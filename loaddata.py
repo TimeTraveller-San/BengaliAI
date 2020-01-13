@@ -56,14 +56,45 @@ class BengaliAI(Dataset):
         return len(self.images)
 
 
-# if debug:
-#     dataset = BengaliAI(train_df, transform=train_aug)
-#     i = 0
-#     LIMIT = 10
-#
-#     for img, (l1, l2, l2) in dataset:
-#         plt.imshow(img.numpy().reshape(128, 128))
-#         plt.show()
-#         i += 1
-#         if i > LIMIT:
-#             break
+
+def load_df(debug=True, random_state=42):
+    # Load Feather Data
+    df = 'data/train.csv'
+    files = [f'data/train_128_feather/train_{i}.feather' for i in range(4)]
+    df = pd.read_csv(df)
+    if debug:
+        data0 = pd.read_feather(files[0])
+        data_full = data0
+        del data0
+        gc.collect()
+        data_full = df.merge(data_full, on='image_id', how='inner')
+    else:
+        data0 = pd.read_feather(files[0])
+        data1 = pd.read_feather(files[1])
+        data2 = pd.read_feather(files[2])
+        data3 = pd.read_feather(files[3])
+        data_full = pd.concat([data0,data1,data2,data3], ignore_index=True)
+        del data0, data1, data2, data3
+        gc.collect()
+        data_full = df.merge(data_full, on='image_id', how='inner')
+    del df
+    gc.collect()
+    print(data_full.shape)
+    train_df , valid_df = train_test_split(data_full,
+                    test_size=0.20, random_state=random_state,
+                    shuffle=True)
+    del data_full
+    gc.collect()
+    return train_df, valid_df
+
+
+if __name__ == "__main__":
+    """Unit tests"""
+    train_df, valid_df = load_df(True)
+    dataset = BengaliAI(train_df)
+    for img, label in dataset:
+        print(label)
+        print(img.shape)
+        plt.imshow(img.numpy().reshape(128, 128))
+        plt.show()
+        break

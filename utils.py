@@ -34,38 +34,6 @@ def seed_everything(seed=42):
     torch.backends.cudnn.deterministic = True
 
 
-def load_df(debug=True, random_state=42):
-    # Load Feather Data
-    df = 'data/train.csv'
-    files = [f'data/train_128_feather/train_{i}.feather' for i in range(4)]
-    df = pd.read_csv(df)
-    if debug:
-        data0 = pd.read_feather(files[0])
-        data_full = data0
-        del data0
-        gc.collect()
-        data_full = df.merge(data_full, on='image_id', how='inner')
-    else:
-        data0 = pd.read_feather(files[0])
-        data1 = pd.read_feather(files[1])
-        data2 = pd.read_feather(files[2])
-        data3 = pd.read_feather(files[3])
-        data_full = pd.concat([data0,data1,data2,data3], ignore_index=True)
-        del data0, data1, data2, data3
-        gc.collect()
-        data_full = df.merge(data_full, on='image_id', how='inner')
-    del df
-    gc.collect()
-    print(data_full.shape)
-    train_df , valid_df = train_test_split(data_full,
-                    test_size=0.20, random_state=random_state,
-                    shuffle=True)
-    del data_full
-    gc.collect()
-    return train_df, valid_df
-
-
-
 def macro_recall_multi(preds, labels):
     pred_graphemes, pred_vowels, pred_consonants = preds
     true_graphemes, true_vowels, true_consonants = labels
@@ -97,3 +65,22 @@ def calc_macro_recall(solution, submission):
             y_true_subset, y_pred_subset, average='macro'))
     final_score = np.average(scores, weights=[2, 1, 1])
     return final_score
+
+def make_dir(dir):
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+
+def check_dirs():
+    directories = ["logs/", "logs/models/"]
+    for dir in directories:
+        make_dir(dir)
+
+
+def save_model(PATH, epoch, model, optimizer, vocal=False):
+    torch.save({
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
+            }, PATH)
+    if vocal:
+        print(f"Saved model: {PATH} for epoch: {epoch}")
