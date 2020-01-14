@@ -84,3 +84,13 @@ def save_model(PATH, epoch, model, optimizer, vocal=False):
             }, PATH)
     if vocal:
         print(f"Saved model: {PATH} for epoch: {epoch}")
+
+def get_weights(weights):
+    """convert ratio to actual weights. Sum should be one. Although, I dont
+    think the sum=1 has any effect on optimization. I could just get away with
+    ratio but... that isn't fancy.. or clean.
+    or is it not?
+    I might remove this reduntant thing in future."""
+    return [weights[0]/sum(weights),
+            weights[1]/sum(weights),
+            weights[2]/sum(weights)]

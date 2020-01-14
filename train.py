@@ -11,7 +11,6 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 from tqdm import tqdm_notebook as tqdm2
 
-import albumentations as albu
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
@@ -23,23 +22,37 @@ import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 
 from utils import *
-import augmentations
 from model import *
+from mixup import *
+import augmentations
 from loaddata import *
 
+import logging
 import argparse
-import logging #TODO
+
+
 
 seed_everything()
 check_dirs()
 
 
-def train(n_epochs=5, name='test', pretrained=False, debug=False,
-        continue_train=False, model_name='efficientnet-b0', run_name=False):
+
+
+def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
+        continue_train=False, model_name='efficientnet-b0', run_name=False,
+        weights=[2, 1, 1], activation=None, mixup=False):
 
     if not run_name: run_name = model_name
     SAVE_DIR = f'logs/models/{run_name}'
     make_dir(SAVE_DIR)
+    logfile = os.path.join(SAVE_DIR, 'logs.txt')
+    logging.basicConfig(format='%(asctime)s %(message)s',
+                        datefmt='%m/%d/%Y %I:%M:%S %p',
+                        filename=logfile,
+                        level=logging.DEBUG,
+                        filemode='w+'
+                        )
+    logging.info(f"\n\n---------------- [LOGS for {run_name}] ----------------")
 
 
     train_df , valid_df = load_df(debug)
@@ -51,15 +64,22 @@ def train(n_epochs=5, name='test', pretrained=False, debug=False,
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     batch_size = 32
 
-    model_name = 'efficientnet-b0'
-    # model_name = 'se_resnext101_32x4d'
-
     if model_name.split('-')[0] == 'efficientnet':
-        model = ClassifierCNN_effnet(model_name, pretrained=pretrained).to(device)
+        model = ClassifierCNN_effnet(model_name,
+                                    pretrained=pretrained,
+                                    rgb=rgb,
+                                    activation=activation).to(device)
     else:
-        model = ClassifierCNN(model_name, pretrained=pretrained).to(device)
-    lr = 1e-3
+        model = ClassifierCNN(model_name,
+                              pretrained=pretrained,
+                              rgb=rgb,
+                              activation=activation).to(device)
+
+    lr = 3e-4 # Andrej must be proud of me
     optimizer = optim.AdamW(model.parameters(), lr=lr)
+    scheduler = scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+                                        optimizer, mode='min', factor=0.7,
+                                        patience=5, min_lr=1e-10, verbose=True)
 
     if continue_train:
         try:
@@ -73,14 +93,20 @@ def train(n_epochs=5, name='test', pretrained=False, debug=False,
             optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
             start_epoch = checkpoint['epoch']
             print(f"Loaded model from: {path}")
+            logging.info(f"Loaded model from: {path}")
         except:
             continue_train = False
             print("Can't continue training. Starting again.")
+            logging.info("Can't continue training. Starting again.")
 
     # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10], gamma=0.3)
     # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, 1e-2, total_steps=None, epochs=n_epochs, steps_per_epoch=3139, pct_start=0.0,
     #                                    anneal_strategy='cos', cycle_momentum=True,base_momentum=0.85, max_momentum=0.95,  div_factor=100.0)
-    criterion = nn.CrossEntropyLoss()
+
+    if mixup:
+        criterion = Mixup_CrossEntropyLoss()
+    else:
+        criterion = nn.CrossEntropyLoss()
     train_aug = augmentations.get_augs()
     train_dataset = BengaliAI(train_df,
                              transform=train_aug,
@@ -101,17 +127,33 @@ def train(n_epochs=5, name='test', pretrained=False, debug=False,
                         )
     assert(len(train_dataset)>=batch_size)
     # model.freeze()
-    ws = [0.5, 0.25, 0.25]
+    ws = get_weights(weights)
     history = pd.DataFrame()
     current, best = 0., -1.
     epoch = 0
+
+    logging.info(f"Project path: {SAVE_DIR}")
+    logging.info(f"Model: {model_name}")
+    logging.info(f"Model class: {type(model)}")
+    logging.info(f"Debug: {debug}")
+    logging.info(f"Batch size: {batch_size}")
+    logging.info(f"LR: {lr}")
+    logging.info(f"Optimizer: {type(optimizer)}")
+    logging.info(f"Weights: [{ws[0]} | {ws[1]} | {ws[2]}]")
+    logging.info(f"Activation: {activation}")
+    logging.info(f"Train dataset: {train_dataset}")
+    logging.info(f"Validation dataset: {val_dataset}")
+    logging.info(f"Continue: {continue_train}")
+    logging.info(f"Mode: {model}")
+    logging.info("------------------------------------------------------------")
+
+    logging.info("Starting training...")
     if continue_train:
-        print(f"\n\nWILL CONTINUE FROM EPOCH: {start_epoch}\n\n")
+        logging.info(f"WILL CONTINUE FROM EPOCH: {start_epoch}\n\n")
         n_epochs += start_epoch
         epoch = start_epoch
     pbar = tqdm(total=n_epochs)
     pbar.update(epoch)
-    # for epoch in pbar:
     while epoch < n_epochs:
         pbar.update(1)
         for phase in ['train', 'valid', 'save']:
@@ -127,36 +169,45 @@ def train(n_epochs=5, name='test', pretrained=False, debug=False,
                 elif (epoch+1) % save_freq == 0:
                     save_model(os.path.join(SAVE_DIR, f'{run_name}_{epoch+1}.pth'),
                                     epoch, model, optimizer, True)
+                continue
 
             if phase == 'train':
                 model.train()
+                logging.info("----------------------------------------------------------\n")
                 loader = train_loader
 
             if phase == 'valid':
                 model.eval()
                 loader = val_loader
 
-            running_loss = 0
-            running_loss0 = 0
-            running_loss1 = 0
-            running_loss2 = 0
+            running_loss = 0.
+            running_loss0 = 0.
+            running_loss1 = 0.
+            running_loss2 = 0.
 
-            running_acc0 = 0.0
-            running_acc1 = 0.0
-            running_acc2 = 0.0
+            running_acc0 = 0.
+            running_acc1 = 0.
+            running_acc2 = 0.
 
-            running_recall = 0.0
-            running_recall0 = 0.0
-            running_recall1 = 0.0
-            running_recall2 = 0.0
+            running_recall = 0.
+            running_recall0 = 0.
+            running_recall1 = 0.
+            running_recall2 = 0.
 
-            recall = 0
+            recall = 0.
 
             bar = tqdm(loader)
             for i, (img, label) in enumerate(bar):
                 img = img.to(device)
                 if phase == 'train':
                     optimizer.zero_grad()
+                    if mixup:
+                        alpha = 0.1
+                        img, labels = mixup(img, label, alpha)
+                        labels, shuffled_labels, lam = labels
+                        shuffled_labels[0] = shuffled_labels[0].to(device)
+                        shuffled_labels[1] = shuffled_labels[1].to(device)
+                        shuffled_labels[2] = shuffled_labels[2].to(device)
                 out = model(img)
                 label[0] = label[0].to(device)
                 label[1] = label[1].to(device)
@@ -185,10 +236,18 @@ def train(n_epochs=5, name='test', pretrained=False, debug=False,
                     running_acc0 += (out[0].argmax(1)==label[0]).float().mean()/len(loader)
                     running_acc1 += (out[1].argmax(1)==label[1]).float().mean()/len(loader)
                     running_acc2 += (out[2].argmax(1)==label[2]).float().mean()/len(loader)
+
             print(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
             print(f"Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}]")
             print(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
             print(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]")
+
+            logging.info(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
+            logging.info(f"Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}]")
+            logging.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
+            logging.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]")
+
+
             if phase == 'valid':
                 current = recall
             history.loc[epoch, f'{phase}_loss'] = running_loss
@@ -199,23 +258,54 @@ def train(n_epochs=5, name='test', pretrained=False, debug=False,
             history.loc[epoch, f'{phase}_acc_grapheme'] = running_acc0.cpu().numpy()
             history.loc[epoch, f'{phase}_acc_vowel'] = running_acc1.cpu().numpy()
             history.loc[epoch, f'{phase}_acc_consonant'] = running_acc2.cpu().numpy()
+
+        history.to_csv(os.path.join(SAVE_DIR, f"{run_name}_{epoch}.csv"))
         epoch += 1
-        # history.to_csv(f'logs/{name}_{epoch}.csv')
-    # history.to_csv(f'logs/{name}_{FINAL}.csv')
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("--epochs", "-e", default=10,
+                        help="number of epochs")
     parser.add_argument("--pretrained", "-p", default=False,
                         help="use pretrained weights of not")
-    parser.add_argument("--epochs", "-e", default=50,
-                        help="number of epochs")
-    parser.add_argument("--name", "-n", default="effnet-b0",
-                            help="name of output csv")
+    parser.add_argument("--debug", "-d", default=False,
+                        help="if debug, run small model")
+    parser.add_argument("--continue_train", "-c", default=False,
+                        help="continue training or not")
+    parser.add_argument("--model_name", "-mn", default="efficientnet-b0",
+                            help="name of the model")
+    parser.add_argument("--run_name", "-rn", default=False,
+                            help="name of run")
+    parser.add_argument("--rgb", "-rbg", default=False,
+                            help="rgb or not?")
+    parser.add_argument("--w1", "-w1", default=2,
+                            help="weight for grapheme (ratio)")
+    parser.add_argument("--w2", "-w2", default=1,
+                            help="weight for vowel (ratio)")
+    parser.add_argument("--w3", "-w3", default=1,
+                            help="weight for consonant (ratio)")
+    parser.add_argument("--activation", "-a", default=None,
+                            help="None is default, mish is mish")
+    parser.add_argument("--mixup", "-mx", default=False,
+                            help="mixup augmentations, only on input for now")
     args = parser.parse_args()
 
-    debug = True
-    model_name = 'efficientnet-b0'
-    run_name = 'test_phase1'
-    train(int(args.epochs), args.name, True, debug=debug,
-            continue_train=True, model_name=model_name, run_name=run_name)
+    # debug = False
+    # pretrained = False
+    # # model_name = 'efficientnet-b0'
+    # model_name = 'se_resnext50_32x4d'
+    # run_name = 'senet50'
+    weights = [int(args.w1), int(args.w2), int(args.w3)]
+
+    train(int(args.epochs),
+        args.pretrained,
+        args.debug,
+        args.rgb,
+        args.continue_train,
+        args.model_name,
+        args.run_name,
+        weights,
+        args.activation,
+        args.mixup,
+        )
