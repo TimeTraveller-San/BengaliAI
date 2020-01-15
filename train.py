@@ -32,6 +32,8 @@ import argparse
 import warnings
 warnings.filterwarnings('ignore')
 
+import wandb
+wandb.init(project="bengaliai")
 
 
 seed_everything()
@@ -305,6 +307,13 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 logging.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
                 logging.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
                 logging.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
+
+                wandb.log({f"{phase}_{li}_loss": running_loss})
+                wandb.log({f"{phase}_{li}_recall": running_recall})
+                wandb.log({f"{phase}_{li}_recall_grapheme": running_recall1})
+                wandb.log({f"{phase}_{li}_recall_vowel": running_recall1})
+                wandb.log({f"{phase}_{li}_recall_consonant": running_recall2})
+
 
                 history.loc[epoch, f'{phase}_{li}_loss'] = running_loss
                 history.loc[epoch, f'{phase}_{li}_recall'] = running_recall
