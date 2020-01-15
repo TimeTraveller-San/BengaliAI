@@ -1,0 +1,349 @@
+01/15/2020 09:04:15 PM 
+
+---------------- [LOGS for seresnext50] ----------------
+01/15/2020 09:04:21 PM Can't continue training. Starting again.
+01/15/2020 09:04:21 PM Project path: sss aa/seresnext50
+01/15/2020 09:04:21 PM Model: se_resnext50_32x4d
+01/15/2020 09:04:21 PM Model class: <class 'model.ClassifierCNN'>
+01/15/2020 09:04:21 PM Debug: True
+01/15/2020 09:04:21 PM Batch size: 32
+01/15/2020 09:04:21 PM LR: 0.0003
+01/15/2020 09:04:21 PM Optimizer: <class 'torch.optim.adamw.AdamW'>
+01/15/2020 09:04:21 PM Weights: [0.5 | 0.25 | 0.25]
+01/15/2020 09:04:21 PM Activation: mish
+01/15/2020 09:04:21 PM Mixup: True
+01/15/2020 09:04:21 PM Cutmix: True
+01/15/2020 09:04:21 PM Train dataset: <loaddata.BengaliAI object at 0x7efd41728eb8>
+01/15/2020 09:04:21 PM Validation dataset: <loaddata.BengaliAI object at 0x7efcd66bc160>
+01/15/2020 09:04:21 PM Continue: False
+01/15/2020 09:04:21 PM Model: ClassifierCNN(
+  (first): RGB()
+  (model): SENet(
+    (layer0): Sequential(
+      (conv1): Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+      (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu1): Mish()
+      (pool): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=True)
+    )
+    (layer1): Sequential(
+      (0): SEResNeXtBottleneck(
+        (conv1): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(256, 16, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(16, 256, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+        (downsample): Sequential(
+          (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): SEResNeXtBottleneck(
+        (conv1): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(256, 16, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(16, 256, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (2): SEResNeXtBottleneck(
+        (conv1): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(256, 16, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(16, 256, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+    (layer2): Sequential(
+      (0): SEResNeXtBottleneck(
+        (conv1): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+        (downsample): Sequential(
+          (0): Conv2d(256, 512, kernel_size=(1, 1), stride=(2, 2), bias=False)
+          (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): SEResNeXtBottleneck(
+        (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (2): SEResNeXtBottleneck(
+        (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (3): SEResNeXtBottleneck(
+        (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+    (layer3): Sequential(
+      (0): SEResNeXtBottleneck(
+        (conv1): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+        (downsample): Sequential(
+          (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(2, 2), bias=False)
+          (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (2): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (3): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (4): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (5): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+    (layer4): Sequential(
+      (0): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(2048, 128, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(128, 2048, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+        (downsample): Sequential(
+          (0): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(2, 2), bias=False)
+          (1): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): SEResNeXtBottleneck(
+        (conv1): Conv2d(2048, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(2048, 128, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(128, 2048, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (2): SEResNeXtBottleneck(
+        (conv1): Conv2d(2048, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): GeM(p=3.0000, eps=1e-06)
+          (fc1): Conv2d(2048, 128, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(128, 2048, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+    (avg_pool): AvgPool2d(kernel_size=7, stride=1, padding=0)
+    (last_linear): Linear(in_features=2048, out_features=1000, bias=True)
+  )
+  (head_grapheme_root): AdaptiveHead(
+    (pool): GeM(p=3.0000, eps=1e-06)
+    (l1): Linear(in_features=2048, out_features=1024, bias=True)
+    (bn): BatchNorm1d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (mish): Mish()
+    (l2): Linear(in_features=1024, out_features=168, bias=True)
+  )
+  (head_vowel_diacritic): AdaptiveHead(
+    (pool): GeM(p=3.0000, eps=1e-06)
+    (l1): Linear(in_features=2048, out_features=1024, bias=True)
+    (bn): BatchNorm1d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (mish): Mish()
+    (l2): Linear(in_features=1024, out_features=11, bias=True)
+  )
+  (head_consonant_diacritic): AdaptiveHead(
+    (pool): GeM(p=3.0000, eps=1e-06)
+    (l1): Linear(in_features=2048, out_features=1024, bias=True)
+    (bn): BatchNorm1d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (mish): Mish()
+    (l2): Linear(in_features=1024, out_features=7, bias=True)
+  )
+)
+01/15/2020 09:04:21 PM ------------------------------------------------------------
+01/15/2020 09:04:21 PM Starting training...
+01/15/2020 09:04:21 PM ----------------------------------------------------------
+
+01/15/2020 09:04:27 PM Epoch: [1/1] train...
+01/15/2020 09:04:27 PM >> Recall: 0.062 | [0.001 | 0.100 | 0.146] <<
+01/15/2020 09:04:27 PM Acc:  [0.781% | 17.695% | 34.844%]
+01/15/2020 09:04:27 PM Loss: 3.603 | [5.121 | 2.386 | 1.782]
+
+01/15/2020 09:04:28 PM ++++++++++++++ VALIDATING ON BOTH, IGNORE ABOVE TRAIN METRICS ++++++++++++++
+01/15/2020 09:04:28 PM ++++++++++++++ FIRST IS TRAIN, THEN IS VAL ++++++++++++++
+01/15/2020 09:04:28 PM [Validation metrics]
+01/15/2020 09:04:29 PM Epoch: [1/1] valid...
+01/15/2020 09:04:29 PM >> Recall: 0.039 | [0.001 | 0.023 | 0.129] <<
+01/15/2020 09:04:29 PM Acc:  [3.359% | 19.688% | 64.102%]
+01/15/2020 09:04:29 PM Loss: 3.555 | [5.267 | 2.375 | 1.310]
+
