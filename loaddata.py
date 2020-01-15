@@ -15,6 +15,7 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
 from sklearn.model_selection import train_test_split
+from iterstrat.ml_stratifiers import MultilabelStratifiedShuffleSplit
 
 import torch
 from torch import nn
@@ -23,6 +24,9 @@ import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 
 from augmentations import *
+from utils import *
+
+seed_everything()
 
 class BengaliAI(Dataset):
     def __init__(self, data, details=False, transform=None, imgsize=(128, 128)):
@@ -80,10 +84,17 @@ def load_df(debug=True, random_state=42):
     del df
     gc.collect()
     print(data_full.shape)
-    train_df , valid_df = train_test_split(data_full,
-                    test_size=0.20, random_state=random_state,
-                    shuffle=True)
-    del data_full
+
+    msss = MultilabelStratifiedShuffleSplit(n_splits=1,
+                                            test_size=0.2,
+                                            random_state=random_state)
+    y = data_full.iloc[:, 1:4]
+    for train_index, test_index in msss.split(data_full, y):
+        train_df, valid_df = data_full.iloc[train_index, :], data_full.iloc[test_index, :]
+    # train_df , valid_df = train_test_split(data_full,
+    #                 test_size=0.20, random_state=random_state,
+    #                 shuffle=True)
+    del data_full, y
     gc.collect()
     return train_df, valid_df
 
@@ -91,10 +102,44 @@ def load_df(debug=True, random_state=42):
 if __name__ == "__main__":
     """Unit tests"""
     train_df, valid_df = load_df(True)
-    dataset = BengaliAI(train_df)
-    for img, label in dataset:
-        print(label)
-        print(img.shape)
-        plt.imshow(img.numpy().reshape(128, 128))
-        plt.show()
-        break
+    dataset1 = BengaliAI(train_df)
+    dataset2 = BengaliAI(train_df,
+                             transform=get_augs(),
+                        )
+    ncol = 2
+    nrow = 15
+    fig, axes = plt.subplots(nrow, ncol, figsize=(10, 2 * nrow), squeeze=True)
+    for i, ((img1, _), (img2, _)) in enumerate(zip(dataset1, dataset2)):
+        for j, img in enumerate([img1, img2]):
+            print(i, j)
+            ax = axes[i, j]
+            ax.axis('off')
+            ax.get_xaxis().set_visible(False)
+            ax.get_yaxis().set_visible(False)
+            ax.imshow(img.numpy().reshape(128, 128))
+        if i >= nrow-1:
+            break
+    plt.show()
+
+
+
+#
+# def show_images(aug_dict, ncol=6):
+#     nrow = len(aug_dict)
+#
+#     fig, axes = plt.subplots(nrow, ncol, figsize=(20, 2 * nrow), squeeze=False)
+#
+#     for i, (key, aug) in enumerate(aug_dict.items()):
+#         for j in range(ncol):
+#             ax = axes[i, j]
+#             if j == 0:
+#                 ax.text(0.5, 0.5, key, horizontalalignment='center', verticalalignment='center', fontsize=15)
+#                 ax.get_xaxis().set_visible(False)
+#                 ax.get_yaxis().set_visible(False)
+#                 ax.axis('off')
+#             else:
+#                 image, label = train_dataset[j-1]
+#                 if aug is not None:
+#                     image = aug(image=image)['image']
+#                 ax.imshow(image, cmap='Greys')
+#                 ax.set_title(f'label: {label}')

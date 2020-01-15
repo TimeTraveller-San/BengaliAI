@@ -27,12 +27,16 @@ import pretrainedmodels
 import SEResNeXt_mish
 # from efficientnet_pytorch import EfficientNet
 from effnet import EfficientNet
+from mixup import *
+from activations import Mish
 
 n_grapheme = 168
 n_vowel = 11
 n_consonant = 7
 num_classes = [n_grapheme, n_vowel, n_consonant]
 
+
+seed_everything()
 
 def residual_add(lhs, rhs):
     lhs_ch, rhs_ch = lhs.shape[1], rhs.shape[1]
@@ -54,6 +58,25 @@ def mean_std(model_name):
     except:
         mean, std = IMAGE_RGB_MEAN, IMAGE_RGB_STD
     return (mean, std)
+
+def gem(x, p=3, eps=1e-6):
+    return F.avg_pool2d(x.clamp(min=eps).pow(p),
+                    (x.size(-2), x.size(-1))).pow(1./p)
+
+class GeM(nn.Module):
+    def __init__(self, p=3, eps=1e-6):
+        super(GeM,self).__init__()
+        self.p = Parameter(torch.ones(1)*p)
+        self.eps = eps
+    def forward(self, x):
+        return gem(x, p=self.p, eps=self.eps)
+    def __repr__(self):
+        return self.__class__.__name__ + '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + ', ' + 'eps=' + str(self.eps) + ')'
+
+
+
+
+
 
 class RGB(nn.Module):
     def __init__(self, model_name):
@@ -108,6 +131,24 @@ def lin_head(indim, outdim, bias=True, use_bn=True, activation=F.relu,
     return nn.Sequential(l1, l2)
 
 
+class AdaptiveHead(nn.Module):
+    def __init__(self, in_features, out_features):
+        super(AdaptiveHead, self).__init__()
+        self.pool = GeM()
+        self.l1 = nn.Linear(in_features, in_features//2)
+        self.bn = nn.BatchNorm1d(in_features//2)
+        self.mish = Mish()
+        self.l2 = nn.Linear(in_features//2, out_features)
+
+    def forward(self, x):
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.l1(x)
+        x = self.bn(x)
+        x = self.mish(x)
+        x = self.l2(x)
+        return x
+
 
 class ClassifierCNN(nn.Module):
     def __init__(self, model_name, num_classes=num_classes,
@@ -118,29 +159,32 @@ class ClassifierCNN(nn.Module):
             self.first = RGB(model_name)
         else:
             self.first = nn.Conv2d(1, 3, kernel_size=3, stride=1, padding=1, bias=True)
-
         if not pretrained:
             pretrained = None
         else:
             print(f"Loaded pretrained weights for {model_name}")
             pretrained = 'imagenet'
-
         if activation == 'mish':
             print("Using mish")
-            self.model = SEResNeXt_mish.se_resnext50_32x4d(pretrained=pretrained)
+            self.model = SEResNeXt_mish.se_resnext50_32x4d(pretrained=pretrained) #Only one model supported for now
         else:
             self.model = pretrainedmodels.__dict__[model_name](pretrained=pretrained)
         self.size = (224, 224) # __dict__ for se_resnext50_32x4d
 
         # in_features = self.model.last_linear.in_features
         in_features = 2048
+
         # self.head_grapheme_root = lin_head(in_features, num_classes[0])
         # self.head_vowel_diacritic = lin_head(in_features, num_classes[1])
         # self.head_consonant_diacritic = lin_head(in_features, num_classes[2])
 
-        self.head_grapheme_root = nn.Linear(in_features, num_classes[0])
-        self.head_vowel_diacritic = nn.Linear(in_features, num_classes[1])
-        self.head_consonant_diacritic = nn.Linear(in_features, num_classes[2])
+        # self.head_grapheme_root = nn.Linear(in_features, num_classes[0])
+        # self.head_vowel_diacritic = nn.Linear(in_features, num_classes[1])
+        # self.head_consonant_diacritic = nn.Linear(in_features, num_classes[2])
+
+        self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0])
+        self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1])
+        self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2])
 
     def freeze(self):
         for param in self.model.parameters():
@@ -154,74 +198,9 @@ class ClassifierCNN(nn.Module):
         # x = F.interpolate(x, size=self.size, mode='bilinear')
         x = self.first(x)
         x = self.model.features(x)
-        x = F.adaptive_avg_pool2d(x, 1)
-        x = x.view(x.size(0), -1)
-        # x = F.dropout(x,0.1,self.training)
-
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
         logit_consonant_diacritic = self.head_consonant_diacritic(x)
-
-        if logit:
-            return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
-        else:
-            grapheme_root = F.softmax(logit_grapheme_root, 1)
-            vowel_diacritic = F.softmax(logit_vowel_diacritic, 1)
-            consonant_diacritic = F.softmax(logit_consonant_diacritic, 1)
-            return grapheme_root, vowel_diacritic, consonant_diacritic
-
-
-
-class ClassifierCNN_Heavy(nn.Module):
-    def __init__(self, model_name, num_classes=num_classes, pretrained=None):
-        super(ClassifierCNN_Heavy, self).__init__()
-
-        # self.inconv = nn.Conv2d(1, 3, kernel_size=3, stride=1, padding=1, bias=True)
-        if not pretrained:
-            pretrained = None
-        else:
-            print(f"Loaded pretrained weights for {model_name}")
-            pretrained = 'imagenet'
-        self.rgb = RGB(model_name)
-        self.model1 = pretrainedmodels.__dict__[model_name](pretrained=pretrained)
-        self.model2 = pretrainedmodels.__dict__[model_name](pretrained=pretrained)
-        self.size = (224, 224) # __dict__ for se_resnext50_32x4d
-
-        # in_features = self.model.last_linear.in_features
-        in_features = 2048
-        # self.head_grapheme_root = lin_head(in_features, num_classes[0])
-        # self.head_vowel_diacritic = lin_head(in_features, num_classes[1])
-        # self.head_consonant_diacritic = lin_head(in_features, num_classes[2])
-
-        self.head_grapheme_root = nn.Linear(in_features, num_classes[0])
-        self.head_vowel_diacritic = nn.Linear(in_features, num_classes[1])
-        self.head_consonant_diacritic = nn.Linear(in_features, num_classes[2])
-
-    def freeze(self):
-        for param in self.model.parameters():
-            param.requires_grad = False
-
-    def unfreeze(self):
-        for param in self.model.parameters():
-            param.requires_grad = True
-
-    def forward(self, x, logit=True):
-        x = F.interpolate(x, size=self.size, mode='bilinear')
-        x = self.rgb(x)
-        # x  = self.inconv(x)
-
-        x1 = self.model1.features(x)
-        x2 = self.model2.features(x)
-
-        x1 = F.adaptive_avg_pool2d(x1, 1)
-        x1 = x1.view(x1.size(0), -1)
-
-        x2 = F.adaptive_avg_pool2d(x2, 1)
-        x2 = x2.view(x2.size(0), -1)
-
-        logit_grapheme_root = self.head_grapheme_root(x1)
-        logit_vowel_diacritic = self.head_vowel_diacritic(x2)
-        logit_consonant_diacritic = self.head_consonant_diacritic(x2)
 
         if logit:
             return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
@@ -243,14 +222,15 @@ class ClassifierCNN_effnet(nn.Module):
             self.model = EfficientNet.from_pretrained(model_name, activation=activation)
         else:
             self.model = EfficientNet.from_name(model_name, activation=activation)
-        in_features = 1280 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
+        # in_features = 1280 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
+        in_features = 1792 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
 
         self.head_grapheme_root = lin_head(in_features, num_classes[0])
         self.head_vowel_diacritic = lin_head(in_features, num_classes[1])
         self.head_consonant_diacritic = lin_head(in_features, num_classes[2])
 
         self.last = nn.Sequential(
-            nn.BatchNorm2d(1280), #TODO
+            nn.BatchNorm2d(in_features), #TODO
             nn.ReLU(inplace=True),
         )
 
@@ -288,8 +268,10 @@ if __name__ == "__main__":
     """Unit tests"""
     #1. Check forward pass
     model_name = 'se_resnext50_32x4d'
+    # model_name = 'efficientnet-b0'
     pretrained = False
     activation = 'mish'
+    mixup = True
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # model = ClassifierCNN_effnet(model_name, pretrained=pretrained, activation=activation).to(device)
     model = ClassifierCNN(model_name, pretrained=pretrained, activation=activation).to(device)
@@ -308,18 +290,31 @@ if __name__ == "__main__":
     dataset = BengaliAI(df[:10000])
     dataloader = DataLoader(dataset, batch_size=32)
     optimizer = optim.AdamW(model.parameters(), lr=3e-4)
-    criterion = nn.CrossEntropyLoss()
+    if mixup:
+        print("Using mixup")
+        criterion = Mixup_CrossEntropyLoss()
+    else:
+        criterion = nn.CrossEntropyLoss()
     losses = []
     epochs = 5 #Increase this if you have good resources/a lot of time
     for epoch in tqdm(range(epochs)):
         for i, (img, label) in enumerate(tqdm(dataloader)):
             model.train()
+            if mixup:
+                alpha = 1
+                img, labels = mixup_data(img, label, alpha, device)
+                labels, shuffled_labels, lam = labels
             img = img.to(device)
             optimizer.zero_grad()
             out = model(img)
-            loss = 0.5*criterion(out[0], label[0].to(device)) +\
-                   0.25*criterion(out[1], label[1].to(device)) +\
-                   0.25*criterion(out[2], label[2].to(device))
+            if mixup:
+                loss = 0.5*criterion(out[0], (label[0].to(device), shuffled_labels[0], lam)) +\
+                       0.25*criterion(out[1], (label[1].to(device), shuffled_labels[1], lam)) +\
+                       0.25*criterion(out[2], (label[2].to(device), shuffled_labels[2], lam))
+            else:
+                loss = 0.5*criterion(out[0], label[0].to(device)) +\
+                       0.25*criterion(out[1], label[1].to(device)) +\
+                       0.25*criterion(out[2], label[2].to(device))
             loss.backward()
             losses.append(loss.item())
             optimizer.step()

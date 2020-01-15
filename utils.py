@@ -76,11 +76,12 @@ def check_dirs():
         make_dir(dir)
 
 
-def save_model(PATH, epoch, model, optimizer, vocal=False):
+def save_model(PATH, epoch, model, optimizer, scheduler, vocal=False):
     torch.save({
             'epoch': epoch,
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
+            'scheduler': scheduler,
             }, PATH)
     if vocal:
         print(f"Saved model: {PATH} for epoch: {epoch}")

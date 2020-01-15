@@ -30,16 +30,18 @@ class Normalize:
 
 def get_augs():
     return albu.Compose([
-        albu.ShiftScaleRotate(p=0.8, border_mode=cv2.BORDER_CONSTANT, value =1),
-    #     albu.OneOf([
-    #         albu.ElasticTransform(p=0.1, alpha=1, sigma=10, alpha_affine=10, border_mode=cv2.BORDER_CONSTANT,value =1),
-    #         albu.GridDistortion(distort_limit =0.01 ,border_mode=cv2.BORDER_CONSTANT,value =1, p=0.1),
-    #         albu.OpticalDistortion(p=0.1, distort_limit= 0.01, shift_limit=0.1, border_mode=cv2.BORDER_CONSTANT,value =1)
-    #         ], p=0.3),
-    #     albu.OneOf([
-    # #         albu.GaussNoise(var_limit=0.5),
-    #         albu.Blur(),
-    #         albu.GaussianBlur(blur_limit=1)
-    #         ], p=0.4),
-    #     albu.RandomGamma(p=0.8)
+        albu.ShiftScaleRotate(p=0.7,
+                              border_mode=cv2.BORDER_CONSTANT,
+                              value=1,
+                              scale_limit=0.2,
+                              rotate_limit=30),
+        # albu.OneOf([
+        #     albu.ElasticTransform(p=0.1, alpha=1, sigma=10, alpha_affine=10, border_mode=cv2.BORDER_CONSTANT,value =1),
+        #     albu.GridDistortion(distort_limit =0.01 ,border_mode=cv2.BORDER_CONSTANT,value =1, p=0.1),
+        #     albu.OpticalDistortion(p=0.1, distort_limit= 0.01, shift_limit=0.1, border_mode=cv2.BORDER_CONSTANT,value =1)
+        #     ], p=0.3),
+        # albu.OneOf([
+        #     albu.Blur(),
+        #     albu.GaussianBlur(blur_limit=1)
+        #     ], p=0.4),
     ])
