@@ -183,11 +183,11 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
             if phase == 'valid':
                 model.eval()
                 if mixup:
-                    loaders = [val_loader]
-                else:
                     logging.info("++++++++++++++ VALIDATING ON BOTH, IGNORE ABOVE TRAIN METRICS ++++++++++++++")
                     logging.info("++++++++++++++ FIRST IS TRAIN, THEN IS VAL ++++++++++++++")
                     loaders = [train_loader, val_loader] #For mixup, train_loader while training doesn't have the actual train data so validation needs to validate both. (to see if I am overfitting)
+                else:
+                    loaders = [val_loader]
 
             running_loss = 0.
             running_loss0 = 0.
@@ -207,7 +207,6 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
             for loader in loaders:
                 bar = tqdm(loader)
-                logging.info(f"Metrics for loader: {loader} | During phase: {phase}")
                 for i, (img, label) in enumerate(bar):
                     with torch.set_grad_enabled(phase == 'train'):
                         img = img.to(device)
@@ -259,9 +258,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 print(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]")
 
                 logging.info(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
-                logging.info(f"Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}]")
+                logging.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
                 logging.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
-                logging.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]")
+                logging.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
 
 
                 if phase == 'valid':
