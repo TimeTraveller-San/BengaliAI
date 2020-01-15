@@ -94,6 +94,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                               activation=activation).to(device)
 
     lr = 3e-4 # Andrej must be proud of me
+    wandb.watch(model)
     optimizer = optim.AdamW(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
                                     factor=0.5, patience=7,
