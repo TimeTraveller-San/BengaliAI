@@ -29,6 +29,8 @@ from augmentations import *
 
 import logging
 import argparse
+import warnings
+warnings.filterwarnings('ignore')
 
 
 
@@ -39,10 +41,14 @@ check_dirs()
 def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         continue_train=False, model_name='efficientnet-b0', run_name=False,
         weights=[2, 1, 1], activation=None, mixup=False, cutmix=False, alpha=1,
-        min_save_epoch=3, save_freq=3, data_root="/data", verbose=False):
+        min_save_epoch=3, save_freq=3, data_root="/data", save_dir=None,
+        verbose=False):
 
     if not run_name: run_name = model_name
-    SAVE_DIR = f'logs/models/{run_name}'
+    if save_dir is None:
+        SAVE_DIR = f'logs/models/{run_name}'
+    else:
+        SAVE_DIR = os.path.join(save_dir, run_name)
     make_dir(SAVE_DIR)
     logfile = os.path.join(SAVE_DIR, 'logs.txt')
     logging.basicConfig(format='%(asctime)s %(message)s',
@@ -355,6 +361,8 @@ if __name__ == "__main__":
                             help="frequency of saving epochs")
     parser.add_argument("--data_root", "-dr", default="data/",
                             help="location of data")
+    parser.add_argument("--save_dir", "-sr", default=None,
+                            help="directory to save model")
     parser.add_argument("--verbose", "-v", default=False,
                             help="print loss on screen or not?")
 
@@ -389,5 +397,6 @@ if __name__ == "__main__":
         args.min_save_epoch,
         args.save_freq,
         args.data_root,
+        args.save_dir,
         args.verbose,
         )
