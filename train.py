@@ -39,7 +39,7 @@ check_dirs()
 def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         continue_train=False, model_name='efficientnet-b0', run_name=False,
         weights=[2, 1, 1], activation=None, mixup=False, cutmix=False, alpha=1,
-        min_save_epoch=3, save_freq=3, verbose=False):
+        min_save_epoch=3, save_freq=3, data_root="/data", verbose=False):
 
     if not run_name: run_name = model_name
     SAVE_DIR = f'logs/models/{run_name}'
@@ -64,7 +64,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         p = [1]
     else:
         augs = None
-    train_df , valid_df = load_df(debug)
+    train_df , valid_df = load_df(debug, root=data_root)
     if debug:
         LIMIT = 500
         train_df = train_df[:LIMIT]
@@ -345,6 +345,8 @@ if __name__ == "__main__":
                             help="minimum epoch to start saving models")
     parser.add_argument("--save_freq", "-sf", default=3,
                             help="frequency of saving epochs")
+    parser.add_argument("--data_root", "-dr", default="data/",
+                            help="location of data")
     parser.add_argument("--verbose", "-v", default=False,
                             help="print loss on screen or not?")
 
@@ -381,5 +383,6 @@ if __name__ == "__main__":
         int(args.alpha),
         args.min_save_epoch,
         args.save_freq,
+        args.data_root,
         args.verbose,
         )
