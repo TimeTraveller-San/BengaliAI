@@ -168,7 +168,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         logging.info(f"WILL CONTINUE FROM EPOCH: {start_epoch}\n\n")
         n_epochs += start_epoch
         epoch = start_epoch
-    pbar = tqdm(total=n_epochs, initial=epoch)
+    if verbose:
+        pbar = tqdm(total=n_epochs, initial=epoch)
     while epoch < n_epochs:
         # Epoch start
         for phase in ['train', 'valid', 'save']:
@@ -227,7 +228,10 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
                 recall = 0.
 
-                bar = tqdm(loader)
+                if verbose:
+                    bar = tqdm(loader)
+                else:
+                    bar = loader
                 for i, (img, label) in enumerate(bar):
                     with torch.set_grad_enabled(phase == 'train'):
                         if mixup or cutmix:
@@ -262,7 +266,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                             optimizer.step()
 
 
-                        bar.set_description(f"Recall: {recall:.3f}")
+                        if verbose:
+                            bar.set_description(f"Recall: {recall:.3f}")
                         # Evaluation
                         with torch.no_grad():
                             running_loss += loss.item()/len(loader)
@@ -287,6 +292,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                     print(f"Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}]")
                     print(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
                     print(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]")
+                else:
+                    print(f"{phase}_{li}_Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}]")
 
                 logging.info(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
                 logging.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
@@ -306,7 +313,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         # Epoch end
         history.to_csv(os.path.join(SAVE_DIR, f"{run_name}_{epoch}.csv"))
         epoch += 1
-        pbar.update(1)
+        if verbose:
+            pbar.update(1)
 
 
 
@@ -365,9 +373,6 @@ if __name__ == "__main__":
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         print("+++++++++++++++++++++++++ DEBUG MODE +++++++++++++++++++++++++")
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-
-
-
 
     train(int(args.epochs),
         args.pretrained,
