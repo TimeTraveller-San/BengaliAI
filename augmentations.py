@@ -45,3 +45,58 @@ def get_augs():
         #     albu.GaussianBlur(blur_limit=1)
         #     ], p=0.4),
     ])
+
+
+def mixup_data(data, labels, alpha, device):
+    indices = torch.randperm(data.size(0))
+    lam = np.random.beta(alpha, alpha)
+    data = data * lam + data[indices] * (1 - lam)
+    labels = ([labels[0].to(device), labels[1].to(device), labels[2].to(device)],
+                      [labels[0][indices].to(device),
+                       labels[1][indices].to(device),
+                       labels[2][indices].to(device)], lam)
+    return data, labels
+
+
+class Mixed_CrossEntropyLoss():
+    def __init__(self):
+        pass
+
+    def __call__(self, preds, labels, val=True):
+        criterion = nn.CrossEntropyLoss(reduction='mean')
+        if val:
+            return criterion(preds, labels)
+        l1, l2, lam = labels
+        return lam * criterion(preds, l1) + (1 - lam) * criterion(preds, l2)
+
+
+def rand_bbox(size, lam):
+    W = size[2]
+    H = size[3]
+    cut_rat = np.sqrt(1. - lam)
+    cut_w = np.int(W * cut_rat)
+    cut_h = np.int(H * cut_rat)
+
+    # uniform
+    cx = np.random.randint(W)
+    cy = np.random.randint(H)
+
+    bbx1 = np.clip(cx - cut_w // 2, 0, W)
+    bby1 = np.clip(cy - cut_h // 2, 0, H)
+    bbx2 = np.clip(cx + cut_w // 2, 0, W)
+    bby2 = np.clip(cy + cut_h // 2, 0, H)
+
+    return bbx1, bby1, bbx2, bby2
+
+
+def cutmix_data(data, labels, alpha, device):
+    indices = torch.randperm(data.size()[0])
+    lam = np.random.beta(alpha, alpha)
+    bbx1, bby1, bbx2, bby2 = rand_bbox(data.size(), lam)
+    data[:, :, bbx1:bbx2, bby1:bby2] = data[indices, :, bbx1:bbx2, bby1:bby2]
+    lam = 1 - ((bbx2 - bbx1) * (bby2 - bby1) / (data.size()[-1] * data.size()[-2]))
+    labels = ([labels[0].to(device), labels[1].to(device), labels[2].to(device)],
+                          [labels[0][indices].to(device),
+                           labels[1][indices].to(device),
+                           labels[2][indices].to(device)], lam)
+    return data, labels

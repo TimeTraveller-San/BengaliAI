@@ -77,14 +77,17 @@ def check_dirs():
 
 
 def save_model(PATH, epoch, model, optimizer, scheduler, vocal=False):
-    torch.save({
-            'epoch': epoch,
-            'model_state_dict': model.state_dict(),
-            'optimizer_state_dict': optimizer.state_dict(),
-            'scheduler': scheduler,
-            }, PATH)
-    if vocal:
-        print(f"Saved model: {PATH} for epoch: {epoch}")
+    try:
+        torch.save({
+                'epoch': epoch,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'scheduler': scheduler,
+                }, PATH)
+        if vocal:
+            print(f"Saved model: {PATH} for epoch: {epoch}")
+    except:
+        print(f"Disk must be full... RIP")
 
 def get_weights(weights):
     """convert ratio to actual weights. Sum should be one. Although, I dont

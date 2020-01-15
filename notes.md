@@ -5,6 +5,7 @@ pip install iterative-stratification
 
 # Todo
 - increase batch size by gradient accumulation
+- cosine annealing with initial learning rate 0.2
 
 # Ideas
 Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687
@@ -92,4 +93,4 @@ Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687
 - its like the name of a super move
 - MultilabelStratifiedShuffleSplit
 - I will go annoy my friend by messaging him this and not explaining what this is
-- MultilabelStratifiedShuffleSplit 
+- MultilabelStratifiedShuffleSplit

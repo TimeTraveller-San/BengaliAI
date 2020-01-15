@@ -61,10 +61,12 @@ class BengaliAI(Dataset):
 
 
 
-def load_df(debug=True, random_state=42):
+def load_df(debug=True, random_state=42, root="data/"):
     # Load Feather Data
-    df = 'data/train.csv'
-    files = [f'data/train_128_feather/train_{i}.feather' for i in range(4)]
+    # df = 'data/train.csv'
+    df = os.path.join(root, 'train.csv')
+    # files = [f'data/train_128_feather/train_{i}.feather' for i in range(4)]
+    files = [os.path.join(root, 'train_128_feather', f'train_{i}.feather') for i in range(4)]
     df = pd.read_csv(df)
     if debug:
         data0 = pd.read_feather(files[0])
