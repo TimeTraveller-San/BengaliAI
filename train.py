@@ -25,6 +25,7 @@ from utils import *
 from model import *
 # from mixup import *
 from loaddata import *
+from optimizers import *
 from augmentations import *
 
 import logging
@@ -32,8 +33,6 @@ import argparse
 import warnings
 warnings.filterwarnings('ignore')
 
-import wandb
-wandb.init(project="bengaliai")
 
 
 seed_everything()
@@ -44,13 +43,16 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         continue_train=False, model_name='efficientnet-b0', run_name=False,
         weights=[2, 1, 1], activation=None, mixup=False, cutmix=False, alpha=1,
         min_save_epoch=3, save_freq=3, data_root="/data", save_dir=None,
-        verbose=False):
+        use_wandb=False, optmzr=None, verbose=False):
 
     if not run_name: run_name = model_name
     if save_dir is None:
         SAVE_DIR = f'logs/models/{run_name}'
     else:
         SAVE_DIR = os.path.join(save_dir, run_name)
+    if use_wandb:
+        import wandb
+        wandb.init(project="bengaliai")
     make_dir(SAVE_DIR)
     logfile = os.path.join(SAVE_DIR, 'logs.txt')
     logging.basicConfig(format='%(asctime)s %(message)s',
@@ -59,7 +61,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                         level=logging.DEBUG,
                         filemode='a'
                         )
-    logging.info(f"\n\n---------------- [LOGS for {run_name}] ----------------")
+    logger = logging.getLogger(__name__)
+    logger.info(f"\n\n---------------- [LOGS for {run_name}] ----------------")
 
     if mixup and cutmix:
         augs = ['mixup', 'cutmix']
@@ -94,8 +97,14 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                               activation=activation).to(device)
 
     lr = 3e-4 # Andrej must be proud of me
-    wandb.watch(model)
-    optimizer = optim.AdamW(model.parameters(), lr=lr)
+    if use_wandb:
+        wandb.watch(model)
+
+    if optmzr=='swats':
+        print(f"\n\n\n Using SWATS")
+        optimizer = SWATS(model.parameters(), lr=lr, logger=logger)
+    else:
+        optimizer = optim.AdamW(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
                                     factor=0.5, patience=7,
                                     min_lr=1e-10, verbose=True
@@ -114,12 +123,12 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
             scheduler = checkpoint['scheduler']
             start_epoch = checkpoint['epoch'] + 1
             print(f"Loaded model from: {path}")
-            logging.info(f"Loaded model from: {path}")
+            logger.info(f"Loaded model from: {path}")
         except:
             continue_train = False
             start_epoch = 0
             print("Can't continue training. Starting again.")
-            logging.info("Can't continue training. Starting again.")
+            logger.info("Can't continue training. Starting again.")
 
     # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10], gamma=0.3)
     # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, 1e-2, total_steps=None, epochs=n_epochs, steps_per_epoch=3139, pct_start=0.0,
@@ -155,26 +164,26 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     current, best = 0., -1.
     epoch = 0
 
-    logging.info(f"Project path: {SAVE_DIR}")
-    logging.info(f"Model: {model_name}")
-    logging.info(f"Model class: {type(model)}")
-    logging.info(f"Debug: {debug}")
-    logging.info(f"Batch size: {batch_size}")
-    logging.info(f"LR: {lr}")
-    logging.info(f"Optimizer: {type(optimizer)}")
-    logging.info(f"Weights: [{ws[0]} | {ws[1]} | {ws[2]}]")
-    logging.info(f"Activation: {activation}")
-    logging.info(f"Mixup: {mixup}")
-    logging.info(f"Cutmix: {cutmix}")
-    logging.info(f"Train dataset: {train_dataset}")
-    logging.info(f"Validation dataset: {val_dataset}")
-    logging.info(f"Continue: {continue_train}")
-    logging.info(f"Model: {model}")
-    logging.info("------------------------------------------------------------")
+    logger.info(f"Project path: {SAVE_DIR}")
+    logger.info(f"Model: {model_name}")
+    logger.info(f"Model class: {type(model)}")
+    logger.info(f"Debug: {debug}")
+    logger.info(f"Batch size: {batch_size}")
+    logger.info(f"LR: {lr}")
+    logger.info(f"Optimizer: {type(optimizer)}")
+    logger.info(f"Weights: [{ws[0]} | {ws[1]} | {ws[2]}]")
+    logger.info(f"Activation: {activation}")
+    logger.info(f"Mixup: {mixup}")
+    logger.info(f"Cutmix: {cutmix}")
+    logger.info(f"Train dataset: {train_dataset}")
+    logger.info(f"Validation dataset: {val_dataset}")
+    logger.info(f"Continue: {continue_train}")
+    logger.info(f"Model: {model}")
+    logger.info("------------------------------------------------------------")
 
-    logging.info("Starting training...")
+    logger.info("Starting training...")
     if continue_train:
-        logging.info(f"WILL CONTINUE FROM EPOCH: {start_epoch}\n\n")
+        logger.info(f"WILL CONTINUE FROM EPOCH: {start_epoch}\n\n")
         n_epochs += start_epoch
         epoch = start_epoch
     if verbose:
@@ -191,24 +200,24 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                     mname = os.path.join(SAVE_DIR, 'best.pth')
                     save_model(mname,
                                     epoch, model, optimizer, scheduler, True)
-                    logging.info(f"Saving model {mname}")
+                    logger.info(f"Saving model {mname}")
                 elif (epoch+1) % save_freq == 0:
                     mname = os.path.join(SAVE_DIR, f'{run_name}_{epoch+1}.pth')
                     save_model(mname,
                                     epoch, model, optimizer, scheduler, True)
-                    logging.info(f"Saving model {mname}")
+                    logger.info(f"Saving model {mname}")
                 continue
 
             if phase == 'train':
                 model.train()
-                logging.info("----------------------------------------------------------\n")
+                logger.info("----------------------------------------------------------\n")
                 loaders = [train_loader]
 
             if phase == 'valid':
                 model.eval()
                 if mixup or cutmix:
-                    logging.info("++++++++++++++ VALIDATING ON BOTH, IGNORE ABOVE TRAIN METRICS ++++++++++++++")
-                    logging.info("++++++++++++++ FIRST IS TRAIN, THEN IS VAL ++++++++++++++")
+                    logger.info("++++++++++++++ VALIDATING ON BOTH, IGNORE ABOVE TRAIN METRICS ++++++++++++++")
+                    logger.info("++++++++++++++ FIRST IS TRAIN, THEN IS VAL ++++++++++++++")
                     loaders = [train_loader, val_loader] #For mixup, train_loader while training doesn't have the actual train data so validation needs to validate both. (to see if I am overfitting)
                 else:
                     loaders = [val_loader]
@@ -217,9 +226,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 if phase == "valid" and not li:
                     if (epoch + 1) % 3 is not 0:
                         continue #Only calculate train metric for every 3rd epoch so save time. X_X
-                    logging.info("[Train metrics]")
+                    logger.info("[Train metrics]")
                 if phase == "valid" and li:
-                    logging.info("[Validation metrics]")
+                    logger.info("[Validation metrics]")
 
                 running_loss = 0.
                 running_loss0 = 0.
@@ -302,16 +311,17 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                     print(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
                     print(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]")
 
-                logging.info(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
-                logging.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
-                logging.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
-                logging.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
+                logger.info(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
+                logger.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
+                logger.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
+                logger.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
 
-                wandb.log({f"{phase}_{li}_loss": running_loss})
-                wandb.log({f"{phase}_{li}_recall": running_recall})
-                wandb.log({f"{phase}_{li}_recall_grapheme": running_recall1})
-                wandb.log({f"{phase}_{li}_recall_vowel": running_recall1})
-                wandb.log({f"{phase}_{li}_recall_consonant": running_recall2})
+                if use_wandb:
+                    wandb.log({f"{phase}_{li}_loss": running_loss})
+                    wandb.log({f"{phase}_{li}_recall": running_recall})
+                    wandb.log({f"{phase}_{li}_recall_grapheme": running_recall0})
+                    wandb.log({f"{phase}_{li}_recall_vowel": running_recall1})
+                    wandb.log({f"{phase}_{li}_recall_consonant": running_recall2})
 
 
                 history.loc[epoch, f'{phase}_{li}_loss'] = running_loss
@@ -371,8 +381,13 @@ if __name__ == "__main__":
                             help="location of data")
     parser.add_argument("--save_dir", "-sr", default=None,
                             help="directory to save model")
+    parser.add_argument("--use_wandb", "-wb", default=False,
+                            help="use wandb or not?")
+    parser.add_argument("--optmzr", "-optim", default=None,
+                            help="what optimizer to use")
     parser.add_argument("--verbose", "-v", default=False,
                             help="print loss on screen or not?")
+
 
 
 
@@ -406,5 +421,7 @@ if __name__ == "__main__":
         args.save_freq,
         args.data_root,
         args.save_dir,
+        args.use_wandb,
+        args.optmzr,
         args.verbose,
         )
