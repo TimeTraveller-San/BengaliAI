@@ -107,7 +107,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     else:
         optimizer = optim.AdamW(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
-                                    factor=0.5, patience=5,
+                                    factor=0.7, patience=5,
                                     min_lr=1e-10, verbose=True
                                     )
 
