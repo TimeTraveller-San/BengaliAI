@@ -98,3 +98,13 @@ def get_weights(weights):
     return [weights[0]/sum(weights),
             weights[1]/sum(weights),
             weights[2]/sum(weights)]
+
+def get_learning_rate(optimizer):
+    lr=[]
+    for param_group in optimizer.param_groups:
+       lr +=[ param_group['lr'] ]
+
+    assert(len(lr)==1) #we support only one param_group
+    lr = lr[0]
+
+    return lr            

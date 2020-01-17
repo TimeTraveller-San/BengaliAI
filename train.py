@@ -284,6 +284,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
                         if phase == 'train':
                             loss.backward()
+                            current_lr = get_learning_rate(optimizer)
                             optimizer.step()
 
 
@@ -318,7 +319,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 logger.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
                 logger.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
                 logger.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
-
+                logger.info(f"Learning rate: {current_lr}")
+                
                 if use_wandb:
                     wandb.log({f"{phase}_{li}_loss": running_loss})
                     wandb.log({f"{phase}_{li}_recall": running_recall})
