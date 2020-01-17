@@ -136,18 +136,19 @@ class AdaptiveHead(nn.Module):
     def __init__(self, in_features, out_features):
         super(AdaptiveHead, self).__init__()
         self.pool = GeM()
-        self.l1 = nn.Linear(in_features, in_features//2)
-        self.bn = nn.BatchNorm1d(in_features//2)
-        self.mish = Mish()
-        self.l2 = nn.Linear(in_features//2, out_features)
+        self.l1 = nn.Linear(in_features, out_features)
+        # self.l1 = nn.Linear(in_features, in_features//2)
+        # self.bn = nn.BatchNorm1d(in_features//2)
+        # self.mish = Mish()
+        # self.l2 = nn.Linear(in_features//2, out_features)
 
     def forward(self, x):
         x = self.pool(x)
         x = x.view(x.size(0), -1)
         x = self.l1(x)
-        x = self.bn(x)
-        x = self.mish(x)
-        x = self.l2(x)
+        # x = self.bn(x)
+        # x = self.mish(x)
+        # x = self.l2(x)
         return x
 
 class AdaptiveHead_Heavy(nn.Module):

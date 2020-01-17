@@ -84,20 +84,32 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     batch_size = 32
+    freezed = False
 
     if model_name.split('-')[0] == 'efficientnet':
         model = ClassifierCNN_effnet(model_name,
                                     pretrained=pretrained,
                                     rgb=rgb,
                                     activation=activation).to(device)
+        if pretrained:
+            model.freeze()
+            freezed = True
+            logger.info("Freezing model")
+
     else:
         model = ClassifierCNN(model_name,
                               pretrained=pretrained,
                               rgb=rgb,
                               activation=activation,
                               heavy_head=heavy_head).to(device)
+        if pretrained:
+            model.freeze()
+            freezed = True
+            logger.info("Freezing model")
 
-    lr = 3e-4 # Andrej must be proud of me
+
+    # lr = 3e-4 # Andrej must be proud of me
+    lr = 0.01 # For SGD
     if use_wandb:
         wandb.watch(model)
 
@@ -105,12 +117,18 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         print(f"\n\n\n Using SWATS")
         optimizer = SWATS(model.parameters(), lr=lr, logger=logger)
     else:
-        optimizer = optim.AdamW(model.parameters(), lr=lr)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
-                                    factor=0.7, patience=5,
-                                    min_lr=1e-10, verbose=True
-                                    )
+        # optimizer = optim.AdamW(model.parameters(), lr=lr)
+        optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
+                        lr=lr, momentum=0.0, weight_decay=0.0)
 
+    # scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
+    #                                 factor=0.7, patience=5,
+    #                                 min_lr=1e-10, verbose=True
+    #                                 )
+    scheduler = optim.lr_scheduler.MultiStepLR(optimizer,
+                                               milestones=[30,50],
+                                               gamma=0.1
+                                               )
     if continue_train:
         try:
             if os.path.exists(str(continue_train)):
@@ -191,8 +209,13 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         epoch = start_epoch
     if verbose:
         pbar = tqdm(total=n_epochs, initial=epoch)
+    cutoff = 6
     while epoch < n_epochs:
         # Epoch start
+        if epoch > cutoff and freezed:
+            logger.info("Unfreezing model")
+            model.unfreeze()
+            freezed = False
         for phase in ['train', 'valid', 'save']:
             # Phase start
             if phase == 'save':
@@ -320,7 +343,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 logger.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
                 logger.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
                 logger.info(f"Learning rate: {current_lr}")
-                
+
                 if use_wandb:
                     wandb.log({f"{phase}_{li}_loss": running_loss})
                     wandb.log({f"{phase}_{li}_recall": running_recall})
