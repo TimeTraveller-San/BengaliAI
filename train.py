@@ -124,7 +124,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
             scheduler = checkpoint['scheduler']
             start_epoch = checkpoint['epoch'] + 1
             print(f"Loaded model from: {path}")
+            print(f"Continuing from epoch: {start_epoch}")
             logger.info(f"Loaded model from: {path}")
+            logger.info(f"Continuing from epoch: {start_epoch}")
         except:
             continue_train = False
             start_epoch = 0
