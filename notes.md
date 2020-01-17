@@ -6,9 +6,12 @@ pip install iterative-stratification
 # Todo
 - increase batch size by gradient accumulation
 - cosine annealing with initial learning rate 0.2
+- Try SWATS [DONE]
+- Try SMOTE
+
 
 # Ideas
-Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687
+- Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687
 
 
 
@@ -94,3 +97,12 @@ Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687
 - MultilabelStratifiedShuffleSplit
 - I will go annoy my friend by messaging him this and not explaining what this is
 - MultilabelStratifiedShuffleSplit
+
+# Optimizer
+- 3e-4
+- I learned that adam doesn't generalize well. Even though I've implemented all the optimizers (not all) from scratch, I just focused on how fast they are
+- I never focused on how well do they generalize (validations score)
+- Turns out, adam doesn't generalize very well. SGD (with momentum?) generalize much better (and slower)
+- SWATS (Switching from adam to SGD technique) seems like the middle ground
+- I will test with SWATS now. Already running adamW model on colab. I need another machine.
+- Lets test SWATS on paperspace. (6 hour limit tho, FML)

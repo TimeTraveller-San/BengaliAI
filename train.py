@@ -43,7 +43,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         continue_train=False, model_name='efficientnet-b0', run_name=False,
         weights=[2, 1, 1], activation=None, mixup=False, cutmix=False, alpha=1,
         min_save_epoch=3, save_freq=3, data_root="/data", save_dir=None,
-        use_wandb=False, optmzr=None, verbose=False):
+        use_wandb=False, optmzr=None, heavy_head=False, verbose=False):
 
     if not run_name: run_name = model_name
     if save_dir is None:
@@ -94,7 +94,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         model = ClassifierCNN(model_name,
                               pretrained=pretrained,
                               rgb=rgb,
-                              activation=activation).to(device)
+                              activation=activation,
+                              heavy_head=heavy_head).to(device)
 
     lr = 3e-4 # Andrej must be proud of me
     if use_wandb:
@@ -106,7 +107,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     else:
         optimizer = optim.AdamW(model.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
-                                    factor=0.5, patience=7,
+                                    factor=0.5, patience=5,
                                     min_lr=1e-10, verbose=True
                                     )
 
@@ -195,7 +196,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
             if phase == 'save':
                 if epoch < min_save_epoch:
                     continue
-                if current > best:
+                if current >= best:
                     best = current
                     mname = os.path.join(SAVE_DIR, 'best.pth')
                     save_model(mname,
@@ -301,7 +302,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                             running_acc1 += (out[1].argmax(1)==label[1]).float().mean()/len(loader)
                             running_acc2 += (out[2].argmax(1)==label[2]).float().mean()/len(loader)
 
-                if phase == 'valid' and i == 1: #For the validation dataset
+                if phase == 'valid' and li == 1: #For the validation dataset
                     current = recall #Update current score
                     scheduler.step(loss) #Step for val loss only
 
@@ -385,6 +386,8 @@ if __name__ == "__main__":
                             help="use wandb or not?")
     parser.add_argument("--optmzr", "-optim", default=None,
                             help="what optimizer to use")
+    parser.add_argument("--heavy_head", "-hh", default=False,
+                            help="head for network end, heavy (Conv) or not.")
     parser.add_argument("--verbose", "-v", default=False,
                             help="print loss on screen or not?")
 
@@ -423,5 +426,6 @@ if __name__ == "__main__":
         args.save_dir,
         args.use_wandb,
         args.optmzr,
+        args.heavy_head,
         args.verbose,
         )

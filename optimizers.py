@@ -1,6 +1,16 @@
 import torch
 
 
+# def cosine_annealing(step, total_steps, lr_max, lr_min):
+#     return lr_min + (lr_max - lr_min) * 0.5 * (
+#         1 + np.cos(step / total_steps * np.pi))
+#
+#
+# scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer,
+#             lr_lambda=lambda step: cosine_annealing(step, total_steps, 1,
+#                 optim_config['lr_min'] / optim_config['base_lr']))
+
+
 class SWATS(torch.optim.Optimizer):
     r"""Implements Switching from Adam to SGD technique. Proposed in
     `Improving Generalization Performance by Switching from Adam to SGD`

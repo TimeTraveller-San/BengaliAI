@@ -25,6 +25,7 @@ from utils import *
 
 import pretrainedmodels
 import SEResNeXt_mish
+import SEResNeXt_vanilla
 # from efficientnet_pytorch import EfficientNet
 from effnet import EfficientNet
 from mixup import *
@@ -149,10 +150,30 @@ class AdaptiveHead(nn.Module):
         x = self.l2(x)
         return x
 
+class AdaptiveHead_Heavy(nn.Module):
+    def __init__(self, in_features, out_features, factor):
+        super(AdaptiveHead_Heavy, self).__init__()
+        self.fc1 = nn.Conv2d(in_features, in_features//factor, 4)
+        self.bn = nn.BatchNorm2d(in_features//factor)
+        self.mish = Mish()
+        self.pool = GeM()
+        self.l1 = nn.Linear(in_features//factor, out_features)
+
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.bn(x)
+        x = self.mish(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.l1(x)
+        return x
+
+
 
 class ClassifierCNN(nn.Module):
     def __init__(self, model_name, num_classes=num_classes,
-            rgb=False, pretrained=None, activation=None):
+            rgb=False, pretrained=None, activation=None, heavy_head=False):
         super(ClassifierCNN, self).__init__()
 
         if rgb:
@@ -166,7 +187,12 @@ class ClassifierCNN(nn.Module):
             pretrained = 'imagenet'
         if activation == 'mish':
             print("Using mish")
-            self.model = SEResNeXt_mish.se_resnext50_32x4d(pretrained=pretrained) #Only one model supported for now
+            if pretrained is not None:
+                print("PRETRAINTED")
+                self.model = SEResNeXt_vanilla.se_resnext50_32x4d(pretrained=pretrained) #Only one model supported for now
+            else:
+                print("NOT PRETRIANED")
+                self.model = SEResNeXt_mish.se_resnext50_32x4d(pretrained=pretrained) #Only one model supported for now
         else:
             self.model = pretrainedmodels.__dict__[model_name](pretrained=pretrained)
         self.size = (224, 224) # __dict__ for se_resnext50_32x4d
@@ -182,9 +208,14 @@ class ClassifierCNN(nn.Module):
         # self.head_vowel_diacritic = nn.Linear(in_features, num_classes[1])
         # self.head_consonant_diacritic = nn.Linear(in_features, num_classes[2])
 
-        self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0])
-        self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1])
-        self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2])
+        if heavy_head:
+            self.head_grapheme_root = AdaptiveHead_Heavy(in_features, num_classes[0], factor=2)
+            self.head_vowel_diacritic = AdaptiveHead_Heavy(in_features, num_classes[1], factor=4)
+            self.head_consonant_diacritic = AdaptiveHead_Heavy(in_features, num_classes[2], factor=4)
+        else:
+            self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0], )
+            self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1], )
+            self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2], )
 
     def freeze(self):
         for param in self.model.parameters():
