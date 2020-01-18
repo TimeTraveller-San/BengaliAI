@@ -108,8 +108,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
             logger.info("Freezing model")
 
 
-    # lr = 3e-4 # Andrej must be proud of me
-    lr = 0.01 # For SGD
+    lr = 3e-4 # Andrej must be proud of me
+    # lr = 0.01 # For SGD
     if use_wandb:
         wandb.watch(model)
 
@@ -117,9 +117,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         print(f"\n\n\n Using SWATS")
         optimizer = SWATS(model.parameters(), lr=lr, logger=logger)
     else:
-        # optimizer = optim.AdamW(model.parameters(), lr=lr)
-        optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
-                        lr=lr, momentum=0.0, weight_decay=0.0)
+        optimizer = optim.Adam(model.parameters(), lr=lr)
+        # optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
+        #                 lr=lr, momentum=0.0, weight_decay=0.0)
 
     # scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
     #                                 factor=0.7, patience=5,

@@ -162,10 +162,10 @@ class AdaptiveHead_Heavy(nn.Module):
 
 
     def forward(self, x):
-        x = self.fc1(x)
+        x = self.fc1(x) #bottleneck
         x = self.bn(x)
-        x = self.mish(x)
-        x = self.pool(x)
+        x = self.mish(x) #sigmoid instead?
+        x = self.pool(x) #4x4->1x1
         x = x.view(x.size(0), -1)
         x = self.l1(x)
         return x
@@ -226,7 +226,7 @@ class ClassifierCNN(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = True
 
-    def forward(self, x, logit=True):
+    def forward(self, x):
         # x = F.interpolate(x, size=self.size, mode='bilinear')
         x = self.first(x)
         x = self.model.features(x)
@@ -234,13 +234,7 @@ class ClassifierCNN(nn.Module):
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
         logit_consonant_diacritic = self.head_consonant_diacritic(x)
 
-        if logit:
-            return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
-        else:
-            grapheme_root = F.softmax(logit_grapheme_root, 1)
-            vowel_diacritic = F.softmax(logit_vowel_diacritic, 1)
-            consonant_diacritic = F.softmax(logit_consonant_diacritic, 1)
-            return grapheme_root, vowel_diacritic, consonant_diacritic
+        return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
 
 class ClassifierCNN_effnet(nn.Module):
     def __init__(self, model_name, num_classes=num_classes, rgb=False, pretrained=False, activation=None):
@@ -254,17 +248,20 @@ class ClassifierCNN_effnet(nn.Module):
             self.model = EfficientNet.from_pretrained(model_name, activation=activation)
         else:
             self.model = EfficientNet.from_name(model_name, activation=activation)
+        self.pool = GeM()
         # in_features = 1280 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
-        in_features = 1792 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
+        # in_features = 1408 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
+        in_features = 1536 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
 
-        self.head_grapheme_root = lin_head(in_features, num_classes[0])
-        self.head_vowel_diacritic = lin_head(in_features, num_classes[1])
-        self.head_consonant_diacritic = lin_head(in_features, num_classes[2])
+        # self.head_grapheme_root = lin_head(in_features, num_classes[0])
+        # self.head_vowel_diacritic = lin_head(in_features, num_classes[1])
+        # self.head_consonant_diacritic = lin_head(in_features, num_classes[2])
 
-        self.last = nn.Sequential(
-            nn.BatchNorm2d(in_features), #TODO
-            nn.ReLU(inplace=True),
-        )
+        self.head_grapheme_root = AdaptiveHead_Heavy(in_features, num_classes[0], factor=2)
+        self.head_vowel_diacritic = AdaptiveHead_Heavy(in_features, num_classes[1], factor=2)
+        self.head_consonant_diacritic = AdaptiveHead_Heavy(in_features, num_classes[2], factor=2)
+
+
 
     def freeze(self):
         for param in self.model.parameters():
@@ -274,24 +271,16 @@ class ClassifierCNN_effnet(nn.Module):
         for param in self.model.parameters():
             param.requires_grad = True
 
-    def forward(self, x, logit=True):
+    def forward(self, x):
         x = self.first(x)
-        features = self.model.extract_features(x)
-        features = self.last(features)
-        features = F.adaptive_avg_pool2d(features, 1)
-        features = features.view(features.size(0), -1)
+        x = self.model.extract_features(x)
 
-        logit_grapheme_root = self.head_grapheme_root(features)
-        logit_vowel_diacritic = self.head_vowel_diacritic(features)
-        logit_consonant_diacritic = self.head_consonant_diacritic(features)
+        logit_grapheme_root = self.head_grapheme_root(x)
+        logit_vowel_diacritic = self.head_vowel_diacritic(x)
+        logit_consonant_diacritic = self.head_consonant_diacritic(x)
 
-        if logit:
-            return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
-        else:
-            grapheme_root = F.softmax(logit_grapheme_root, 1)
-            vowel_diacritic = F.softmax(logit_vowel_diacritic, 1)
-            consonant_diacritic = F.softmax(logit_consonant_diacritic, 1)
-            return grapheme_root, vowel_diacritic, consonant_diacritic
+        return logit_grapheme_root, logit_vowel_diacritic, logit_consonant_diacritic
+
 
 
 

@@ -235,12 +235,12 @@ class EfficientNet(nn.Module):
             model._conv_stem = Conv2d(in_channels, out_channels, kernel_size=3, stride=2, bias=False)
         return model
 
-    @classmethod
-    def from_pretrained(cls, model_name, num_classes=1000):
-        model = cls.from_name(model_name, override_params={'num_classes': num_classes})
-        load_pretrained_weights(model, model_name, load_fc=(num_classes == 1000))
-
-        return model
+    # @classmethod
+    # def from_pretrained(cls, model_name, num_classes=1000):
+    #     model = cls.from_name(model_name, override_params={'num_classes': num_classes})
+    #     load_pretrained_weights(model, model_name, load_fc=(num_classes == 1000))
+    #
+    #     return model
 
     @classmethod
     def get_image_size(cls, model_name):

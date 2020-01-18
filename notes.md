@@ -17,6 +17,8 @@ pip install iterative-stratification
 
 # Feels
 - DAMN! `se_resnext50_32x4d` with mish and mixup got 0.9 val score only on 2 epochs (~55 minutes)! This is amazing. I will be training it for ~40-60 epochs.
+- I feel incompetent and am angry at myself. I've tried so many things yet I can not defeat the public best score. I am pretty sure I am doing everything ~same (if not better) I CAN STILL NOT CROSS 0.95999! I need at least 9.970 to stand anywhere on the LB. What am I doing wrong?
+
 
 # Model?
 - I love efficientnets. Mainly because they are efficient. EUREKA!
