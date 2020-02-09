@@ -74,11 +74,6 @@ class GeM(nn.Module):
     def __repr__(self):
         return self.__class__.__name__ + '(' + 'p=' + '{:.4f}'.format(self.p.data.tolist()[0]) + ', ' + 'eps=' + str(self.eps) + ')'
 
-
-
-
-
-
 class RGB(nn.Module):
     def __init__(self, model_name):
         super(RGB, self).__init__()
@@ -132,24 +127,67 @@ def lin_head(indim, outdim, bias=True, use_bn=True, activation=F.relu,
     return nn.Sequential(l1, l2)
 
 
+# class AdaptiveHead(nn.Module):
+#     def __init__(self, in_features, out_features):
+#         super(AdaptiveHead, self).__init__()
+#         self.pool = GeM()
+#         self.l1 = nn.Linear(in_features, out_features)
+#         # self.l1 = nn.Linear(in_features, in_features//2)
+#         # self.bn = nn.BatchNorm1d(in_features//2)
+#         # self.mish = Mish()
+#         # self.l2 = nn.Linear(in_features//2, out_features)
+#
+#     def forward(self, x):
+#         x = self.pool(x)
+#         x = x.view(x.size(0), -1)
+#         x = self.l1(x)
+#         # x = self.bn(x)
+#         # x = self.mish(x)
+#         # x = self.l2(x)
+#         return x
+
 class AdaptiveHead(nn.Module):
+    """WORKS THE BEST TILL NOW - 0.714"""
     def __init__(self, in_features, out_features):
         super(AdaptiveHead, self).__init__()
         self.pool = GeM()
-        self.l1 = nn.Linear(in_features, out_features)
-        # self.l1 = nn.Linear(in_features, in_features//2)
-        # self.bn = nn.BatchNorm1d(in_features//2)
-        # self.mish = Mish()
-        # self.l2 = nn.Linear(in_features//2, out_features)
+        self.fc1 = nn.Conv2d(in_features, in_features//2, 2)
+        self.bn = nn.BatchNorm2d(in_features//2)
+        self.mish = Mish()
+        self.l1 = nn.Linear(in_features//2, out_features)
+
 
     def forward(self, x):
+        x = self.fc1(x)
+        x = self.bn(x)
         x = self.pool(x)
+        x = self.mish(x)
         x = x.view(x.size(0), -1)
         x = self.l1(x)
-        # x = self.bn(x)
-        # x = self.mish(x)
-        # x = self.l2(x)
+
         return x
+
+# class AdaptiveHead(nn.Module):
+#       """BADH DOESNT WORK"""
+#     def __init__(self, in_features, out_features, p=0.3):
+#         super(AdaptiveHead, self).__init__()
+#         self.mish = Mish()
+#         self.fc1 = nn.Conv2d(in_features, in_features//2, 4)
+#         self.bn = nn.BatchNorm2d(in_features//2)
+#         self.pool = GeM()
+#         self.dropout = nn.Dropout2d(p)
+#         self.l1 = nn.Linear(in_features//2, out_features)
+#
+#
+#     def forward(self, x):
+#         x = self.mish(x)
+#         x = self.fc1(x)
+#         x = self.bn(x)
+#         x = self.pool(x)
+#         x = self.dropout(x)
+#         x = x.view(x.size(0), -1)
+#         x = self.l1(x)
+#         return x
 
 class AdaptiveHead_Heavy(nn.Module):
     def __init__(self, in_features, out_features, factor):
@@ -214,9 +252,9 @@ class ClassifierCNN(nn.Module):
             self.head_vowel_diacritic = AdaptiveHead_Heavy(in_features, num_classes[1], factor=4)
             self.head_consonant_diacritic = AdaptiveHead_Heavy(in_features, num_classes[2], factor=4)
         else:
-            self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0], )
-            self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1], )
-            self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2], )
+            self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0])
+            self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1])
+            self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2])
 
     def freeze(self):
         for param in self.model.parameters():
