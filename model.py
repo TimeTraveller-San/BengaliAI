@@ -184,7 +184,7 @@ class ClassifierCNN(nn.Module):
         if not pretrained:
             pretrained = None
         else:
-            print(f"Loaded pretrained weights for {model_name}")
+            print(f"Loading pretrained weights for {model_name}")
             pretrained = 'imagenet'
         if activation == 'mish':
             print("Using mish")
@@ -250,8 +250,8 @@ class ClassifierCNN_effnet(nn.Module):
             self.model = EfficientNet.from_name(model_name, activation=activation)
         self.pool = GeM()
         # in_features = 1280 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
-        # in_features = 1408 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
-        in_features = 1536 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
+        in_features = 1408 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
+        # in_features = 1536 #TODO: Write a lazy linear to find this, for now, I do it by getting an error
 
         # self.head_grapheme_root = lin_head(in_features, num_classes[0])
         # self.head_vowel_diacritic = lin_head(in_features, num_classes[1])

@@ -101,9 +101,37 @@ def load_df(debug=True, random_state=42, root="data/"):
     return train_df, valid_df
 
 
+def load_toy_df(random_state=42, root="/home/timetraveller/Entertainment/BengaliAI_Data"):
+    # Load Feather Data
+    df = os.path.join(root, 'toy_data.csv')
+    files = [os.path.join(root, 'train_128', f'train_{i}.feather') for i in range(4)]
+    df = pd.read_csv(df)
+    data0 = pd.read_feather(files[0])
+    data1 = pd.read_feather(files[1])
+    data2 = pd.read_feather(files[2])
+    data3 = pd.read_feather(files[3])
+    data_full = pd.concat([data0,data1,data2,data3], ignore_index=True)
+    del data0, data1, data2, data3
+    gc.collect()
+    data_full = df.merge(data_full, on='image_id', how='inner')
+    del df
+    gc.collect()
+    print(data_full.shape)
+    msss = MultilabelStratifiedShuffleSplit(n_splits=1,
+                                            test_size=0.2,
+                                            random_state=random_state)
+    y = data_full.iloc[:, 1:4]
+    for train_index, test_index in msss.split(data_full, y):
+        train_df, valid_df = data_full.iloc[train_index, :], data_full.iloc[test_index, :]
+    del data_full, y
+    gc.collect()
+    return train_df, valid_df
+
+
 if __name__ == "__main__":
     """Unit tests"""
-    train_df, valid_df = load_df(True)
+    # train_df, valid_df = load_df(True)
+    train_df, valid_df = load_toy_df()
     dataset1 = BengaliAI(train_df)
     dataset2 = BengaliAI(train_df,
                              transform=get_augs(),

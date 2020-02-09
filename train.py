@@ -33,26 +33,35 @@ import argparse
 import warnings
 warnings.filterwarnings('ignore')
 
-
-
 seed_everything()
 check_dirs()
 
 
+def save_cond(phase, li, num_loaders):
+    if num_loaders == 1 and phase == 'valid':
+        return True
+    elif num_loaders == 2 and phase == 'valid' and li == 1:
+        return True
+    return False
+
 def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
-        continue_train=False, model_name='efficientnet-b0', run_name=False,
+        continue_train=False, model_name='se_resnext50_32x4d', run_name=False,
         weights=[2, 1, 1], activation=None, mixup=False, cutmix=False, alpha=1,
         min_save_epoch=3, save_freq=3, data_root="/data", save_dir=None,
-        use_wandb=False, optmzr=None, heavy_head=False, verbose=False):
+        use_wandb=False, optmzr=None, heavy_head=False, toy_set=False,
+        verbose=False):
 
     if not run_name: run_name = model_name
+
     if save_dir is None:
         SAVE_DIR = f'logs/models/{run_name}'
     else:
         SAVE_DIR = os.path.join(save_dir, run_name)
+
     if use_wandb:
         import wandb
         wandb.init(project="bengaliai")
+
     make_dir(SAVE_DIR)
     logfile = os.path.join(SAVE_DIR, 'logs.txt')
     logging.basicConfig(format='%(asctime)s %(message)s',
@@ -75,7 +84,11 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         p = [1]
     else:
         augs = None
-    train_df , valid_df = load_df(debug, root=data_root)
+    if toy_set:
+        train_df , valid_df = load_toy_df()
+    else:
+        train_df , valid_df = load_df(debug, root=data_root)
+
     if debug:
         LIMIT = 500
         train_df = train_df[:LIMIT]
@@ -155,7 +168,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, 1e-2, total_steps=None, epochs=n_epochs, steps_per_epoch=3139, pct_start=0.0,
     #                                    anneal_strategy='cos', cycle_momentum=True,base_momentum=0.85, max_momentum=0.95,  div_factor=100.0)
 
-    if mixup:
+    if mixup or cutmix:
         criterion = Mixed_CrossEntropyLoss()
     else:
         # criterion = Mixed_CrossEntropyLoss()
@@ -209,10 +222,10 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         epoch = start_epoch
     if verbose:
         pbar = tqdm(total=n_epochs, initial=epoch)
-    cutoff = 6
+    unfreerze_cutoff = 0 #HARDCODED HP
     while epoch < n_epochs:
         # Epoch start
-        if epoch > cutoff and freezed:
+        if epoch >= unfreerze_cutoff and freezed:
             logger.info("Unfreezing model")
             model.unfreeze()
             freezed = False
@@ -236,25 +249,25 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
             if phase == 'train':
                 model.train()
-                logger.info("----------------------------------------------------------\n")
+                # logger.info("----------------------------------------------------------\n")
                 loaders = [train_loader]
 
             if phase == 'valid':
                 model.eval()
                 if mixup or cutmix:
-                    logger.info("++++++++++++++ VALIDATING ON BOTH, IGNORE ABOVE TRAIN METRICS ++++++++++++++")
-                    logger.info("++++++++++++++ FIRST IS TRAIN, THEN IS VAL ++++++++++++++")
+                    # logger.info("++++++++++++++ VALIDATING ON BOTH, IGNORE ABOVE TRAIN METRICS ++++++++++++++")
+                    # logger.info("++++++++++++++ FIRST IS TRAIN, THEN IS VAL ++++++++++++++")
                     loaders = [train_loader, val_loader] #For mixup, train_loader while training doesn't have the actual train data so validation needs to validate both. (to see if I am overfitting)
                 else:
                     loaders = [val_loader]
 
             for li, loader in enumerate(loaders):
-                if phase == "valid" and not li:
-                    if (epoch + 1) % 3 is not 0:
-                        continue #Only calculate train metric for every 3rd epoch so save time. X_X
-                    logger.info("[Train metrics]")
-                if phase == "valid" and li:
-                    logger.info("[Validation metrics]")
+                # if phase == "valid" and not li:
+                #     # if (epoch + 1) % 3 is not 0:
+                #     #     continue #Only calculate train metric for every 3rd epoch so save time. X_X
+                #     # logger.info("[Train metrics]")
+                # if phase == "valid" and li:
+                #     # logger.info("[Validation metrics]")
 
                 running_loss = 0.
                 running_loss0 = 0.
@@ -283,12 +296,14 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                         img = img.to(device)
                         if phase == 'train':
                             optimizer.zero_grad()
+
                             if mixup or cutmix:
                                 if aug == 'mixup':
                                     img, labels = mixup_data(img, label, alpha, device)
                                 else:
                                     img, labels = cutmix_data(img, label, alpha, device)
                                 labels, shuffled_labels, lam = labels
+
                         out = model(img)
                         label[0] = label[0].to(device)
                         label[1] = label[1].to(device)
@@ -310,9 +325,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                             current_lr = get_learning_rate(optimizer)
                             optimizer.step()
 
-
                         if verbose:
                             bar.set_description(f"Recall: {recall:.3f}")
+
                         # Evaluation
                         with torch.no_grad():
                             running_loss += loss.item()/len(loader)
@@ -328,21 +343,30 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                             running_acc1 += (out[1].argmax(1)==label[1]).float().mean()/len(loader)
                             running_acc2 += (out[2].argmax(1)==label[2]).float().mean()/len(loader)
 
-                if phase == 'valid' and li == 1: #For the validation dataset
+
+
+
+                # if phase == 'valid' and li == 1: #For the validation dataset
+                if save_cond(phase, li, len(loaders)):
                     current = recall #Update current score
                     scheduler.step(loss) #Step for val loss only
 
+                epoch_str = f"[{epoch+1}/{n_epochs}] | {phase[0]}_{li} | "
+                recall_str = f"R: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] | "
+                acc_str = f"A: [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%] | "
+                loss_str = f"L: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]"
                 if verbose:
-                    print(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
-                    print(f"Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}]")
-                    print(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
-                    print(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]")
+                    print(epoch_str)
+                    print(recall_str)
+                    print(acc_str)
+                    print(loss_str)
 
-                logger.info(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
-                logger.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
-                logger.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
-                logger.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
-                logger.info(f"Learning rate: {current_lr}")
+                # logger.info(f"Epoch: [{epoch+1}/{n_epochs}] {phase}...")
+                # logger.info(f"Learning rate: {current_lr}")
+                # logger.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
+                # logger.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
+                # logger.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
+                logger.info(epoch_str+recall_str+acc_str+loss_str)
 
                 if use_wandb:
                     wandb.log({f"{phase}_{li}_loss": running_loss})
@@ -363,7 +387,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 # Loader end
             # Phase end
         # Epoch end
-        history.to_csv(os.path.join(SAVE_DIR, f"{run_name}_{epoch}.csv"))
+        save_hist = False
+        if save_hist:
+            history.to_csv(os.path.join(SAVE_DIR, f"{run_name}_{epoch}.csv"))
         epoch += 1
         if verbose:
             pbar.update(1)
@@ -381,7 +407,7 @@ if __name__ == "__main__":
                         help="if debug, run small model")
     parser.add_argument("--continue_train", "-c", default=False,
                         help="continue training or not")
-    parser.add_argument("--model_name", "-mn", default="efficientnet-b0",
+    parser.add_argument("--model_name", "-mn", default="se_resnext50_32x4d",
                             help="name of the model")
     parser.add_argument("--run_name", "-rn", default=False,
                             help="name of run")
@@ -415,6 +441,8 @@ if __name__ == "__main__":
                             help="what optimizer to use")
     parser.add_argument("--heavy_head", "-hh", default=False,
                             help="head for network end, heavy (Conv) or not.")
+    parser.add_argument("--toy_set", "-ts", default=False,
+                            help="use toy dataset or not.")
     parser.add_argument("--verbose", "-v", default=False,
                             help="print loss on screen or not?")
 
@@ -428,7 +456,8 @@ if __name__ == "__main__":
     # # model_name = 'efficientnet-b0'
     # model_name = 'se_resnext50_32x4d'
     # run_name = 'senet50'
-    weights = [int(args.w1), int(args.w2), int(args.w3)]
+    sum = float(int(args.w1) + int(args.w2) + int(args.w3))
+    weights = [int(args.w1)/sum, int(args.w2)/sum, int(args.w3)/sum]
 
     if args.debug:
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -446,7 +475,7 @@ if __name__ == "__main__":
         args.activation,
         args.mixup,
         args.cutmix,
-        int(args.alpha),
+        args.alpha,
         args.min_save_epoch,
         args.save_freq,
         args.data_root,
@@ -454,5 +483,6 @@ if __name__ == "__main__":
         args.use_wandb,
         args.optmzr,
         args.heavy_head,
+        args.toy_set,
         args.verbose,
         )
