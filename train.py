@@ -162,7 +162,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
     if use_wandb:
         import wandb
-        wandb.init(project="bengaliai")
+        wandb.init(project="bengali-ai2")
 
     make_dir(SAVE_DIR)
     logfile = os.path.join(SAVE_DIR, 'logs.txt')
