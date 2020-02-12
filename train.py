@@ -31,6 +31,15 @@ from augmentations import *
 import logging
 import argparse
 import warnings
+import sys
+import math
+
+try:
+    from apex import amp
+    APEX_AVAILABLE = True
+except ModuleNotFoundError:
+    APEX_AVAILABLE = False
+
 warnings.filterwarnings('ignore')
 
 seed_everything()
@@ -44,12 +53,105 @@ def save_cond(phase, li, num_loaders):
         return True
     return False
 
+
+def find_lr(model, optimizer, criterion, trainloader, ws, final_value=10, init_value=1e-8):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    model.train() # setup model for training configuration
+
+    num = len(trainloader) - 1 # total number of batches
+    mult = (final_value / init_value) ** (1/num)
+
+    losses = []
+    lrs = []
+    best_loss = 0.
+    avg_loss = 0.
+    beta = 0.98 # the value for smooth losses
+    lr = init_value
+
+    for batch_num, (img, label) in enumerate(trainloader):
+        img = img.to(device)
+        optimizer.param_groups[0]['lr'] = lr
+        batch_num += 1 # for non zero value
+        optimizer.zero_grad() # clear gradients
+
+        out = model(img)
+        label[0] = label[0].to(device)
+        label[1] = label[1].to(device)
+        label[2] = label[2].to(device)
+
+        loss0 = criterion(out[0], label[0])
+        loss1 = criterion(out[1], label[1])
+        loss2 = criterion(out[2], label[2])
+
+        loss = ws[0]*loss0 + ws[1]*loss1 + ws[2]*loss2
+
+        #Compute the smoothed loss to create a clean graph
+        avg_loss = beta * avg_loss + (1-beta) *loss.item()
+        smoothed_loss = avg_loss / (1 - beta**batch_num)
+
+        #Record the best loss
+        if smoothed_loss < best_loss or batch_num==1:
+            best_loss = smoothed_loss
+
+        # append loss and learning rates for plotting
+        lrs.append(math.log10(lr))
+        losses.append(smoothed_loss)
+
+        # Stop if the loss is exploding
+        if batch_num > 1 and smoothed_loss > 4 * best_loss:
+            break
+
+        # backprop for next step
+        loss.backward()
+        optimizer.step()
+
+        # update learning rate
+        lr = mult*lr
+
+    plt.xlabel('Learning Rates')
+    plt.ylabel('Losses')
+    plt.plot(lrs,losses)
+    plt.show()
+    sys.exit()
+
+def get_optim(model, optmzr, lr, momentum=0.0, weight_decay=0.0):
+    lr = 3e-4
+    if optmzr == 'swats':
+        print(f"\n\n\n Using SWATS")
+        optimizer = SWATS(model.parameters(), lr=lr, logger=logger)
+    elif optmzr == 'adam':
+        optimizer = optim.Adam(model.parameters(), lr=lr)
+        # optimizer = Adam16(model.parameters(), lr=lr) #For half precision
+    elif optmzr == 'radam':
+        optimizer = RAdam(model.parameters(), lr=lr)
+    elif optmzr == 'sgd':
+        lr = 0.1
+        optimizer = optim.SGD(model.parameters(),
+                        lr=lr, momentum=momentum, weight_decay=weight_decay)
+    else:
+        optimizer = None
+        print(f"{optmzr} not defined")
+    return optimizer, lr
+
+def plot_lr(optimizer, scheduler, epochs):
+    lrs = {}
+    for epoch in range(epochs):
+        lrs[epoch] = get_learning_rate(optimizer)
+        scheduler.step()
+    plt.xlabel('Epochs')
+    plt.ylabel('LR')
+    plt.plot(list(lrs.keys()),list(lrs.values()))
+    plt.show()
+    sys.exit()
+
 def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         continue_train=False, model_name='se_resnext50_32x4d', run_name=False,
         weights=[2, 1, 1], activation=None, mixup=False, cutmix=False, alpha=1,
         min_save_epoch=3, save_freq=3, data_root="/data", save_dir=None,
         use_wandb=False, optmzr=None, heavy_head=False, toy_set=False,
-        verbose=False):
+        gridmask=False, schd=None, momentum=0., weight_decay=0.,
+        use_apex=False, batch_size=32, verbose=False):
 
     if not run_name: run_name = model_name
 
@@ -96,7 +198,6 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    batch_size = 32
     freezed = False
 
     if model_name.split('-')[0] == 'efficientnet':
@@ -126,22 +227,32 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     if use_wandb:
         wandb.watch(model)
 
-    if optmzr=='swats':
-        print(f"\n\n\n Using SWATS")
-        optimizer = SWATS(model.parameters(), lr=lr, logger=logger)
-    else:
-        optimizer = optim.Adam(model.parameters(), lr=lr)
-        # optimizer = optim.SGD(filter(lambda p: p.requires_grad, model.parameters()),
-        #                 lr=lr, momentum=0.0, weight_decay=0.0)
+    optimizer, lr = get_optim(model, optmzr, lr, momentum, weight_decay)
+
 
     # scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
     #                                 factor=0.7, patience=5,
     #                                 min_lr=1e-10, verbose=True
     #                                 )
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer,
-                                               milestones=[30,50],
-                                               gamma=0.1
-                                               )
+
+    if schd is None:
+        scheduler = optim.lr_scheduler.MultiStepLR(optimizer,
+                                                   # milestones=[60,75,85,90],
+                                                   # milestones=[30,40,50,70], #alt
+                                                   # milestones=[30,50,80,150], #alt3
+                                                   milestones=[30,50,65,75], #alt4
+                                                   gamma=0.5)
+    elif schd == "clr":
+        stepsz = int(10*train_df.shape[0]//batch_size)
+        if lr < 0.01:
+            max_lr = 100*lr
+        else:
+            max_lr = 2*lr
+        scheduler = optim.lr_scheduler.CyclicLR(optimizer,
+                                                base_lr=lr, max_lr=max_lr,
+                                                step_size_up=stepsz)
+
+    # plot_lr(optimizer, scheduler, n_epochs)
     if continue_train:
         try:
             if os.path.exists(str(continue_train)):
@@ -173,7 +284,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     else:
         # criterion = Mixed_CrossEntropyLoss()
         criterion = nn.CrossEntropyLoss()
-    train_aug = get_augs()
+    train_aug = get_augs(gridmask)
     train_dataset = BengaliAI(train_df,
                              transform=train_aug,
                              details=mean_std(model_name)
@@ -198,6 +309,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     current, best = 0., -1.
     epoch = 0
 
+    # find_lr(model, optimizer, criterion, train_loader, ws)
+
     logger.info(f"Project path: {SAVE_DIR}")
     logger.info(f"Model: {model_name}")
     logger.info(f"Model class: {type(model)}")
@@ -205,6 +318,10 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     logger.info(f"Batch size: {batch_size}")
     logger.info(f"LR: {lr}")
     logger.info(f"Optimizer: {type(optimizer)}")
+    try:
+        logger.info(f"Scheduler: {type(scheduler)}")
+    except:
+        logger.info(f"Scheduler: None")
     logger.info(f"Weights: [{ws[0]} | {ws[1]} | {ws[2]}]")
     logger.info(f"Activation: {activation}")
     logger.info(f"Mixup: {mixup}")
@@ -212,6 +329,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     logger.info(f"Train dataset: {train_dataset}")
     logger.info(f"Validation dataset: {val_dataset}")
     logger.info(f"Continue: {continue_train}")
+    logger.info(f"Momentum: {momentum}")
+    logger.info(f"Weight decay: {weight_decay}")
+    logger.info(f"Batch size: {batch_size}")
     logger.info(f"Model: {model}")
     logger.info("------------------------------------------------------------")
 
@@ -223,6 +343,12 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     if verbose:
         pbar = tqdm(total=n_epochs, initial=epoch)
     unfreerze_cutoff = 0 #HARDCODED HP
+
+    if APEX_AVAILABLE and use_apex:
+        model, optimizer = amp.initialize(
+               model, optimizer, opt_level="O3",
+               keep_batchnorm_fp32=True
+            )
     while epoch < n_epochs:
         # Epoch start
         if epoch >= unfreerze_cutoff and freezed:
@@ -321,9 +447,15 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                         loss = ws[0]*loss0 + ws[1]*loss1 + ws[2]*loss2
 
                         if phase == 'train':
-                            loss.backward()
+                            if APEX_AVAILABLE and use_apex:
+                                with amp.scale_loss(loss, optimizer) as scaled_loss:
+                                    scaled_loss.backward()
+                            else:
+                                loss.backward()
                             current_lr = get_learning_rate(optimizer)
                             optimizer.step()
+                            if schd == "clr":
+                                scheduler.step()
 
                         if verbose:
                             bar.set_description(f"Recall: {recall:.3f}")
@@ -343,18 +475,20 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                             running_acc1 += (out[1].argmax(1)==label[1]).float().mean()/len(loader)
                             running_acc2 += (out[2].argmax(1)==label[2]).float().mean()/len(loader)
 
-
-
-
                 # if phase == 'valid' and li == 1: #For the validation dataset
                 if save_cond(phase, li, len(loaders)):
                     current = recall #Update current score
-                    scheduler.step(loss) #Step for val loss only
+                    # scheduler.step(loss) #Step for val loss only
 
+
+
+                current_lr = get_learning_rate(optimizer)
                 epoch_str = f"[{epoch+1}/{n_epochs}] | {phase[0]}_{li} | "
                 recall_str = f"R: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] | "
                 acc_str = f"A: [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%] | "
                 loss_str = f"L: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]"
+                lr_str = f"LR: {current_lr}"
+
                 if verbose:
                     print(epoch_str)
                     print(recall_str)
@@ -366,7 +500,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 # logger.info(f">> Recall: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] <<")
                 # logger.info(f"Acc:  [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%]")
                 # logger.info(f"Loss: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]\n")
-                logger.info(epoch_str+recall_str+acc_str+loss_str)
+                logger.info(epoch_str+recall_str+acc_str+loss_str+lr_str)
 
                 if use_wandb:
                     wandb.log({f"{phase}_{li}_loss": running_loss})
@@ -385,6 +519,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 history.loc[epoch, f'{phase}_{li}_acc_vowel'] = running_acc1.cpu().numpy()
                 history.loc[epoch, f'{phase}_{li}_acc_consonant'] = running_acc2.cpu().numpy()
                 # Loader end
+            # # this part new
+            if phase == "valid":
+                scheduler.step() #Step for val loss only
             # Phase end
         # Epoch end
         save_hist = False
@@ -393,8 +530,6 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         epoch += 1
         if verbose:
             pbar.update(1)
-
-
 
 
 if __name__ == "__main__":
@@ -437,12 +572,24 @@ if __name__ == "__main__":
                             help="directory to save model")
     parser.add_argument("--use_wandb", "-wb", default=False,
                             help="use wandb or not?")
-    parser.add_argument("--optmzr", "-optim", default=None,
+    parser.add_argument("--optmzr", "-optim", default="adam",
                             help="what optimizer to use")
     parser.add_argument("--heavy_head", "-hh", default=False,
                             help="head for network end, heavy (Conv) or not.")
     parser.add_argument("--toy_set", "-ts", default=False,
                             help="use toy dataset or not.")
+    parser.add_argument("--gridmask", "-grm", default=False,
+                            help="gridmask augmentation.")
+    parser.add_argument("--scheduler", "-sch", default=None,
+                            help="type of scheduler.")
+    parser.add_argument("--momentum", "-mom", default=0.0,
+                            help="for SGD")
+    parser.add_argument("--weight_decay", "-wde", default=0.0,
+                            help="for adam and others")
+    parser.add_argument("--use_apex", "-ax", default=False,
+                            help="nvidia apex")
+    parser.add_argument("--batch_size", "-bs", default=32,
+                            help="batch size")
     parser.add_argument("--verbose", "-v", default=False,
                             help="print loss on screen or not?")
 
@@ -450,14 +597,7 @@ if __name__ == "__main__":
 
 
     args = parser.parse_args()
-
-    # debug = False
-    # pretrained = False
-    # # model_name = 'efficientnet-b0'
-    # model_name = 'se_resnext50_32x4d'
-    # run_name = 'senet50'
-    sum = float(int(args.w1) + int(args.w2) + int(args.w3))
-    weights = [int(args.w1)/sum, int(args.w2)/sum, int(args.w3)/sum]
+    weights = [int(args.w1), int(args.w2), int(args.w3)]
 
     if args.debug:
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -484,5 +624,11 @@ if __name__ == "__main__":
         args.optmzr,
         args.heavy_head,
         args.toy_set,
+        args.gridmask,
+        args.scheduler,
+        float(args.momentum),
+        float(args.weight_decay),
+        args.use_apex,
+        int(args.batch_size),
         args.verbose,
         )

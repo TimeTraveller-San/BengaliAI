@@ -146,25 +146,67 @@ def lin_head(indim, outdim, bias=True, use_bn=True, activation=F.relu,
 #         # x = self.l2(x)
 #         return x
 
+# class AdaptiveHead(nn.Module):
+#     def __init__(self, in_features, out_features):
+#         super(AdaptiveHead, self).__init__()
+#         self.pool = GeM()
+#         self.fc1 = nn.Conv2d(in_features, in_features//2, 2)
+#         self.bn = nn.BatchNorm2d(in_features//2)
+#         self.mish = Mish()
+#         self.l1 = nn.Linear(in_features//2, out_features)
+#
+#     def forward(self, x):
+#         x = self.fc1(x)
+#         x = self.bn(x)
+#         x = self.pool(x)
+#         x = self.mish(x)
+#         x = x.view(x.size(0), -1)
+#         x = self.l1(x)
+#         return x
+
+# class AdaptiveHead(nn.Module):
+#     def __init__(self, in_features, out_features, factor=2):
+#         super(AdaptiveHead, self).__init__()
+#         self.pool = GeM()
+#         h_dim = int(in_features//factor)
+#         self.fc1 = nn.Conv2d(in_features, h_dim, 2)
+#         self.bn = nn.BatchNorm2d(h_dim)
+#         self.mish = Mish()
+#         self.l1 = nn.Linear(h_dim, out_features)
+#
+#     def forward(self, x):
+#         x = self.fc1(x)
+#         x = self.bn(x)
+#         x = self.pool(x)
+#         x = self.mish(x)
+#         x = x.view(x.size(0), -1)
+#         x = self.l1(x)
+#         return x
+
+# https://arxiv.org/pdf/1901.07012.pdf
 class AdaptiveHead(nn.Module):
-    """WORKS THE BEST TILL NOW - 0.714"""
-    def __init__(self, in_features, out_features):
+    """ New best R: 0.732 | [0.601 | 0.878 | 0.849]
+        TRAIN:   R: 0.990 | [0.984 | 0.996 | 0.995] """
+    def __init__(self, in_features, out_features, factor=2, p=0.7):
         super(AdaptiveHead, self).__init__()
         self.pool = GeM()
-        self.fc1 = nn.Conv2d(in_features, in_features//2, 2)
-        self.bn = nn.BatchNorm2d(in_features//2)
+        h_dim = int(in_features//factor)
+        self.fc1 = nn.Conv2d(in_features, h_dim, 2)
+        self.bn = nn.BatchNorm2d(h_dim)
         self.mish = Mish()
-        self.l1 = nn.Linear(in_features//2, out_features)
+        self.l1 = nn.Linear(h_dim, out_features)
+        self.dropout = nn.Dropout2d(p)
 
+# https://www.kaggle.com/haqishen/gridmask
 
     def forward(self, x):
         x = self.fc1(x)
         x = self.bn(x)
         x = self.pool(x)
+        x = self.dropout(x)
         x = self.mish(x)
         x = x.view(x.size(0), -1)
         x = self.l1(x)
-
         return x
 
 # class AdaptiveHead(nn.Module):
@@ -219,11 +261,13 @@ class ClassifierCNN(nn.Module):
             self.first = RGB(model_name)
         else:
             self.first = nn.Conv2d(1, 3, kernel_size=3, stride=1, padding=1, bias=True)
+
         if not pretrained:
             pretrained = None
         else:
             print(f"Loading pretrained weights for {model_name}")
             pretrained = 'imagenet'
+
         if activation == 'mish':
             print("Using mish")
             if pretrained is not None:
@@ -234,18 +278,8 @@ class ClassifierCNN(nn.Module):
                 self.model = SEResNeXt_mish.se_resnext50_32x4d(pretrained=pretrained) #Only one model supported for now
         else:
             self.model = pretrainedmodels.__dict__[model_name](pretrained=pretrained)
-        self.size = (224, 224) # __dict__ for se_resnext50_32x4d
 
-        # in_features = self.model.last_linear.in_features
         in_features = 2048
-
-        # self.head_grapheme_root = lin_head(in_features, num_classes[0])
-        # self.head_vowel_diacritic = lin_head(in_features, num_classes[1])
-        # self.head_consonant_diacritic = lin_head(in_features, num_classes[2])
-
-        # self.head_grapheme_root = nn.Linear(in_features, num_classes[0])
-        # self.head_vowel_diacritic = nn.Linear(in_features, num_classes[1])
-        # self.head_consonant_diacritic = nn.Linear(in_features, num_classes[2])
 
         if heavy_head:
             self.head_grapheme_root = AdaptiveHead_Heavy(in_features, num_classes[0], factor=2)
@@ -253,8 +287,8 @@ class ClassifierCNN(nn.Module):
             self.head_consonant_diacritic = AdaptiveHead_Heavy(in_features, num_classes[2], factor=4)
         else:
             self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0])
-            self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1])
-            self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2])
+            self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1], 4, p=0.3)
+            self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2], 4, p=0.3)
 
     def freeze(self):
         for param in self.model.parameters():

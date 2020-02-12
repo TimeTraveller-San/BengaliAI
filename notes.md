@@ -14,6 +14,8 @@ pip install iterative-stratification
 - Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687
 
 
+# What doesn't work?
+- Reducing first kenel size in `se_resnext50_32x4d` from 7x7 to 3x3... it should've worked but it doesn't. 
 
 # Feels
 - DAMN! `se_resnext50_32x4d` with mish and mixup got 0.9 val score only on 2 epochs (~55 minutes)! This is amazing. I will be training it for ~40-60 epochs.
@@ -80,6 +82,7 @@ pip install iterative-stratification
 - If I set alpha small. like ~0.0001 then it will almost always be 1 or 0
 - I set it to 1 (because of the official facebook research code)
 - 1 is still a small value. For 1, most of the times the random number will be close to 1 or 0 which means that it will be close to either image 1 or 2. which is a good thing. because we don't want to learn a lot of noise (mix of two images) but just a little noise (eg mostly image 1 with some image 2)
+
 ## Dirichlet distribution is pretty cool too.
 - It's just a generalization for beta if I want to interpolate more than 2 images.
 - still having all the parameters ~1 means having a tuple of random numbers that are close to some single image.

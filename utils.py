@@ -94,7 +94,9 @@ def get_weights(weights):
     think the sum=1 has any effect on optimization. I could just get away with
     ratio but... that isn't fancy.. or clean.
     or is it not?
-    I might remove this reduntant thing in future."""
+    I might remove this reduntant thing in future.
+    `feeling ~cute~ confused, might delete later.`
+    """
     return [weights[0]/sum(weights),
             weights[1]/sum(weights),
             weights[2]/sum(weights)]
@@ -107,4 +109,4 @@ def get_learning_rate(optimizer):
     assert(len(lr)==1) #we support only one param_group
     lr = lr[0]
 
-    return lr            
+    return lr

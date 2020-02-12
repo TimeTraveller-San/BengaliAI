@@ -1,0 +1,939 @@
+02/10/2020 08:49:43 PM 
+
+---------------- [LOGS for bb_sgd] ----------------
+02/10/2020 08:50:42 PM Freezing model
+02/10/2020 08:50:42 PM Project path: test_5/bb_sgd
+02/10/2020 08:50:42 PM Model: se_resnext50_32x4d
+02/10/2020 08:50:42 PM Model class: <class 'model.ClassifierCNN'>
+02/10/2020 08:50:42 PM Debug: False
+02/10/2020 08:50:42 PM Batch size: 32
+02/10/2020 08:50:42 PM LR: 0.0003
+02/10/2020 08:50:42 PM Optimizer: <class 'torch.optim.sgd.SGD'>
+02/10/2020 08:50:42 PM Scheduler: <class 'torch.optim.lr_scheduler.MultiStepLR'>
+02/10/2020 08:50:42 PM Weights: [0.5 | 0.25 | 0.25]
+02/10/2020 08:50:42 PM Activation: mish
+02/10/2020 08:50:42 PM Mixup: True
+02/10/2020 08:50:42 PM Cutmix: False
+02/10/2020 08:50:42 PM Train dataset: <loaddata.BengaliAI object at 0x7f0102897668>
+02/10/2020 08:50:42 PM Validation dataset: <loaddata.BengaliAI object at 0x7f0102897898>
+02/10/2020 08:50:42 PM Continue: False
+02/10/2020 08:50:42 PM Model: ClassifierCNN(
+  (first): RGB()
+  (model): SENet(
+    (layer0): Sequential(
+      (conv1): Conv2d(3, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+      (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu1): Mish()
+      (pool): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=True)
+    )
+    (layer1): Sequential(
+      (0): SEResNeXtBottleneck(
+        (conv1): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(256, 16, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(16, 256, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+        (downsample): Sequential(
+          (0): Conv2d(64, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+          (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): SEResNeXtBottleneck(
+        (conv1): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(256, 16, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(16, 256, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (2): SEResNeXtBottleneck(
+        (conv1): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(256, 16, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(16, 256, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+    (layer2): Sequential(
+      (0): SEResNeXtBottleneck(
+        (conv1): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+        (downsample): Sequential(
+          (0): Conv2d(256, 512, kernel_size=(1, 1), stride=(2, 2), bias=False)
+          (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): SEResNeXtBottleneck(
+        (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (2): SEResNeXtBottleneck(
+        (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (3): SEResNeXtBottleneck(
+        (conv1): Conv2d(512, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(512, 32, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(32, 512, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+    (layer3): Sequential(
+      (0): SEResNeXtBottleneck(
+        (conv1): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+        (downsample): Sequential(
+          (0): Conv2d(512, 1024, kernel_size=(1, 1), stride=(2, 2), bias=False)
+          (1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (2): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (3): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (4): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (5): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(1024, 64, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(64, 1024, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+    (layer4): Sequential(
+      (0): SEResNeXtBottleneck(
+        (conv1): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(2048, 128, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(128, 2048, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+        (downsample): Sequential(
+          (0): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(2, 2), bias=False)
+          (1): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        )
+      )
+      (1): SEResNeXtBottleneck(
+        (conv1): Conv2d(2048, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(2048, 128, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(128, 2048, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+      (2): SEResNeXtBottleneck(
+        (conv1): Conv2d(2048, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv2): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+        (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (conv3): Conv2d(1024, 2048, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn3): BatchNorm2d(2048, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (relu): Mish()
+        (se_module): SEModule(
+          (avg_pool): AdaptiveAvgPool2d(output_size=1)
+          (fc1): Conv2d(2048, 128, kernel_size=(1, 1), stride=(1, 1))
+          (relu): Mish()
+          (fc2): Conv2d(128, 2048, kernel_size=(1, 1), stride=(1, 1))
+          (sigmoid): Sigmoid()
+        )
+      )
+    )
+    (avg_pool): AvgPool2d(kernel_size=7, stride=1, padding=0)
+    (last_linear): Linear(in_features=2048, out_features=1000, bias=True)
+  )
+  (head_grapheme_root): AdaptiveHead(
+    (pool): GeM(p=3.0000, eps=1e-06)
+    (fc1): Conv2d(2048, 1024, kernel_size=(2, 2), stride=(1, 1))
+    (bn): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (mish): Mish()
+    (l1): Linear(in_features=1024, out_features=168, bias=True)
+    (dropout): Dropout2d(p=0.7, inplace=False)
+  )
+  (head_vowel_diacritic): AdaptiveHead(
+    (pool): GeM(p=3.0000, eps=1e-06)
+    (fc1): Conv2d(2048, 512, kernel_size=(2, 2), stride=(1, 1))
+    (bn): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (mish): Mish()
+    (l1): Linear(in_features=512, out_features=11, bias=True)
+    (dropout): Dropout2d(p=0.3, inplace=False)
+  )
+  (head_consonant_diacritic): AdaptiveHead(
+    (pool): GeM(p=3.0000, eps=1e-06)
+    (fc1): Conv2d(2048, 512, kernel_size=(2, 2), stride=(1, 1))
+    (bn): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (mish): Mish()
+    (l1): Linear(in_features=512, out_features=7, bias=True)
+    (dropout): Dropout2d(p=0.3, inplace=False)
+  )
+)
+02/10/2020 08:50:42 PM ------------------------------------------------------------
+02/10/2020 08:50:42 PM Starting training...
+02/10/2020 08:50:42 PM Unfreezing model
+02/10/2020 08:51:04 PM [1/200] | t_0 | R: 0.054 | [0.003 | 0.070 | 0.138] | A: [0.568% | 10.417% | 22.443%] | L: 3.854 | [5.521 | 2.500 | 1.873]LR: 0.0003
+02/10/2020 08:51:11 PM [1/200] | v_0 | R: 0.048 | [0.001 | 0.050 | 0.141] | A: [0.237% | 10.890% | 45.170%] | L: 3.639 | [5.189 | 2.431 | 1.747]LR: 0.0003
+02/10/2020 08:51:13 PM [1/200] | v_1 | R: 0.045 | [0.002 | 0.051 | 0.124] | A: [0.368% | 10.795% | 51.922%] | L: 3.635 | [5.202 | 2.432 | 1.703]LR: 0.0003
+02/10/2020 08:51:33 PM [2/200] | t_0 | R: 0.051 | [0.003 | 0.068 | 0.130] | A: [0.473% | 11.553% | 44.981%] | L: 3.764 | [5.466 | 2.453 | 1.670]LR: 0.0003
+02/10/2020 08:51:40 PM [2/200] | v_0 | R: 0.050 | [0.004 | 0.062 | 0.132] | A: [0.663% | 12.216% | 61.080%] | L: 3.576 | [5.160 | 2.392 | 1.589]LR: 0.0003
+02/10/2020 08:51:41 PM [2/200] | v_1 | R: 0.048 | [0.007 | 0.050 | 0.128] | A: [0.919% | 10.612% | 61.648%] | L: 3.576 | [5.174 | 2.401 | 1.556]LR: 0.0003
+02/10/2020 08:52:03 PM [3/200] | t_0 | R: 0.058 | [0.005 | 0.078 | 0.144] | A: [0.994% | 12.831% | 57.765%] | L: 3.703 | [5.426 | 2.407 | 1.554]LR: 0.0003
+02/10/2020 08:52:10 PM [3/200] | v_0 | R: 0.052 | [0.002 | 0.070 | 0.132] | A: [0.473% | 14.157% | 62.216%] | L: 3.535 | [5.141 | 2.352 | 1.507]LR: 0.0003
+02/10/2020 08:52:12 PM [3/200] | v_1 | R: 0.051 | [0.007 | 0.064 | 0.128] | A: [0.919% | 11.915% | 62.383%] | L: 3.534 | [5.150 | 2.358 | 1.477]LR: 0.0003
+02/10/2020 08:52:33 PM [4/200] | t_0 | R: 0.059 | [0.004 | 0.076 | 0.151] | A: [0.663% | 12.926% | 60.511%] | L: 3.664 | [5.408 | 2.384 | 1.457]LR: 0.0003
+02/10/2020 08:52:40 PM [4/200] | v_0 | R: 0.054 | [0.002 | 0.078 | 0.132] | A: [0.616% | 15.625% | 62.311%] | L: 3.495 | [5.114 | 2.318 | 1.435]LR: 0.0003
+02/10/2020 08:52:41 PM [4/200] | v_1 | R: 0.050 | [0.003 | 0.066 | 0.128] | A: [0.551% | 14.288% | 62.383%] | L: 3.498 | [5.125 | 2.334 | 1.409]LR: 0.0003
+02/10/2020 08:53:03 PM [5/200] | t_0 | R: 0.055 | [0.004 | 0.076 | 0.137] | A: [0.758% | 13.968% | 61.837%] | L: 3.622 | [5.363 | 2.356 | 1.407]LR: 0.0003
+02/10/2020 08:53:09 PM [5/200] | v_0 | R: 0.054 | [0.004 | 0.076 | 0.132] | A: [1.326% | 16.383% | 62.358%] | L: 3.475 | [5.099 | 2.311 | 1.392]LR: 0.0003
+02/10/2020 08:53:11 PM [5/200] | v_1 | R: 0.056 | [0.003 | 0.090 | 0.128] | A: [0.919% | 18.332% | 62.383%] | L: 3.469 | [5.097 | 2.312 | 1.368]LR: 0.0003
+02/10/2020 08:53:33 PM [6/200] | t_0 | R: 0.056 | [0.005 | 0.080 | 0.132] | A: [0.947% | 14.725% | 62.311%] | L: 3.602 | [5.351 | 2.323 | 1.383]LR: 0.0003
+02/10/2020 08:53:39 PM [6/200] | v_0 | R: 0.058 | [0.004 | 0.090 | 0.132] | A: [1.705% | 18.134% | 62.405%] | L: 3.446 | [5.072 | 2.284 | 1.355]LR: 0.0003
+02/10/2020 08:53:41 PM [6/200] | v_1 | R: 0.056 | [0.004 | 0.087 | 0.128] | A: [0.735% | 19.084% | 62.383%] | L: 3.448 | [5.079 | 2.292 | 1.343]LR: 0.0003
+02/10/2020 08:54:02 PM [7/200] | t_0 | R: 0.060 | [0.006 | 0.097 | 0.132] | A: [1.136% | 17.945% | 62.074%] | L: 3.587 | [5.349 | 2.285 | 1.367]LR: 0.0003
+02/10/2020 08:54:09 PM [7/200] | v_0 | R: 0.058 | [0.006 | 0.086 | 0.132] | A: [2.225% | 16.667% | 62.405%] | L: 3.429 | [5.047 | 2.267 | 1.353]LR: 0.0003
+02/10/2020 08:54:11 PM [7/200] | v_1 | R: 0.055 | [0.009 | 0.074 | 0.128] | A: [1.654% | 19.452% | 62.383%] | L: 3.428 | [5.056 | 2.271 | 1.329]LR: 0.0003
+02/10/2020 08:54:32 PM [8/200] | t_0 | R: 0.059 | [0.007 | 0.089 | 0.132] | A: [1.420% | 16.667% | 62.311%] | L: 3.556 | [5.297 | 2.284 | 1.345]LR: 0.0003
+02/10/2020 08:54:39 PM [8/200] | v_0 | R: 0.063 | [0.005 | 0.107 | 0.132] | A: [1.799% | 20.739% | 62.405%] | L: 3.416 | [5.040 | 2.245 | 1.338]LR: 0.0003
+02/10/2020 08:54:41 PM [8/200] | v_1 | R: 0.058 | [0.006 | 0.092 | 0.128] | A: [2.206% | 21.106% | 62.383%] | L: 3.419 | [5.043 | 2.264 | 1.326]LR: 0.0003
+02/10/2020 08:55:02 PM [9/200] | t_0 | R: 0.061 | [0.004 | 0.105 | 0.132] | A: [1.089% | 17.992% | 62.263%] | L: 3.540 | [5.286 | 2.268 | 1.319]LR: 0.0003
+02/10/2020 08:55:09 PM [9/200] | v_0 | R: 0.056 | [0.006 | 0.081 | 0.132] | A: [2.415% | 18.703% | 62.405%] | L: 3.400 | [5.021 | 2.238 | 1.319]LR: 0.0003
+02/10/2020 08:55:11 PM [9/200] | v_1 | R: 0.061 | [0.008 | 0.101 | 0.128] | A: [2.390% | 20.572% | 62.383%] | L: 3.397 | [5.020 | 2.247 | 1.301]LR: 0.0003
+02/10/2020 08:55:32 PM [10/200] | t_0 | R: 0.058 | [0.004 | 0.093 | 0.132] | A: [1.184% | 18.608% | 62.405%] | L: 3.517 | [5.242 | 2.256 | 1.329]LR: 0.0003
+02/10/2020 08:55:39 PM [10/200] | v_0 | R: 0.060 | [0.007 | 0.094 | 0.132] | A: [2.699% | 20.360% | 62.405%] | L: 3.378 | [4.993 | 2.220 | 1.304]LR: 0.0003
+02/10/2020 08:55:40 PM [10/200] | v_1 | R: 0.058 | [0.008 | 0.088 | 0.128] | A: [2.574% | 20.939% | 62.383%] | L: 3.383 | [5.002 | 2.233 | 1.295]LR: 0.0003
+02/10/2020 08:56:02 PM [11/200] | t_0 | R: 0.060 | [0.007 | 0.094 | 0.132] | A: [1.562% | 17.945% | 62.311%] | L: 3.513 | [5.229 | 2.262 | 1.331]LR: 0.0003
+02/10/2020 08:56:08 PM [11/200] | v_0 | R: 0.059 | [0.007 | 0.089 | 0.132] | A: [2.983% | 20.170% | 62.405%] | L: 3.377 | [4.993 | 2.222 | 1.299]LR: 0.0003
+02/10/2020 08:56:10 PM [11/200] | v_1 | R: 0.060 | [0.009 | 0.094 | 0.128] | A: [3.125% | 20.739% | 62.383%] | L: 3.372 | [4.986 | 2.228 | 1.285]LR: 0.0003
+02/10/2020 08:56:32 PM [12/200] | t_0 | R: 0.057 | [0.004 | 0.085 | 0.135] | A: [0.947% | 18.466% | 62.453%] | L: 3.496 | [5.210 | 2.260 | 1.304]LR: 0.0003
+02/10/2020 08:56:38 PM [12/200] | v_0 | R: 0.056 | [0.005 | 0.081 | 0.132] | A: [2.604% | 19.271% | 62.405%] | L: 3.365 | [4.977 | 2.214 | 1.293]LR: 0.0003
+02/10/2020 08:56:40 PM [12/200] | v_1 | R: 0.061 | [0.009 | 0.098 | 0.128] | A: [2.757% | 21.307% | 62.383%] | L: 3.363 | [4.973 | 2.220 | 1.286]LR: 0.0003
+02/10/2020 08:57:02 PM [13/200] | t_0 | R: 0.062 | [0.007 | 0.102 | 0.132] | A: [1.515% | 19.176% | 62.311%] | L: 3.487 | [5.208 | 2.228 | 1.302]LR: 0.0003
+02/10/2020 08:57:08 PM [13/200] | v_0 | R: 0.062 | [0.005 | 0.105 | 0.132] | A: [2.273% | 21.212% | 62.405%] | L: 3.351 | [4.961 | 2.205 | 1.277]LR: 0.0003
+02/10/2020 08:57:10 PM [13/200] | v_1 | R: 0.057 | [0.008 | 0.082 | 0.128] | A: [2.574% | 20.388% | 62.383%] | L: 3.351 | [4.957 | 2.213 | 1.277]LR: 0.0003
+02/10/2020 08:57:31 PM [14/200] | t_0 | R: 0.059 | [0.007 | 0.089 | 0.132] | A: [1.278% | 19.034% | 62.405%] | L: 3.477 | [5.199 | 2.224 | 1.288]LR: 0.0003
+02/10/2020 08:57:38 PM [14/200] | v_0 | R: 0.059 | [0.006 | 0.093 | 0.132] | A: [2.604% | 21.780% | 62.405%] | L: 3.345 | [4.949 | 2.197 | 1.286]LR: 0.0003
+02/10/2020 08:57:40 PM [14/200] | v_1 | R: 0.053 | [0.006 | 0.071 | 0.128] | A: [2.206% | 21.674% | 62.383%] | L: 3.338 | [4.941 | 2.199 | 1.272]LR: 0.0003
+02/10/2020 08:58:01 PM [15/200] | t_0 | R: 0.060 | [0.006 | 0.097 | 0.132] | A: [1.515% | 18.466% | 62.358%] | L: 3.471 | [5.186 | 2.228 | 1.281]LR: 0.0003
+02/10/2020 08:58:08 PM [15/200] | v_0 | R: 0.058 | [0.003 | 0.092 | 0.132] | A: [2.557% | 20.691% | 62.405%] | L: 3.329 | [4.926 | 2.185 | 1.279]LR: 0.0003
+02/10/2020 08:58:10 PM [15/200] | v_1 | R: 0.053 | [0.007 | 0.068 | 0.128] | A: [2.757% | 19.836% | 62.383%] | L: 3.332 | [4.931 | 2.199 | 1.266]LR: 0.0003
+02/10/2020 08:58:31 PM [16/200] | t_0 | R: 0.061 | [0.008 | 0.096 | 0.132] | A: [2.036% | 19.555% | 62.311%] | L: 3.455 | [5.162 | 2.213 | 1.283]LR: 0.0003
+02/10/2020 08:58:38 PM [16/200] | v_0 | R: 0.058 | [0.005 | 0.092 | 0.132] | A: [2.462% | 21.922% | 62.405%] | L: 3.323 | [4.922 | 2.186 | 1.264]LR: 0.0003
+02/10/2020 08:58:39 PM [16/200] | v_1 | R: 0.051 | [0.009 | 0.060 | 0.128] | A: [2.941% | 20.020% | 62.383%] | L: 3.323 | [4.919 | 2.192 | 1.262]LR: 0.0003
+02/10/2020 08:59:01 PM [17/200] | t_0 | R: 0.063 | [0.009 | 0.103 | 0.132] | A: [1.941% | 20.881% | 62.263%] | L: 3.451 | [5.158 | 2.205 | 1.283]LR: 0.0003
+02/10/2020 08:59:08 PM [17/200] | v_0 | R: 0.059 | [0.006 | 0.092 | 0.132] | A: [2.699% | 21.117% | 62.405%] | L: 3.315 | [4.911 | 2.169 | 1.268]LR: 0.0003
+02/10/2020 08:59:09 PM [17/200] | v_1 | R: 0.052 | [0.006 | 0.070 | 0.128] | A: [2.574% | 21.858% | 62.383%] | L: 3.313 | [4.906 | 2.186 | 1.256]LR: 0.0003
+02/10/2020 08:59:31 PM [18/200] | t_0 | R: 0.062 | [0.010 | 0.097 | 0.132] | A: [1.941% | 20.502% | 62.311%] | L: 3.444 | [5.137 | 2.214 | 1.287]LR: 0.0003
+02/10/2020 08:59:37 PM [18/200] | v_0 | R: 0.057 | [0.005 | 0.088 | 0.132] | A: [2.509% | 21.922% | 62.405%] | L: 3.313 | [4.905 | 2.167 | 1.276]LR: 0.0003
+02/10/2020 08:59:39 PM [18/200] | v_1 | R: 0.054 | [0.010 | 0.069 | 0.128] | A: [3.125% | 20.939% | 62.383%] | L: 3.309 | [4.901 | 2.177 | 1.255]LR: 0.0003
+02/10/2020 09:00:01 PM [19/200] | t_0 | R: 0.061 | [0.010 | 0.093 | 0.132] | A: [2.083% | 19.034% | 62.405%] | L: 3.420 | [5.108 | 2.191 | 1.272]LR: 0.0003
+02/10/2020 09:00:07 PM [19/200] | v_0 | R: 0.057 | [0.006 | 0.085 | 0.132] | A: [2.699% | 20.881% | 62.405%] | L: 3.300 | [4.889 | 2.168 | 1.256]LR: 0.0003
+02/10/2020 09:00:09 PM [19/200] | v_1 | R: 0.054 | [0.006 | 0.075 | 0.128] | A: [2.574% | 22.945% | 62.383%] | L: 3.301 | [4.889 | 2.172 | 1.253]LR: 0.0003
+02/10/2020 09:00:31 PM [20/200] | t_0 | R: 0.061 | [0.008 | 0.095 | 0.132] | A: [1.894% | 20.076% | 62.358%] | L: 3.429 | [5.125 | 2.190 | 1.274]LR: 0.0003
+02/10/2020 09:00:37 PM [20/200] | v_0 | R: 0.061 | [0.007 | 0.100 | 0.132] | A: [2.794% | 23.106% | 62.405%] | L: 3.296 | [4.890 | 2.155 | 1.251]LR: 0.0003
+02/10/2020 09:00:39 PM [20/200] | v_1 | R: 0.054 | [0.009 | 0.069 | 0.128] | A: [2.757% | 21.674% | 62.383%] | L: 3.296 | [4.881 | 2.175 | 1.250]LR: 0.0003
+02/10/2020 09:01:00 PM [21/200] | t_0 | R: 0.060 | [0.006 | 0.091 | 0.136] | A: [1.752% | 19.555% | 62.358%] | L: 3.442 | [5.154 | 2.189 | 1.272]LR: 0.0003
+02/10/2020 09:01:07 PM [21/200] | v_0 | R: 0.059 | [0.004 | 0.095 | 0.132] | A: [2.888% | 22.112% | 62.405%] | L: 3.295 | [4.884 | 2.160 | 1.251]LR: 0.0003
+02/10/2020 09:01:09 PM [21/200] | v_1 | R: 0.056 | [0.009 | 0.075 | 0.128] | A: [2.941% | 20.939% | 62.383%] | L: 3.291 | [4.873 | 2.172 | 1.246]LR: 0.0003
+02/10/2020 09:01:30 PM [22/200] | t_0 | R: 0.060 | [0.010 | 0.090 | 0.132] | A: [1.989% | 18.845% | 62.358%] | L: 3.422 | [5.117 | 2.190 | 1.266]LR: 0.0003
+02/10/2020 09:01:37 PM [22/200] | v_0 | R: 0.060 | [0.008 | 0.092 | 0.132] | A: [2.652% | 22.348% | 62.405%] | L: 3.287 | [4.871 | 2.150 | 1.256]LR: 0.0003
+02/10/2020 09:01:39 PM [22/200] | v_1 | R: 0.055 | [0.004 | 0.082 | 0.128] | A: [2.390% | 23.128% | 62.383%] | L: 3.281 | [4.863 | 2.157 | 1.242]LR: 0.0003
+02/10/2020 09:02:00 PM [23/200] | t_0 | R: 0.060 | [0.007 | 0.096 | 0.132] | A: [1.468% | 19.460% | 62.216%] | L: 3.416 | [5.101 | 2.196 | 1.268]LR: 0.0003
+02/10/2020 09:02:07 PM [23/200] | v_0 | R: 0.059 | [0.006 | 0.091 | 0.132] | A: [2.794% | 20.975% | 62.405%] | L: 3.284 | [4.868 | 2.153 | 1.250]LR: 0.0003
+02/10/2020 09:02:09 PM [23/200] | v_1 | R: 0.057 | [0.006 | 0.089 | 0.128] | A: [2.574% | 21.674% | 62.383%] | L: 3.279 | [4.859 | 2.161 | 1.239]LR: 0.0003
+02/10/2020 09:02:29 PM [24/200] | t_0 | R: 0.057 | [0.005 | 0.086 | 0.132] | A: [1.562% | 19.366% | 62.358%] | L: 3.410 | [5.089 | 2.198 | 1.263]LR: 0.0003
+02/10/2020 09:02:36 PM [24/200] | v_0 | R: 0.057 | [0.005 | 0.084 | 0.132] | A: [2.604% | 21.828% | 62.405%] | L: 3.280 | [4.858 | 2.153 | 1.251]LR: 0.0003
+02/10/2020 09:02:38 PM [24/200] | v_1 | R: 0.055 | [0.008 | 0.074 | 0.128] | A: [2.757% | 20.939% | 62.383%] | L: 3.275 | [4.851 | 2.162 | 1.236]LR: 0.0003
+02/10/2020 09:02:58 PM [25/200] | t_0 | R: 0.059 | [0.007 | 0.088 | 0.132] | A: [1.989% | 19.602% | 62.311%] | L: 3.415 | [5.107 | 2.184 | 1.262]LR: 0.0003
+02/10/2020 09:03:05 PM [25/200] | v_0 | R: 0.059 | [0.005 | 0.095 | 0.132] | A: [2.699% | 22.680% | 62.405%] | L: 3.272 | [4.853 | 2.139 | 1.243]LR: 0.0003
+02/10/2020 09:03:06 PM [25/200] | v_1 | R: 0.051 | [0.007 | 0.063 | 0.128] | A: [2.390% | 22.226% | 62.383%] | L: 3.270 | [4.846 | 2.151 | 1.236]LR: 0.0003
+02/10/2020 09:03:27 PM [26/200] | t_0 | R: 0.059 | [0.007 | 0.089 | 0.132] | A: [1.799% | 19.650% | 62.311%] | L: 3.391 | [5.064 | 2.177 | 1.259]LR: 0.0003
+02/10/2020 09:03:34 PM [26/200] | v_0 | R: 0.059 | [0.007 | 0.092 | 0.132] | A: [2.936% | 21.970% | 62.405%] | L: 3.260 | [4.833 | 2.138 | 1.239]LR: 0.0003
+02/10/2020 09:03:35 PM [26/200] | v_1 | R: 0.054 | [0.008 | 0.070 | 0.128] | A: [2.757% | 22.226% | 62.383%] | L: 3.267 | [4.842 | 2.151 | 1.234]LR: 0.0003
+02/10/2020 09:03:56 PM [27/200] | t_0 | R: 0.059 | [0.006 | 0.090 | 0.132] | A: [1.941% | 19.792% | 62.358%] | L: 3.397 | [5.065 | 2.198 | 1.258]LR: 0.0003
+02/10/2020 09:04:02 PM [27/200] | v_0 | R: 0.059 | [0.007 | 0.088 | 0.132] | A: [2.557% | 22.348% | 62.405%] | L: 3.266 | [4.844 | 2.138 | 1.240]LR: 0.0003
+02/10/2020 09:04:04 PM [27/200] | v_1 | R: 0.054 | [0.007 | 0.074 | 0.128] | A: [2.574% | 22.577% | 62.383%] | L: 3.261 | [4.836 | 2.144 | 1.229]LR: 0.0003
+02/10/2020 09:04:25 PM [28/200] | t_0 | R: 0.064 | [0.011 | 0.100 | 0.132] | A: [2.509% | 19.981% | 62.358%] | L: 3.391 | [5.066 | 2.173 | 1.259]LR: 0.0003
+02/10/2020 09:04:31 PM [28/200] | v_0 | R: 0.061 | [0.005 | 0.102 | 0.132] | A: [2.367% | 24.148% | 62.405%] | L: 3.257 | [4.835 | 2.122 | 1.235]LR: 0.0003
+02/10/2020 09:04:33 PM [28/200] | v_1 | R: 0.060 | [0.009 | 0.093 | 0.128] | A: [2.941% | 22.777% | 62.383%] | L: 3.257 | [4.828 | 2.143 | 1.230]LR: 0.0003
+02/10/2020 09:04:54 PM [29/200] | t_0 | R: 0.061 | [0.010 | 0.091 | 0.132] | A: [2.273% | 21.023% | 62.358%] | L: 3.374 | [5.037 | 2.167 | 1.256]LR: 0.0003
+02/10/2020 09:05:00 PM [29/200] | v_0 | R: 0.062 | [0.007 | 0.101 | 0.132] | A: [2.936% | 22.917% | 62.405%] | L: 3.258 | [4.840 | 2.128 | 1.227]LR: 0.0003
+02/10/2020 09:05:02 PM [29/200] | v_1 | R: 0.054 | [0.007 | 0.073 | 0.128] | A: [2.574% | 22.226% | 62.383%] | L: 3.255 | [4.824 | 2.146 | 1.227]LR: 0.0003
+02/10/2020 09:05:22 PM [30/200] | t_0 | R: 0.059 | [0.008 | 0.087 | 0.132] | A: [1.894% | 18.845% | 62.311%] | L: 3.394 | [5.068 | 2.174 | 1.265]LR: 0.0003
+02/10/2020 09:05:29 PM [30/200] | v_0 | R: 0.061 | [0.006 | 0.100 | 0.132] | A: [3.125% | 23.864% | 62.405%] | L: 3.254 | [4.830 | 2.128 | 1.227]LR: 0.0003
+02/10/2020 09:05:31 PM [30/200] | v_1 | R: 0.058 | [0.011 | 0.080 | 0.128] | A: [2.941% | 22.410% | 62.383%] | L: 3.254 | [4.823 | 2.140 | 1.230]LR: 0.0003
+02/10/2020 09:05:51 PM [31/200] | t_0 | R: 0.062 | [0.008 | 0.099 | 0.132] | A: [1.847% | 21.259% | 62.311%] | L: 3.383 | [5.047 | 2.167 | 1.271]LR: 0.0003
+02/10/2020 09:05:58 PM [31/200] | v_0 | R: 0.063 | [0.009 | 0.102 | 0.132] | A: [3.314% | 23.674% | 62.405%] | L: 3.249 | [4.820 | 2.124 | 1.233]LR: 0.0003
+02/10/2020 09:05:59 PM [31/200] | v_1 | R: 0.055 | [0.008 | 0.076 | 0.128] | A: [2.941% | 22.577% | 62.383%] | L: 3.249 | [4.819 | 2.136 | 1.223]LR: 0.0003
+02/10/2020 09:06:20 PM [32/200] | t_0 | R: 0.060 | [0.009 | 0.091 | 0.132] | A: [2.083% | 20.028% | 62.311%] | L: 3.381 | [5.044 | 2.169 | 1.267]LR: 0.0003
+02/10/2020 09:06:27 PM [32/200] | v_0 | R: 0.061 | [0.007 | 0.099 | 0.132] | A: [2.746% | 24.100% | 62.405%] | L: 3.246 | [4.819 | 2.114 | 1.231]LR: 0.0003
+02/10/2020 09:06:28 PM [32/200] | v_1 | R: 0.056 | [0.008 | 0.080 | 0.128] | A: [2.941% | 23.496% | 62.383%] | L: 3.242 | [4.807 | 2.132 | 1.223]LR: 0.0003
+02/10/2020 09:06:49 PM [33/200] | t_0 | R: 0.061 | [0.007 | 0.097 | 0.132] | A: [1.894% | 21.449% | 62.263%] | L: 3.370 | [5.024 | 2.177 | 1.256]LR: 0.0003
+02/10/2020 09:06:55 PM [33/200] | v_0 | R: 0.065 | [0.008 | 0.111 | 0.132] | A: [3.030% | 24.195% | 62.405%] | L: 3.240 | [4.809 | 2.117 | 1.225]LR: 0.0003
+02/10/2020 09:06:57 PM [33/200] | v_1 | R: 0.058 | [0.008 | 0.089 | 0.128] | A: [2.757% | 23.513% | 62.383%] | L: 3.242 | [4.808 | 2.132 | 1.221]LR: 0.0003
+02/10/2020 09:07:18 PM [34/200] | t_0 | R: 0.063 | [0.008 | 0.103 | 0.132] | A: [1.989% | 20.975% | 62.121%] | L: 3.370 | [5.038 | 2.153 | 1.252]LR: 0.0003
+02/10/2020 09:07:24 PM [34/200] | v_0 | R: 0.060 | [0.006 | 0.096 | 0.132] | A: [2.509% | 22.301% | 62.405%] | L: 3.242 | [4.808 | 2.122 | 1.228]LR: 0.0003
+02/10/2020 09:07:26 PM [34/200] | v_1 | R: 0.053 | [0.007 | 0.068 | 0.128] | A: [2.574% | 21.858% | 62.383%] | L: 3.239 | [4.803 | 2.130 | 1.222]LR: 0.0003
+02/10/2020 09:07:47 PM [35/200] | t_0 | R: 0.061 | [0.010 | 0.093 | 0.132] | A: [2.225% | 20.360% | 62.311%] | L: 3.368 | [5.040 | 2.150 | 1.242]LR: 0.0003
+02/10/2020 09:07:53 PM [35/200] | v_0 | R: 0.059 | [0.006 | 0.091 | 0.132] | A: [3.220% | 22.301% | 62.405%] | L: 3.242 | [4.803 | 2.128 | 1.235]LR: 0.0003
+02/10/2020 09:07:55 PM [35/200] | v_1 | R: 0.055 | [0.007 | 0.078 | 0.128] | A: [2.757% | 22.410% | 62.383%] | L: 3.237 | [4.800 | 2.129 | 1.219]LR: 0.0003
+02/10/2020 09:08:15 PM [36/200] | t_0 | R: 0.058 | [0.008 | 0.081 | 0.132] | A: [1.941% | 18.513% | 62.358%] | L: 3.366 | [5.029 | 2.160 | 1.246]LR: 0.0003
+02/10/2020 09:08:22 PM [36/200] | v_0 | R: 0.061 | [0.008 | 0.096 | 0.132] | A: [2.888% | 23.627% | 62.405%] | L: 3.239 | [4.802 | 2.119 | 1.233]LR: 0.0003
+02/10/2020 09:08:23 PM [36/200] | v_1 | R: 0.058 | [0.005 | 0.096 | 0.128] | A: [2.390% | 23.680% | 62.383%] | L: 3.237 | [4.800 | 2.130 | 1.218]LR: 0.0003
+02/10/2020 09:08:44 PM [37/200] | t_0 | R: 0.065 | [0.010 | 0.101 | 0.139] | A: [2.604% | 20.597% | 62.311%] | L: 3.366 | [5.022 | 2.169 | 1.251]LR: 0.0003
+02/10/2020 09:08:51 PM [37/200] | v_0 | R: 0.064 | [0.008 | 0.108 | 0.132] | A: [2.936% | 23.911% | 62.405%] | L: 3.229 | [4.793 | 2.111 | 1.221]LR: 0.0003
+02/10/2020 09:08:52 PM [37/200] | v_1 | R: 0.055 | [0.006 | 0.080 | 0.128] | A: [2.574% | 22.777% | 62.383%] | L: 3.233 | [4.794 | 2.128 | 1.214]LR: 0.0003
+02/10/2020 09:09:13 PM [38/200] | t_0 | R: 0.064 | [0.008 | 0.109 | 0.132] | A: [2.036% | 20.928% | 62.311%] | L: 3.365 | [5.027 | 2.156 | 1.251]LR: 0.0003
+02/10/2020 09:09:19 PM [38/200] | v_0 | R: 0.060 | [0.006 | 0.096 | 0.132] | A: [3.125% | 22.254% | 62.405%] | L: 3.228 | [4.789 | 2.115 | 1.220]LR: 0.0003
+02/10/2020 09:09:21 PM [38/200] | v_1 | R: 0.054 | [0.006 | 0.074 | 0.128] | A: [2.757% | 23.680% | 62.383%] | L: 3.229 | [4.789 | 2.120 | 1.216]LR: 0.0003
+02/10/2020 09:09:42 PM [39/200] | t_0 | R: 0.064 | [0.009 | 0.102 | 0.138] | A: [2.083% | 20.407% | 62.358%] | L: 3.368 | [5.029 | 2.159 | 1.253]LR: 0.0003
+02/10/2020 09:09:48 PM [39/200] | v_0 | R: 0.063 | [0.009 | 0.102 | 0.132] | A: [3.930% | 23.580% | 62.405%] | L: 3.228 | [4.790 | 2.110 | 1.220]LR: 0.0003
+02/10/2020 09:09:50 PM [39/200] | v_1 | R: 0.054 | [0.006 | 0.074 | 0.128] | A: [2.941% | 22.209% | 62.383%] | L: 3.229 | [4.789 | 2.121 | 1.216]LR: 0.0003
+02/10/2020 09:10:11 PM [40/200] | t_0 | R: 0.065 | [0.007 | 0.112 | 0.132] | A: [1.847% | 21.828% | 62.311%] | L: 3.351 | [5.014 | 2.140 | 1.235]LR: 0.0003
+02/10/2020 09:10:17 PM [40/200] | v_0 | R: 0.063 | [0.008 | 0.102 | 0.132] | A: [3.409% | 24.100% | 62.405%] | L: 3.221 | [4.783 | 2.102 | 1.217]LR: 0.0003
+02/10/2020 09:10:19 PM [40/200] | v_1 | R: 0.059 | [0.009 | 0.090 | 0.128] | A: [3.125% | 23.513% | 62.383%] | L: 3.223 | [4.783 | 2.117 | 1.209]LR: 0.0003
+02/10/2020 09:10:40 PM [41/200] | t_0 | R: 0.065 | [0.009 | 0.108 | 0.136] | A: [2.367% | 21.544% | 62.358%] | L: 3.351 | [5.010 | 2.142 | 1.239]LR: 0.0003
+02/10/2020 09:10:46 PM [41/200] | v_0 | R: 0.059 | [0.008 | 0.088 | 0.132] | A: [3.314% | 22.538% | 62.405%] | L: 3.221 | [4.781 | 2.109 | 1.213]LR: 0.0003
+02/10/2020 09:10:48 PM [41/200] | v_1 | R: 0.054 | [0.006 | 0.074 | 0.128] | A: [2.574% | 23.145% | 62.383%] | L: 3.218 | [4.776 | 2.111 | 1.209]LR: 0.0003
+02/10/2020 09:11:08 PM [42/200] | t_0 | R: 0.063 | [0.007 | 0.105 | 0.132] | A: [2.036% | 21.023% | 62.263%] | L: 3.345 | [4.993 | 2.160 | 1.234]LR: 0.0003
+02/10/2020 09:11:15 PM [42/200] | v_0 | R: 0.063 | [0.005 | 0.108 | 0.132] | A: [2.699% | 24.195% | 62.405%] | L: 3.221 | [4.785 | 2.100 | 1.212]LR: 0.0003
+02/10/2020 09:11:16 PM [42/200] | v_1 | R: 0.057 | [0.007 | 0.085 | 0.128] | A: [2.757% | 23.496% | 62.383%] | L: 3.218 | [4.777 | 2.110 | 1.207]LR: 0.0003
+02/10/2020 09:11:37 PM [43/200] | t_0 | R: 0.060 | [0.008 | 0.091 | 0.132] | A: [1.657% | 21.023% | 62.074%] | L: 3.345 | [4.993 | 2.150 | 1.244]LR: 0.0003
+02/10/2020 09:11:44 PM [43/200] | v_0 | R: 0.063 | [0.008 | 0.105 | 0.132] | A: [2.936% | 24.858% | 62.405%] | L: 3.211 | [4.767 | 2.095 | 1.216]LR: 0.0003
+02/10/2020 09:11:45 PM [43/200] | v_1 | R: 0.057 | [0.007 | 0.087 | 0.128] | A: [2.941% | 23.680% | 62.383%] | L: 3.216 | [4.773 | 2.108 | 1.209]LR: 0.0003
+02/10/2020 09:12:06 PM [44/200] | t_0 | R: 0.067 | [0.012 | 0.112 | 0.132] | A: [2.746% | 22.491% | 62.216%] | L: 3.342 | [4.996 | 2.140 | 1.234]LR: 0.0003
+02/10/2020 09:12:12 PM [44/200] | v_0 | R: 0.063 | [0.007 | 0.107 | 0.132] | A: [2.888% | 24.669% | 62.405%] | L: 3.215 | [4.774 | 2.102 | 1.209]LR: 0.0003
+02/10/2020 09:12:14 PM [44/200] | v_1 | R: 0.060 | [0.008 | 0.096 | 0.128] | A: [2.757% | 22.761% | 62.383%] | L: 3.216 | [4.773 | 2.111 | 1.208]LR: 0.0003
+02/10/2020 09:12:35 PM [45/200] | t_0 | R: 0.065 | [0.012 | 0.099 | 0.138] | A: [2.415% | 21.402% | 62.358%] | L: 3.348 | [5.004 | 2.136 | 1.248]LR: 0.0003
+02/10/2020 09:12:41 PM [45/200] | v_0 | R: 0.064 | [0.007 | 0.108 | 0.132] | A: [3.220% | 24.053% | 62.405%] | L: 3.213 | [4.776 | 2.093 | 1.208]LR: 0.0003
+02/10/2020 09:12:43 PM [45/200] | v_1 | R: 0.055 | [0.005 | 0.081 | 0.128] | A: [2.757% | 22.594% | 62.383%] | L: 3.214 | [4.770 | 2.109 | 1.207]LR: 0.0003
+02/10/2020 09:13:03 PM [46/200] | t_0 | R: 0.062 | [0.010 | 0.094 | 0.132] | A: [2.462% | 20.786% | 62.358%] | L: 3.334 | [4.985 | 2.133 | 1.233]LR: 0.0003
+02/10/2020 09:13:10 PM [46/200] | v_0 | R: 0.066 | [0.009 | 0.116 | 0.132] | A: [3.125% | 24.621% | 62.405%] | L: 3.215 | [4.777 | 2.093 | 1.212]LR: 0.0003
+02/10/2020 09:13:11 PM [46/200] | v_1 | R: 0.055 | [0.006 | 0.081 | 0.128] | A: [2.574% | 22.410% | 62.383%] | L: 3.216 | [4.773 | 2.112 | 1.207]LR: 0.0003
+02/10/2020 09:13:32 PM [47/200] | t_0 | R: 0.064 | [0.011 | 0.098 | 0.136] | A: [2.604% | 21.070% | 62.453%] | L: 3.344 | [4.993 | 2.154 | 1.234]LR: 0.0003
+02/10/2020 09:13:38 PM [47/200] | v_0 | R: 0.061 | [0.008 | 0.098 | 0.132] | A: [3.220% | 23.627% | 62.405%] | L: 3.212 | [4.765 | 2.103 | 1.216]LR: 0.0003
+02/10/2020 09:13:40 PM [47/200] | v_1 | R: 0.058 | [0.008 | 0.088 | 0.128] | A: [2.757% | 22.777% | 62.383%] | L: 3.212 | [4.765 | 2.113 | 1.205]LR: 0.0003
+02/10/2020 09:14:01 PM [48/200] | t_0 | R: 0.062 | [0.011 | 0.092 | 0.135] | A: [2.178% | 19.034% | 62.358%] | L: 3.340 | [5.001 | 2.134 | 1.225]LR: 0.0003
+02/10/2020 09:14:07 PM [48/200] | v_0 | R: 0.061 | [0.008 | 0.095 | 0.132] | A: [2.888% | 23.864% | 62.405%] | L: 3.210 | [4.762 | 2.098 | 1.218]LR: 0.0003
+02/10/2020 09:14:09 PM [48/200] | v_1 | R: 0.055 | [0.010 | 0.072 | 0.128] | A: [2.757% | 23.312% | 62.383%] | L: 3.211 | [4.766 | 2.108 | 1.204]LR: 0.0003
+02/10/2020 09:14:29 PM [49/200] | t_0 | R: 0.064 | [0.009 | 0.099 | 0.139] | A: [2.509% | 20.597% | 62.405%] | L: 3.349 | [5.007 | 2.147 | 1.235]LR: 0.0003
+02/10/2020 09:14:36 PM [49/200] | v_0 | R: 0.062 | [0.006 | 0.106 | 0.132] | A: [2.888% | 23.485% | 62.405%] | L: 3.208 | [4.760 | 2.100 | 1.212]LR: 0.0003
+02/10/2020 09:14:37 PM [49/200] | v_1 | R: 0.057 | [0.005 | 0.091 | 0.128] | A: [2.206% | 23.496% | 62.383%] | L: 3.210 | [4.764 | 2.110 | 1.203]LR: 0.0003
+02/10/2020 09:14:58 PM [50/200] | t_0 | R: 0.064 | [0.010 | 0.099 | 0.136] | A: [1.989% | 20.644% | 62.169%] | L: 3.337 | [4.985 | 2.138 | 1.240]LR: 0.0003
+02/10/2020 09:15:04 PM [50/200] | v_0 | R: 0.065 | [0.010 | 0.108 | 0.132] | A: [3.551% | 24.811% | 62.405%] | L: 3.206 | [4.762 | 2.093 | 1.207]LR: 0.0003
+02/10/2020 09:15:06 PM [50/200] | v_1 | R: 0.058 | [0.009 | 0.086 | 0.128] | A: [3.309% | 23.312% | 62.383%] | L: 3.209 | [4.762 | 2.109 | 1.203]LR: 0.0003
+02/10/2020 09:15:27 PM [51/200] | t_0 | R: 0.067 | [0.010 | 0.114 | 0.132] | A: [2.367% | 22.301% | 62.311%] | L: 3.340 | [4.989 | 2.144 | 1.237]LR: 0.0003
+02/10/2020 09:15:33 PM [51/200] | v_0 | R: 0.066 | [0.007 | 0.117 | 0.132] | A: [3.172% | 24.763% | 62.405%] | L: 3.204 | [4.761 | 2.098 | 1.196]LR: 0.0003
+02/10/2020 09:15:35 PM [51/200] | v_1 | R: 0.062 | [0.008 | 0.102 | 0.128] | A: [2.941% | 24.064% | 62.383%] | L: 3.206 | [4.759 | 2.106 | 1.202]LR: 0.0003
+02/10/2020 09:15:55 PM [52/200] | t_0 | R: 0.067 | [0.008 | 0.115 | 0.136] | A: [2.083% | 22.064% | 62.263%] | L: 3.331 | [4.989 | 2.121 | 1.223]LR: 0.0003
+02/10/2020 09:16:02 PM [52/200] | v_0 | R: 0.066 | [0.009 | 0.112 | 0.132] | A: [3.741% | 23.722% | 62.405%] | L: 3.202 | [4.757 | 2.085 | 1.208]LR: 0.0003
+02/10/2020 09:16:03 PM [52/200] | v_1 | R: 0.059 | [0.007 | 0.092 | 0.128] | A: [2.390% | 23.680% | 62.383%] | L: 3.205 | [4.758 | 2.101 | 1.201]LR: 0.0003
+02/10/2020 09:16:24 PM [53/200] | t_0 | R: 0.065 | [0.009 | 0.106 | 0.136] | A: [2.273% | 21.402% | 62.405%] | L: 3.335 | [4.977 | 2.137 | 1.247]LR: 0.0003
+02/10/2020 09:16:30 PM [53/200] | v_0 | R: 0.065 | [0.007 | 0.114 | 0.132] | A: [2.699% | 26.326% | 62.405%] | L: 3.206 | [4.767 | 2.085 | 1.206]LR: 0.0003
+02/10/2020 09:16:32 PM [53/200] | v_1 | R: 0.060 | [0.008 | 0.097 | 0.128] | A: [3.676% | 24.415% | 62.383%] | L: 3.202 | [4.755 | 2.097 | 1.202]LR: 0.0003
+02/10/2020 09:16:53 PM [54/200] | t_0 | R: 0.066 | [0.009 | 0.110 | 0.135] | A: [1.752% | 21.922% | 62.263%] | L: 3.344 | [5.003 | 2.139 | 1.231]LR: 0.0003
+02/10/2020 09:16:59 PM [54/200] | v_0 | R: 0.066 | [0.008 | 0.117 | 0.132] | A: [3.220% | 25.095% | 62.405%] | L: 3.189 | [4.745 | 2.068 | 1.196]LR: 0.0003
+02/10/2020 09:17:01 PM [54/200] | v_1 | R: 0.057 | [0.007 | 0.086 | 0.128] | A: [2.574% | 23.496% | 62.383%] | L: 3.201 | [4.752 | 2.100 | 1.201]LR: 0.0003
+02/10/2020 09:17:21 PM [55/200] | t_0 | R: 0.067 | [0.011 | 0.110 | 0.136] | A: [2.367% | 23.106% | 62.263%] | L: 3.335 | [4.993 | 2.133 | 1.221]LR: 0.0003
+02/10/2020 09:17:28 PM [55/200] | v_0 | R: 0.066 | [0.007 | 0.118 | 0.132] | A: [3.030% | 25.805% | 62.405%] | L: 3.193 | [4.745 | 2.081 | 1.202]LR: 0.0003
+02/10/2020 09:17:30 PM [55/200] | v_1 | R: 0.057 | [0.006 | 0.089 | 0.128] | A: [2.757% | 24.231% | 62.383%] | L: 3.200 | [4.753 | 2.098 | 1.198]LR: 0.0003
+02/10/2020 09:17:50 PM [56/200] | t_0 | R: 0.065 | [0.007 | 0.114 | 0.132] | A: [1.705% | 21.402% | 62.311%] | L: 3.334 | [4.992 | 2.122 | 1.231]LR: 0.0003
+02/10/2020 09:17:56 PM [56/200] | v_0 | R: 0.064 | [0.008 | 0.106 | 0.132] | A: [3.551% | 24.811% | 62.405%] | L: 3.195 | [4.745 | 2.081 | 1.208]LR: 0.0003
+02/10/2020 09:17:58 PM [56/200] | v_1 | R: 0.061 | [0.006 | 0.104 | 0.128] | A: [2.206% | 22.961% | 62.383%] | L: 3.197 | [4.750 | 2.096 | 1.194]LR: 0.0003
+02/10/2020 09:18:19 PM [57/200] | t_0 | R: 0.063 | [0.008 | 0.099 | 0.135] | A: [1.989% | 21.591% | 62.405%] | L: 3.330 | [4.992 | 2.124 | 1.213]LR: 0.0003
+02/10/2020 09:18:25 PM [57/200] | v_0 | R: 0.067 | [0.008 | 0.118 | 0.132] | A: [3.362% | 25.237% | 62.405%] | L: 3.195 | [4.754 | 2.076 | 1.198]LR: 0.0003
+02/10/2020 09:18:27 PM [57/200] | v_1 | R: 0.060 | [0.006 | 0.100 | 0.128] | A: [2.574% | 23.128% | 62.383%] | L: 3.195 | [4.747 | 2.093 | 1.194]LR: 0.0003
+02/10/2020 09:18:47 PM [58/200] | t_0 | R: 0.067 | [0.011 | 0.109 | 0.139] | A: [2.699% | 20.833% | 62.453%] | L: 3.311 | [4.945 | 2.126 | 1.226]LR: 0.0003
+02/10/2020 09:18:54 PM [58/200] | v_0 | R: 0.065 | [0.009 | 0.110 | 0.132] | A: [3.220% | 24.053% | 62.405%] | L: 3.194 | [4.750 | 2.076 | 1.199]LR: 0.0003
+02/10/2020 09:18:56 PM [58/200] | v_1 | R: 0.062 | [0.007 | 0.107 | 0.128] | A: [2.757% | 24.967% | 62.383%] | L: 3.196 | [4.749 | 2.090 | 1.196]LR: 0.0003
+02/10/2020 09:19:16 PM [59/200] | t_0 | R: 0.064 | [0.010 | 0.099 | 0.136] | A: [2.462% | 21.780% | 62.169%] | L: 3.335 | [4.994 | 2.130 | 1.222]LR: 0.0003
+02/10/2020 09:19:23 PM [59/200] | v_0 | R: 0.065 | [0.009 | 0.112 | 0.132] | A: [3.267% | 24.574% | 62.405%] | L: 3.199 | [4.755 | 2.086 | 1.202]LR: 0.0003
+02/10/2020 09:19:24 PM [59/200] | v_1 | R: 0.062 | [0.009 | 0.102 | 0.128] | A: [3.309% | 23.680% | 62.383%] | L: 3.197 | [4.748 | 2.096 | 1.196]LR: 0.0003
+02/10/2020 09:19:45 PM [60/200] | t_0 | R: 0.064 | [0.008 | 0.105 | 0.136] | A: [1.941% | 21.402% | 62.263%] | L: 3.326 | [4.970 | 2.140 | 1.223]LR: 0.0003
+02/10/2020 09:19:51 PM [60/200] | v_0 | R: 0.065 | [0.005 | 0.119 | 0.132] | A: [2.273% | 25.521% | 62.405%] | L: 3.187 | [4.741 | 2.065 | 1.204]LR: 0.0003
+02/10/2020 09:19:53 PM [60/200] | v_1 | R: 0.061 | [0.009 | 0.096 | 0.128] | A: [3.493% | 23.680% | 62.383%] | L: 3.194 | [4.746 | 2.087 | 1.198]LR: 0.0003
+02/10/2020 09:20:14 PM [61/200] | t_0 | R: 0.070 | [0.012 | 0.118 | 0.138] | A: [2.367% | 22.538% | 62.358%] | L: 3.313 | [4.955 | 2.120 | 1.222]LR: 0.0003
+02/10/2020 09:20:20 PM [61/200] | v_0 | R: 0.068 | [0.008 | 0.124 | 0.132] | A: [3.078% | 26.941% | 62.405%] | L: 3.191 | [4.748 | 2.071 | 1.199]LR: 0.0003
+02/10/2020 09:20:22 PM [61/200] | v_1 | R: 0.063 | [0.006 | 0.113 | 0.128] | A: [2.390% | 25.334% | 62.383%] | L: 3.190 | [4.741 | 2.087 | 1.192]LR: 0.0003
+02/10/2020 09:20:42 PM [62/200] | t_0 | R: 0.064 | [0.009 | 0.104 | 0.132] | A: [2.320% | 22.159% | 62.405%] | L: 3.319 | [4.966 | 2.120 | 1.225]LR: 0.0003
+02/10/2020 09:20:49 PM [62/200] | v_0 | R: 0.065 | [0.009 | 0.109 | 0.132] | A: [3.598% | 24.195% | 62.405%] | L: 3.188 | [4.741 | 2.076 | 1.194]LR: 0.0003
+02/10/2020 09:20:50 PM [62/200] | v_1 | R: 0.061 | [0.009 | 0.099 | 0.128] | A: [3.125% | 23.128% | 62.383%] | L: 3.192 | [4.744 | 2.091 | 1.188]LR: 0.0003
+02/10/2020 09:21:11 PM [63/200] | t_0 | R: 0.064 | [0.012 | 0.097 | 0.136] | A: [2.225% | 20.265% | 62.311%] | L: 3.312 | [4.939 | 2.132 | 1.237]LR: 0.0003
+02/10/2020 09:21:17 PM [63/200] | v_0 | R: 0.067 | [0.007 | 0.124 | 0.132] | A: [2.936% | 25.616% | 62.405%] | L: 3.191 | [4.748 | 2.065 | 1.204]LR: 0.0003
+02/10/2020 09:21:19 PM [63/200] | v_1 | R: 0.063 | [0.010 | 0.104 | 0.128] | A: [3.493% | 25.167% | 62.383%] | L: 3.191 | [4.741 | 2.088 | 1.193]LR: 0.0003
+02/10/2020 09:21:40 PM [64/200] | t_0 | R: 0.067 | [0.011 | 0.109 | 0.135] | A: [2.367% | 22.254% | 62.216%] | L: 3.332 | [4.990 | 2.120 | 1.228]LR: 0.0003
+02/10/2020 09:21:46 PM [64/200] | v_0 | R: 0.066 | [0.010 | 0.110 | 0.132] | A: [4.119% | 24.905% | 62.405%] | L: 3.188 | [4.740 | 2.073 | 1.198]LR: 0.0003
+02/10/2020 09:21:48 PM [64/200] | v_1 | R: 0.065 | [0.006 | 0.117 | 0.128] | A: [2.941% | 24.599% | 62.383%] | L: 3.189 | [4.741 | 2.084 | 1.191]LR: 0.0003
+02/10/2020 09:22:08 PM [65/200] | t_0 | R: 0.063 | [0.012 | 0.098 | 0.132] | A: [2.794% | 21.544% | 62.263%] | L: 3.324 | [4.974 | 2.119 | 1.227]LR: 0.0003
+02/10/2020 09:22:15 PM [65/200] | v_0 | R: 0.069 | [0.007 | 0.129 | 0.132] | A: [2.983% | 26.657% | 62.405%] | L: 3.185 | [4.737 | 2.068 | 1.199]LR: 0.0003
+02/10/2020 09:22:16 PM [65/200] | v_1 | R: 0.065 | [0.008 | 0.114 | 0.128] | A: [2.941% | 24.432% | 62.383%] | L: 3.190 | [4.740 | 2.088 | 1.190]LR: 0.0003
+02/10/2020 09:22:37 PM [66/200] | t_0 | R: 0.063 | [0.008 | 0.105 | 0.132] | A: [1.941% | 22.301% | 62.311%] | L: 3.309 | [4.955 | 2.108 | 1.218]LR: 0.0003
+02/10/2020 09:22:43 PM [66/200] | v_0 | R: 0.065 | [0.008 | 0.113 | 0.132] | A: [3.551% | 26.042% | 62.405%] | L: 3.181 | [4.731 | 2.068 | 1.195]LR: 0.0003
+02/10/2020 09:22:45 PM [66/200] | v_1 | R: 0.060 | [0.008 | 0.098 | 0.128] | A: [3.125% | 23.680% | 62.383%] | L: 3.187 | [4.738 | 2.082 | 1.191]LR: 0.0003
+02/10/2020 09:23:06 PM [67/200] | t_0 | R: 0.066 | [0.008 | 0.109 | 0.137] | A: [1.894% | 20.407% | 62.405%] | L: 3.315 | [4.961 | 2.114 | 1.225]LR: 0.0003
+02/10/2020 09:23:12 PM [67/200] | v_0 | R: 0.070 | [0.009 | 0.128 | 0.132] | A: [3.504% | 26.468% | 62.405%] | L: 3.180 | [4.733 | 2.059 | 1.195]LR: 0.0003
+02/10/2020 09:23:14 PM [67/200] | v_1 | R: 0.066 | [0.009 | 0.117 | 0.128] | A: [3.309% | 25.334% | 62.383%] | L: 3.184 | [4.737 | 2.075 | 1.188]LR: 0.0003
+02/10/2020 09:23:34 PM [68/200] | t_0 | R: 0.068 | [0.010 | 0.113 | 0.138] | A: [2.699% | 22.775% | 62.311%] | L: 3.314 | [4.951 | 2.123 | 1.230]LR: 0.0003
+02/10/2020 09:23:41 PM [68/200] | v_0 | R: 0.070 | [0.010 | 0.127 | 0.132] | A: [3.741% | 26.657% | 62.405%] | L: 3.183 | [4.733 | 2.077 | 1.189]LR: 0.0003
+02/10/2020 09:23:42 PM [68/200] | v_1 | R: 0.065 | [0.006 | 0.121 | 0.128] | A: [3.125% | 24.599% | 62.383%] | L: 3.189 | [4.738 | 2.088 | 1.192]LR: 0.0003
+02/10/2020 09:24:03 PM [69/200] | t_0 | R: 0.066 | [0.008 | 0.107 | 0.142] | A: [1.799% | 22.064% | 62.500%] | L: 3.314 | [4.971 | 2.098 | 1.217]LR: 0.0003
+02/10/2020 09:24:09 PM [69/200] | v_0 | R: 0.067 | [0.010 | 0.115 | 0.135] | A: [3.741% | 25.426% | 62.453%] | L: 3.176 | [4.725 | 2.066 | 1.189]LR: 0.0003
+02/10/2020 09:24:11 PM [69/200] | v_1 | R: 0.067 | [0.007 | 0.127 | 0.128] | A: [3.309% | 26.053% | 62.383%] | L: 3.185 | [4.735 | 2.082 | 1.188]LR: 0.0003
+02/10/2020 09:24:32 PM [70/200] | t_0 | R: 0.064 | [0.009 | 0.105 | 0.135] | A: [2.273% | 21.449% | 62.358%] | L: 3.308 | [4.946 | 2.119 | 1.220]LR: 0.0003
+02/10/2020 09:24:38 PM [70/200] | v_0 | R: 0.069 | [0.008 | 0.125 | 0.132] | A: [3.504% | 26.042% | 62.405%] | L: 3.175 | [4.724 | 2.058 | 1.194]LR: 0.0003
+02/10/2020 09:24:40 PM [70/200] | v_1 | R: 0.066 | [0.010 | 0.116 | 0.128] | A: [3.309% | 24.599% | 62.383%] | L: 3.183 | [4.732 | 2.082 | 1.187]LR: 0.0003
+02/10/2020 09:25:00 PM [71/200] | t_0 | R: 0.067 | [0.010 | 0.111 | 0.135] | A: [2.462% | 22.017% | 62.405%] | L: 3.314 | [4.951 | 2.120 | 1.233]LR: 0.0003
+02/10/2020 09:25:07 PM [71/200] | v_0 | R: 0.068 | [0.004 | 0.132 | 0.132] | A: [2.320% | 27.225% | 62.405%] | L: 3.183 | [4.742 | 2.054 | 1.195]LR: 0.0003
+02/10/2020 09:25:08 PM [71/200] | v_1 | R: 0.064 | [0.008 | 0.110 | 0.128] | A: [2.941% | 25.334% | 62.383%] | L: 3.181 | [4.731 | 2.080 | 1.183]LR: 0.0003
+02/10/2020 09:25:29 PM [72/200] | t_0 | R: 0.067 | [0.011 | 0.109 | 0.136] | A: [2.273% | 23.153% | 62.263%] | L: 3.309 | [4.952 | 2.108 | 1.223]LR: 0.0003
+02/10/2020 09:25:35 PM [72/200] | v_0 | R: 0.073 | [0.010 | 0.138 | 0.132] | A: [3.646% | 27.178% | 62.405%] | L: 3.172 | [4.722 | 2.055 | 1.190]LR: 0.0003
+02/10/2020 09:25:37 PM [72/200] | v_1 | R: 0.069 | [0.009 | 0.128 | 0.128] | A: [3.309% | 26.253% | 62.383%] | L: 3.177 | [4.726 | 2.070 | 1.184]LR: 0.0003
+02/10/2020 09:25:58 PM [73/200] | t_0 | R: 0.071 | [0.010 | 0.120 | 0.142] | A: [2.509% | 23.106% | 62.500%] | L: 3.299 | [4.933 | 2.116 | 1.213]LR: 0.0003
+02/10/2020 09:26:04 PM [73/200] | v_0 | R: 0.068 | [0.008 | 0.123 | 0.132] | A: [3.362% | 25.805% | 62.405%] | L: 3.177 | [4.734 | 2.052 | 1.189]LR: 0.0003
+02/10/2020 09:26:06 PM [73/200] | v_1 | R: 0.070 | [0.009 | 0.134 | 0.128] | A: [3.493% | 26.070% | 62.383%] | L: 3.180 | [4.728 | 2.076 | 1.186]LR: 0.0003
+02/10/2020 09:26:26 PM [74/200] | t_0 | R: 0.066 | [0.011 | 0.108 | 0.135] | A: [2.462% | 22.348% | 62.311%] | L: 3.312 | [4.963 | 2.101 | 1.221]LR: 0.0003
+02/10/2020 09:26:33 PM [74/200] | v_0 | R: 0.070 | [0.013 | 0.123 | 0.132] | A: [4.403% | 26.657% | 62.405%] | L: 3.175 | [4.725 | 2.055 | 1.193]LR: 0.0003
+02/10/2020 09:26:34 PM [74/200] | v_1 | R: 0.067 | [0.006 | 0.128 | 0.128] | A: [2.941% | 25.702% | 62.383%] | L: 3.178 | [4.729 | 2.071 | 1.185]LR: 0.0003
+02/10/2020 09:26:55 PM [75/200] | t_0 | R: 0.064 | [0.008 | 0.110 | 0.132] | A: [1.894% | 22.348% | 62.358%] | L: 3.313 | [4.962 | 2.110 | 1.220]LR: 0.0003
+02/10/2020 09:27:01 PM [75/200] | v_0 | R: 0.069 | [0.007 | 0.129 | 0.132] | A: [3.125% | 26.941% | 62.405%] | L: 3.170 | [4.723 | 2.051 | 1.184]LR: 0.0003
+02/10/2020 09:27:03 PM [75/200] | v_1 | R: 0.068 | [0.008 | 0.129 | 0.128] | A: [3.676% | 26.070% | 62.383%] | L: 3.176 | [4.725 | 2.067 | 1.186]LR: 0.0003
+02/10/2020 09:27:24 PM [76/200] | t_0 | R: 0.065 | [0.007 | 0.111 | 0.135] | A: [1.752% | 22.254% | 62.216%] | L: 3.317 | [4.967 | 2.116 | 1.220]LR: 0.0003
+02/10/2020 09:27:30 PM [76/200] | v_0 | R: 0.066 | [0.007 | 0.117 | 0.132] | A: [3.030% | 25.852% | 62.405%] | L: 3.167 | [4.713 | 2.056 | 1.185]LR: 0.0003
+02/10/2020 09:27:32 PM [76/200] | v_1 | R: 0.064 | [0.005 | 0.119 | 0.128] | A: [3.125% | 24.967% | 62.383%] | L: 3.177 | [4.727 | 2.073 | 1.180]LR: 0.0003
+02/10/2020 09:27:52 PM [77/200] | t_0 | R: 0.068 | [0.010 | 0.109 | 0.142] | A: [2.131% | 22.680% | 62.453%] | L: 3.310 | [4.954 | 2.113 | 1.217]LR: 0.0003
+02/10/2020 09:27:59 PM [77/200] | v_0 | R: 0.071 | [0.008 | 0.134 | 0.132] | A: [2.936% | 27.083% | 62.405%] | L: 3.171 | [4.721 | 2.058 | 1.183]LR: 0.0003
+02/10/2020 09:28:00 PM [77/200] | v_1 | R: 0.066 | [0.008 | 0.121 | 0.128] | A: [3.309% | 25.702% | 62.383%] | L: 3.178 | [4.727 | 2.078 | 1.180]LR: 0.0003
+02/10/2020 09:28:21 PM [78/200] | t_0 | R: 0.072 | [0.014 | 0.116 | 0.142] | A: [2.936% | 22.206% | 62.358%] | L: 3.289 | [4.917 | 2.105 | 1.218]LR: 0.0003
+02/10/2020 09:28:27 PM [78/200] | v_0 | R: 0.069 | [0.006 | 0.131 | 0.132] | A: [3.172% | 27.225% | 62.405%] | L: 3.171 | [4.720 | 2.054 | 1.190]LR: 0.0003
+02/10/2020 09:28:29 PM [78/200] | v_1 | R: 0.066 | [0.008 | 0.117 | 0.128] | A: [3.493% | 26.070% | 62.383%] | L: 3.177 | [4.724 | 2.072 | 1.186]LR: 0.0003
+02/10/2020 09:28:50 PM [79/200] | t_0 | R: 0.065 | [0.009 | 0.104 | 0.136] | A: [2.036% | 21.638% | 62.263%] | L: 3.300 | [4.934 | 2.117 | 1.216]LR: 0.0003
+02/10/2020 09:28:56 PM [79/200] | v_0 | R: 0.069 | [0.008 | 0.127 | 0.132] | A: [3.835% | 26.468% | 62.405%] | L: 3.167 | [4.710 | 2.058 | 1.190]LR: 0.0003
+02/10/2020 09:28:58 PM [79/200] | v_1 | R: 0.064 | [0.009 | 0.107 | 0.128] | A: [3.493% | 24.599% | 62.383%] | L: 3.177 | [4.725 | 2.073 | 1.184]LR: 0.0003
+02/10/2020 09:29:18 PM [80/200] | t_0 | R: 0.070 | [0.012 | 0.121 | 0.135] | A: [2.746% | 24.006% | 62.121%] | L: 3.285 | [4.906 | 2.108 | 1.222]LR: 0.0003
+02/10/2020 09:29:25 PM [80/200] | v_0 | R: 0.071 | [0.011 | 0.132 | 0.132] | A: [3.504% | 27.036% | 62.405%] | L: 3.161 | [4.707 | 2.054 | 1.178]LR: 0.0003
+02/10/2020 09:29:26 PM [80/200] | v_1 | R: 0.068 | [0.008 | 0.126 | 0.128] | A: [3.676% | 26.253% | 62.383%] | L: 3.171 | [4.719 | 2.067 | 1.180]LR: 0.0003
+02/10/2020 09:29:47 PM [81/200] | t_0 | R: 0.070 | [0.010 | 0.128 | 0.132] | A: [2.273% | 24.100% | 62.358%] | L: 3.301 | [4.943 | 2.093 | 1.224]LR: 0.0003
+02/10/2020 09:29:53 PM [81/200] | v_0 | R: 0.067 | [0.012 | 0.111 | 0.132] | A: [3.835% | 25.805% | 62.405%] | L: 3.170 | [4.722 | 2.050 | 1.186]LR: 0.0003
+02/10/2020 09:29:55 PM [81/200] | v_1 | R: 0.068 | [0.013 | 0.118 | 0.128] | A: [3.860% | 25.351% | 62.383%] | L: 3.175 | [4.722 | 2.074 | 1.181]LR: 0.0003
+02/10/2020 09:30:16 PM [82/200] | t_0 | R: 0.070 | [0.011 | 0.114 | 0.143] | A: [2.557% | 23.011% | 62.311%] | L: 3.295 | [4.929 | 2.110 | 1.213]LR: 0.0003
+02/10/2020 09:30:22 PM [82/200] | v_0 | R: 0.070 | [0.011 | 0.124 | 0.132] | A: [3.741% | 25.616% | 62.405%] | L: 3.170 | [4.713 | 2.066 | 1.188]LR: 0.0003
+02/10/2020 09:30:24 PM [82/200] | v_1 | R: 0.064 | [0.006 | 0.117 | 0.128] | A: [3.125% | 26.070% | 62.383%] | L: 3.173 | [4.722 | 2.068 | 1.178]LR: 0.0003
+02/10/2020 09:30:44 PM [83/200] | t_0 | R: 0.066 | [0.012 | 0.105 | 0.132] | A: [2.320% | 22.633% | 62.216%] | L: 3.300 | [4.944 | 2.092 | 1.219]LR: 0.0003
+02/10/2020 09:30:51 PM [83/200] | v_0 | R: 0.071 | [0.009 | 0.133 | 0.132] | A: [3.409% | 26.989% | 62.405%] | L: 3.164 | [4.711 | 2.045 | 1.190]LR: 0.0003
+02/10/2020 09:30:52 PM [83/200] | v_1 | R: 0.068 | [0.008 | 0.128 | 0.128] | A: [3.309% | 25.685% | 62.383%] | L: 3.175 | [4.726 | 2.068 | 1.179]LR: 0.0003
+02/10/2020 09:31:13 PM [84/200] | t_0 | R: 0.067 | [0.012 | 0.101 | 0.142] | A: [2.604% | 20.739% | 62.263%] | L: 3.304 | [4.943 | 2.114 | 1.217]LR: 0.0003
+02/10/2020 09:31:19 PM [84/200] | v_0 | R: 0.070 | [0.008 | 0.134 | 0.132] | A: [3.598% | 27.225% | 62.405%] | L: 3.164 | [4.712 | 2.047 | 1.184]LR: 0.0003
+02/10/2020 09:31:21 PM [84/200] | v_1 | R: 0.070 | [0.009 | 0.136 | 0.128] | A: [3.309% | 25.685% | 62.383%] | L: 3.172 | [4.719 | 2.072 | 1.178]LR: 0.0003
+02/10/2020 09:31:42 PM [85/200] | t_0 | R: 0.067 | [0.009 | 0.115 | 0.135] | A: [2.036% | 22.491% | 62.358%] | L: 3.307 | [4.957 | 2.101 | 1.213]LR: 0.0003
+02/10/2020 09:31:48 PM [85/200] | v_0 | R: 0.070 | [0.010 | 0.129 | 0.132] | A: [4.072% | 27.225% | 62.405%] | L: 3.165 | [4.714 | 2.048 | 1.185]LR: 0.0003
+02/10/2020 09:31:50 PM [85/200] | v_1 | R: 0.069 | [0.007 | 0.132 | 0.128] | A: [3.493% | 25.501% | 62.383%] | L: 3.173 | [4.721 | 2.070 | 1.179]LR: 0.0003
+02/10/2020 09:32:10 PM [86/200] | t_0 | R: 0.073 | [0.013 | 0.131 | 0.135] | A: [2.888% | 23.911% | 62.311%] | L: 3.302 | [4.943 | 2.106 | 1.215]LR: 0.0003
+02/10/2020 09:32:17 PM [86/200] | v_0 | R: 0.064 | [0.007 | 0.110 | 0.132] | A: [2.888% | 26.089% | 62.405%] | L: 3.164 | [4.704 | 2.057 | 1.192]LR: 0.0003
+02/10/2020 09:32:18 PM [86/200] | v_1 | R: 0.065 | [0.008 | 0.118 | 0.128] | A: [3.493% | 24.783% | 62.383%] | L: 3.173 | [4.720 | 2.072 | 1.178]LR: 0.0003
+02/10/2020 09:32:39 PM [87/200] | t_0 | R: 0.068 | [0.009 | 0.117 | 0.136] | A: [2.178% | 23.485% | 62.311%] | L: 3.286 | [4.918 | 2.099 | 1.212]LR: 0.0003
+02/10/2020 09:32:45 PM [87/200] | v_0 | R: 0.070 | [0.009 | 0.129 | 0.132] | A: [3.788% | 26.184% | 62.405%] | L: 3.162 | [4.709 | 2.048 | 1.183]LR: 0.0003
+02/10/2020 09:32:47 PM [87/200] | v_1 | R: 0.067 | [0.007 | 0.124 | 0.128] | A: [3.493% | 25.334% | 62.383%] | L: 3.172 | [4.718 | 2.069 | 1.181]LR: 0.0003
+02/10/2020 09:33:08 PM [88/200] | t_0 | R: 0.067 | [0.008 | 0.121 | 0.132] | A: [2.131% | 22.727% | 62.311%] | L: 3.293 | [4.930 | 2.104 | 1.206]LR: 0.0003
+02/10/2020 09:33:14 PM [88/200] | v_0 | R: 0.069 | [0.011 | 0.123 | 0.132] | A: [3.835% | 26.799% | 62.405%] | L: 3.160 | [4.707 | 2.045 | 1.181]LR: 0.0003
+02/10/2020 09:33:16 PM [88/200] | v_1 | R: 0.076 | [0.007 | 0.160 | 0.128] | A: [3.309% | 28.626% | 62.383%] | L: 3.168 | [4.718 | 2.059 | 1.177]LR: 0.0003
+02/10/2020 09:33:36 PM [89/200] | t_0 | R: 0.066 | [0.011 | 0.109 | 0.135] | A: [2.557% | 22.064% | 62.358%] | L: 3.292 | [4.919 | 2.118 | 1.214]LR: 0.0003
+02/10/2020 09:33:43 PM [89/200] | v_0 | R: 0.066 | [0.008 | 0.118 | 0.132] | A: [3.456% | 25.947% | 62.405%] | L: 3.160 | [4.704 | 2.044 | 1.188]LR: 0.0003
+02/10/2020 09:33:44 PM [89/200] | v_1 | R: 0.067 | [0.008 | 0.124 | 0.128] | A: [3.676% | 25.886% | 62.383%] | L: 3.168 | [4.717 | 2.065 | 1.175]LR: 0.0003
+02/10/2020 09:34:05 PM [90/200] | t_0 | R: 0.067 | [0.009 | 0.116 | 0.132] | A: [2.083% | 22.443% | 62.216%] | L: 3.290 | [4.924 | 2.103 | 1.209]LR: 0.0003
+02/10/2020 09:34:11 PM [90/200] | v_0 | R: 0.070 | [0.007 | 0.134 | 0.132] | A: [3.551% | 27.225% | 62.405%] | L: 3.161 | [4.708 | 2.036 | 1.192]LR: 0.0003
+02/10/2020 09:34:13 PM [90/200] | v_1 | R: 0.069 | [0.007 | 0.134 | 0.128] | A: [3.493% | 26.972% | 62.383%] | L: 3.169 | [4.717 | 2.065 | 1.176]LR: 0.0003
+02/10/2020 09:34:34 PM [91/200] | t_0 | R: 0.066 | [0.010 | 0.103 | 0.139] | A: [2.320% | 21.922% | 62.500%] | L: 3.301 | [4.943 | 2.110 | 1.207]LR: 0.0003
+02/10/2020 09:34:40 PM [91/200] | v_0 | R: 0.075 | [0.009 | 0.151 | 0.132] | A: [3.693% | 27.652% | 62.405%] | L: 3.162 | [4.711 | 2.044 | 1.181]LR: 0.0003
+02/10/2020 09:34:42 PM [91/200] | v_1 | R: 0.065 | [0.007 | 0.118 | 0.128] | A: [3.309% | 25.351% | 62.383%] | L: 3.166 | [4.715 | 2.059 | 1.174]LR: 0.0003
+02/10/2020 09:35:02 PM [92/200] | t_0 | R: 0.065 | [0.012 | 0.099 | 0.135] | A: [2.131% | 20.265% | 61.932%] | L: 3.288 | [4.917 | 2.099 | 1.218]LR: 0.0003
+02/10/2020 09:35:09 PM [92/200] | v_0 | R: 0.074 | [0.009 | 0.141 | 0.136] | A: [3.598% | 27.699% | 62.453%] | L: 3.157 | [4.705 | 2.037 | 1.179]LR: 0.0003
+02/10/2020 09:35:10 PM [92/200] | v_1 | R: 0.067 | [0.010 | 0.117 | 0.128] | A: [3.860% | 26.070% | 62.383%] | L: 3.165 | [4.714 | 2.060 | 1.172]LR: 0.0003
+02/10/2020 09:35:31 PM [93/200] | t_0 | R: 0.067 | [0.010 | 0.115 | 0.135] | A: [2.273% | 23.248% | 62.311%] | L: 3.276 | [4.907 | 2.074 | 1.217]LR: 0.0003
+02/10/2020 09:35:37 PM [93/200] | v_0 | R: 0.073 | [0.008 | 0.144 | 0.132] | A: [3.220% | 28.220% | 62.405%] | L: 3.152 | [4.701 | 2.030 | 1.177]LR: 0.0003
+02/10/2020 09:35:39 PM [93/200] | v_1 | R: 0.073 | [0.010 | 0.144 | 0.128] | A: [3.860% | 27.356% | 62.383%] | L: 3.165 | [4.714 | 2.056 | 1.174]LR: 0.0003
+02/10/2020 09:36:00 PM [94/200] | t_0 | R: 0.071 | [0.011 | 0.122 | 0.142] | A: [2.320% | 22.112% | 62.074%] | L: 3.292 | [4.923 | 2.111 | 1.212]LR: 0.0003
+02/10/2020 09:36:06 PM [94/200] | v_0 | R: 0.074 | [0.009 | 0.145 | 0.132] | A: [3.693% | 27.509% | 62.405%] | L: 3.151 | [4.700 | 2.030 | 1.176]LR: 0.0003
+02/10/2020 09:36:08 PM [94/200] | v_1 | R: 0.068 | [0.009 | 0.127 | 0.128] | A: [3.493% | 27.540% | 62.383%] | L: 3.165 | [4.714 | 2.060 | 1.174]LR: 0.0003
+02/10/2020 09:36:28 PM [95/200] | t_0 | R: 0.069 | [0.008 | 0.118 | 0.143] | A: [2.225% | 22.633% | 62.358%] | L: 3.285 | [4.918 | 2.092 | 1.213]LR: 0.0003
+02/10/2020 09:36:35 PM [95/200] | v_0 | R: 0.075 | [0.011 | 0.146 | 0.132] | A: [3.835% | 28.835% | 62.405%] | L: 3.155 | [4.702 | 2.030 | 1.186]LR: 0.0003
+02/10/2020 09:36:36 PM [95/200] | v_1 | R: 0.068 | [0.012 | 0.121 | 0.128] | A: [3.860% | 26.070% | 62.383%] | L: 3.163 | [4.711 | 2.059 | 1.173]LR: 0.0003
+02/10/2020 09:36:57 PM [96/200] | t_0 | R: 0.070 | [0.010 | 0.121 | 0.139] | A: [2.652% | 23.627% | 62.216%] | L: 3.290 | [4.926 | 2.101 | 1.207]LR: 0.0003
+02/10/2020 09:37:03 PM [96/200] | v_0 | R: 0.072 | [0.011 | 0.125 | 0.138] | A: [3.741% | 26.420% | 62.500%] | L: 3.154 | [4.695 | 2.043 | 1.183]LR: 0.0003
+02/10/2020 09:37:05 PM [96/200] | v_1 | R: 0.068 | [0.008 | 0.126 | 0.128] | A: [3.676% | 26.253% | 62.383%] | L: 3.165 | [4.714 | 2.056 | 1.174]LR: 0.0003
+02/10/2020 09:37:26 PM [97/200] | t_0 | R: 0.070 | [0.011 | 0.116 | 0.142] | A: [2.794% | 23.059% | 62.311%] | L: 3.301 | [4.951 | 2.093 | 1.210]LR: 0.0003
+02/10/2020 09:37:32 PM [97/200] | v_0 | R: 0.074 | [0.011 | 0.142 | 0.132] | A: [3.788% | 27.794% | 62.405%] | L: 3.152 | [4.699 | 2.026 | 1.187]LR: 0.0003
+02/10/2020 09:37:34 PM [97/200] | v_1 | R: 0.074 | [0.009 | 0.148 | 0.128] | A: [3.860% | 28.827% | 62.383%] | L: 3.159 | [4.708 | 2.046 | 1.173]LR: 0.0003
+02/10/2020 09:37:54 PM [98/200] | t_0 | R: 0.067 | [0.009 | 0.119 | 0.132] | A: [2.036% | 22.396% | 62.121%] | L: 3.291 | [4.936 | 2.085 | 1.209]LR: 0.0003
+02/10/2020 09:38:01 PM [98/200] | v_0 | R: 0.070 | [0.007 | 0.134 | 0.132] | A: [3.030% | 27.273% | 62.405%] | L: 3.150 | [4.697 | 2.026 | 1.178]LR: 0.0003
+02/10/2020 09:38:03 PM [98/200] | v_1 | R: 0.076 | [0.009 | 0.159 | 0.128] | A: [3.860% | 29.378% | 62.383%] | L: 3.158 | [4.710 | 2.046 | 1.169]LR: 0.0003
+02/10/2020 09:38:23 PM [99/200] | t_0 | R: 0.070 | [0.010 | 0.127 | 0.135] | A: [2.273% | 23.248% | 62.074%] | L: 3.280 | [4.908 | 2.092 | 1.214]LR: 0.0003
+02/10/2020 09:38:29 PM [99/200] | v_0 | R: 0.075 | [0.010 | 0.146 | 0.132] | A: [4.072% | 27.178% | 62.405%] | L: 3.146 | [4.691 | 2.028 | 1.175]LR: 0.0003
+02/10/2020 09:38:31 PM [99/200] | v_1 | R: 0.068 | [0.008 | 0.130 | 0.128] | A: [3.493% | 25.886% | 62.383%] | L: 3.161 | [4.709 | 2.053 | 1.172]LR: 0.0003
+02/10/2020 09:38:52 PM [100/200] | t_0 | R: 0.074 | [0.012 | 0.132 | 0.139] | A: [2.462% | 23.201% | 62.311%] | L: 3.288 | [4.920 | 2.104 | 1.207]LR: 0.0003
+02/10/2020 09:38:58 PM [100/200] | v_0 | R: 0.075 | [0.009 | 0.151 | 0.132] | A: [3.883% | 28.362% | 62.405%] | L: 3.148 | [4.694 | 2.027 | 1.176]LR: 0.0003
+02/10/2020 09:39:00 PM [100/200] | v_1 | R: 0.066 | [0.008 | 0.119 | 0.128] | A: [3.676% | 26.070% | 62.383%] | L: 3.163 | [4.710 | 2.059 | 1.173]LR: 0.0003
+02/10/2020 09:39:20 PM [101/200] | t_0 | R: 0.069 | [0.009 | 0.118 | 0.139] | A: [2.367% | 22.775% | 62.311%] | L: 3.288 | [4.928 | 2.086 | 1.210]LR: 0.0003
+02/10/2020 09:39:27 PM [101/200] | v_0 | R: 0.072 | [0.008 | 0.140 | 0.132] | A: [3.314% | 28.030% | 62.405%] | L: 3.152 | [4.697 | 2.034 | 1.178]LR: 0.0003
+02/10/2020 09:39:29 PM [101/200] | v_1 | R: 0.073 | [0.008 | 0.148 | 0.128] | A: [3.309% | 27.340% | 62.383%] | L: 3.161 | [4.708 | 2.054 | 1.172]LR: 0.0003
+02/10/2020 09:39:49 PM [102/200] | t_0 | R: 0.073 | [0.013 | 0.130 | 0.138] | A: [2.983% | 24.763% | 62.311%] | L: 3.280 | [4.915 | 2.085 | 1.204]LR: 0.0003
+02/10/2020 09:39:56 PM [102/200] | v_0 | R: 0.077 | [0.011 | 0.155 | 0.132] | A: [4.025% | 28.977% | 62.405%] | L: 3.138 | [4.677 | 2.018 | 1.178]LR: 0.0003
+02/10/2020 09:39:57 PM [102/200] | v_1 | R: 0.072 | [0.009 | 0.141 | 0.128] | A: [3.676% | 27.172% | 62.383%] | L: 3.159 | [4.707 | 2.050 | 1.173]LR: 0.0003
+02/10/2020 09:40:18 PM [103/200] | t_0 | R: 0.070 | [0.010 | 0.120 | 0.141] | A: [2.415% | 23.153% | 62.453%] | L: 3.286 | [4.918 | 2.088 | 1.218]LR: 0.0003
+02/10/2020 09:40:24 PM [103/200] | v_0 | R: 0.075 | [0.012 | 0.142 | 0.132] | A: [3.456% | 28.646% | 62.405%] | L: 3.147 | [4.689 | 2.031 | 1.179]LR: 0.0003
+02/10/2020 09:40:26 PM [103/200] | v_1 | R: 0.072 | [0.007 | 0.144 | 0.128] | A: [3.309% | 27.523% | 62.383%] | L: 3.159 | [4.710 | 2.049 | 1.167]LR: 0.0003
+02/10/2020 09:40:47 PM [104/200] | t_0 | R: 0.069 | [0.013 | 0.118 | 0.131] | A: [2.273% | 23.816% | 62.216%] | L: 3.270 | [4.890 | 2.097 | 1.202]LR: 0.0003
+02/10/2020 09:40:53 PM [104/200] | v_0 | R: 0.075 | [0.010 | 0.149 | 0.132] | A: [3.646% | 28.456% | 62.405%] | L: 3.142 | [4.689 | 2.016 | 1.173]LR: 0.0003
+02/10/2020 09:40:55 PM [104/200] | v_1 | R: 0.073 | [0.008 | 0.149 | 0.128] | A: [3.493% | 27.523% | 62.383%] | L: 3.154 | [4.702 | 2.040 | 1.171]LR: 0.0003
+02/10/2020 09:41:15 PM [105/200] | t_0 | R: 0.070 | [0.011 | 0.125 | 0.135] | A: [2.746% | 22.633% | 62.074%] | L: 3.275 | [4.900 | 2.087 | 1.215]LR: 0.0003
+02/10/2020 09:41:22 PM [105/200] | v_0 | R: 0.076 | [0.013 | 0.146 | 0.132] | A: [4.735% | 28.314% | 62.405%] | L: 3.145 | [4.689 | 2.032 | 1.169]LR: 0.0003
+02/10/2020 09:41:23 PM [105/200] | v_1 | R: 0.066 | [0.007 | 0.122 | 0.128] | A: [2.941% | 26.237% | 62.383%] | L: 3.161 | [4.708 | 2.058 | 1.167]LR: 0.0003
+02/10/2020 09:41:44 PM [106/200] | t_0 | R: 0.071 | [0.011 | 0.125 | 0.136] | A: [2.320% | 23.153% | 62.216%] | L: 3.282 | [4.912 | 2.085 | 1.218]LR: 0.0003
+02/10/2020 09:41:50 PM [106/200] | v_0 | R: 0.071 | [0.009 | 0.132 | 0.132] | A: [3.409% | 27.746% | 62.405%] | L: 3.147 | [4.689 | 2.041 | 1.169]LR: 0.0003
+02/10/2020 09:41:52 PM [106/200] | v_1 | R: 0.072 | [0.009 | 0.141 | 0.128] | A: [3.493% | 26.788% | 62.383%] | L: 3.159 | [4.707 | 2.051 | 1.172]LR: 0.0003
+02/10/2020 09:42:13 PM [107/200] | t_0 | R: 0.068 | [0.011 | 0.112 | 0.137] | A: [2.462% | 23.437% | 62.311%] | L: 3.273 | [4.902 | 2.089 | 1.199]LR: 0.0003
+02/10/2020 09:42:19 PM [107/200] | v_0 | R: 0.074 | [0.010 | 0.142 | 0.132] | A: [3.977% | 28.314% | 62.311%] | L: 3.134 | [4.672 | 2.025 | 1.167]LR: 0.0003
+02/10/2020 09:42:21 PM [107/200] | v_1 | R: 0.073 | [0.008 | 0.148 | 0.128] | A: [3.676% | 27.523% | 62.383%] | L: 3.154 | [4.702 | 2.046 | 1.168]LR: 0.0003
+02/10/2020 09:42:41 PM [108/200] | t_0 | R: 0.070 | [0.011 | 0.122 | 0.136] | A: [2.509% | 23.106% | 62.358%] | L: 3.282 | [4.908 | 2.099 | 1.213]LR: 0.0003
+02/10/2020 09:42:48 PM [108/200] | v_0 | R: 0.073 | [0.012 | 0.138 | 0.132] | A: [4.735% | 27.983% | 62.405%] | L: 3.145 | [4.684 | 2.033 | 1.181]LR: 0.0003
+02/10/2020 09:42:49 PM [108/200] | v_1 | R: 0.072 | [0.012 | 0.134 | 0.128] | A: [3.860% | 27.891% | 62.383%] | L: 3.156 | [4.704 | 2.047 | 1.167]LR: 0.0003
+02/10/2020 09:43:10 PM [109/200] | t_0 | R: 0.069 | [0.010 | 0.117 | 0.139] | A: [2.273% | 21.780% | 62.405%] | L: 3.291 | [4.935 | 2.095 | 1.202]LR: 0.0003
+02/10/2020 09:43:16 PM [109/200] | v_0 | R: 0.075 | [0.011 | 0.143 | 0.132] | A: [4.119% | 28.220% | 62.405%] | L: 3.141 | [4.680 | 2.019 | 1.185]LR: 0.0003
+02/10/2020 09:43:18 PM [109/200] | v_1 | R: 0.069 | [0.008 | 0.130 | 0.128] | A: [3.125% | 27.356% | 62.383%] | L: 3.156 | [4.704 | 2.044 | 1.171]LR: 0.0003
+02/10/2020 09:43:39 PM [110/200] | t_0 | R: 0.070 | [0.009 | 0.123 | 0.139] | A: [1.941% | 23.295% | 62.216%] | L: 3.276 | [4.905 | 2.091 | 1.204]LR: 0.0003
+02/10/2020 09:43:45 PM [110/200] | v_0 | R: 0.071 | [0.009 | 0.133 | 0.135] | A: [3.362% | 27.746% | 62.405%] | L: 3.144 | [4.682 | 2.034 | 1.176]LR: 0.0003
+02/10/2020 09:43:47 PM [110/200] | v_1 | R: 0.071 | [0.009 | 0.137 | 0.128] | A: [3.676% | 26.253% | 62.383%] | L: 3.158 | [4.702 | 2.054 | 1.171]LR: 0.0003
+02/10/2020 09:44:07 PM [111/200] | t_0 | R: 0.067 | [0.010 | 0.114 | 0.136] | A: [2.367% | 22.348% | 62.216%] | L: 3.294 | [4.937 | 2.093 | 1.209]LR: 0.0003
+02/10/2020 09:44:14 PM [111/200] | v_0 | R: 0.073 | [0.012 | 0.134 | 0.132] | A: [4.261% | 26.562% | 62.358%] | L: 3.146 | [4.691 | 2.031 | 1.173]LR: 0.0003
+02/10/2020 09:44:15 PM [111/200] | v_1 | R: 0.074 | [0.009 | 0.152 | 0.128] | A: [3.676% | 27.891% | 62.383%] | L: 3.157 | [4.704 | 2.053 | 1.165]LR: 0.0003
+02/10/2020 09:44:36 PM [112/200] | t_0 | R: 0.069 | [0.008 | 0.124 | 0.136] | A: [2.131% | 23.580% | 62.311%] | L: 3.269 | [4.898 | 2.079 | 1.200]LR: 0.0003
+02/10/2020 09:44:42 PM [112/200] | v_0 | R: 0.077 | [0.010 | 0.158 | 0.132] | A: [3.883% | 29.735% | 62.405%] | L: 3.141 | [4.688 | 2.015 | 1.174]LR: 0.0003
+02/10/2020 09:44:44 PM [112/200] | v_1 | R: 0.069 | [0.011 | 0.127 | 0.128] | A: [4.044% | 26.253% | 62.383%] | L: 3.155 | [4.702 | 2.046 | 1.168]LR: 0.0003
+02/10/2020 09:45:05 PM [113/200] | t_0 | R: 0.068 | [0.010 | 0.114 | 0.138] | A: [2.178% | 22.585% | 62.358%] | L: 3.290 | [4.934 | 2.090 | 1.201]LR: 0.0003
+02/10/2020 09:45:11 PM [113/200] | v_0 | R: 0.074 | [0.009 | 0.149 | 0.132] | A: [4.025% | 28.504% | 62.405%] | L: 3.136 | [4.677 | 2.022 | 1.169]LR: 0.0003
+02/10/2020 09:45:13 PM [113/200] | v_1 | R: 0.075 | [0.010 | 0.153 | 0.128] | A: [3.860% | 30.097% | 62.383%] | L: 3.150 | [4.700 | 2.035 | 1.165]LR: 0.0003
+02/10/2020 09:45:33 PM [114/200] | t_0 | R: 0.071 | [0.012 | 0.118 | 0.142] | A: [2.557% | 22.585% | 62.263%] | L: 3.273 | [4.908 | 2.072 | 1.204]LR: 0.0003
+02/10/2020 09:45:40 PM [114/200] | v_0 | R: 0.075 | [0.009 | 0.147 | 0.136] | A: [3.788% | 28.646% | 62.453%] | L: 3.138 | [4.678 | 2.021 | 1.176]LR: 0.0003
+02/10/2020 09:45:41 PM [114/200] | v_1 | R: 0.071 | [0.012 | 0.130 | 0.128] | A: [4.412% | 27.523% | 62.383%] | L: 3.151 | [4.699 | 2.039 | 1.166]LR: 0.0003
+02/10/2020 09:46:02 PM [115/200] | t_0 | R: 0.069 | [0.007 | 0.122 | 0.138] | A: [1.657% | 23.295% | 62.358%] | L: 3.276 | [4.904 | 2.097 | 1.200]LR: 0.0003
+02/10/2020 09:46:08 PM [115/200] | v_0 | R: 0.075 | [0.009 | 0.149 | 0.132] | A: [3.788% | 28.741% | 62.405%] | L: 3.146 | [4.692 | 2.020 | 1.178]LR: 0.0003
+02/10/2020 09:46:10 PM [115/200] | v_1 | R: 0.071 | [0.007 | 0.142 | 0.128] | A: [3.676% | 27.891% | 62.383%] | L: 3.154 | [4.702 | 2.048 | 1.167]LR: 0.0003
+02/10/2020 09:46:31 PM [116/200] | t_0 | R: 0.070 | [0.011 | 0.121 | 0.137] | A: [2.320% | 22.727% | 62.216%] | L: 3.279 | [4.916 | 2.076 | 1.208]LR: 0.0003
+02/10/2020 09:46:37 PM [116/200] | v_0 | R: 0.075 | [0.009 | 0.147 | 0.132] | A: [3.456% | 27.273% | 62.405%] | L: 3.138 | [4.684 | 2.019 | 1.165]LR: 0.0003
+02/10/2020 09:46:39 PM [116/200] | v_1 | R: 0.072 | [0.010 | 0.140 | 0.128] | A: [3.860% | 27.340% | 62.383%] | L: 3.150 | [4.697 | 2.039 | 1.165]LR: 0.0003
+02/10/2020 09:46:59 PM [117/200] | t_0 | R: 0.069 | [0.010 | 0.122 | 0.135] | A: [2.415% | 23.958% | 62.216%] | L: 3.267 | [4.898 | 2.076 | 1.197]LR: 0.0003
+02/10/2020 09:47:06 PM [117/200] | v_0 | R: 0.074 | [0.011 | 0.141 | 0.132] | A: [4.356% | 28.078% | 62.405%] | L: 3.142 | [4.685 | 2.024 | 1.175]LR: 0.0003
+02/10/2020 09:47:07 PM [117/200] | v_1 | R: 0.072 | [0.007 | 0.144 | 0.128] | A: [3.860% | 26.788% | 62.383%] | L: 3.151 | [4.699 | 2.040 | 1.163]LR: 0.0003
+02/10/2020 09:47:28 PM [118/200] | t_0 | R: 0.069 | [0.010 | 0.123 | 0.132] | A: [2.367% | 23.106% | 62.169%] | L: 3.276 | [4.906 | 2.088 | 1.204]LR: 0.0003
+02/10/2020 09:47:34 PM [118/200] | v_0 | R: 0.076 | [0.010 | 0.151 | 0.132] | A: [4.356% | 28.883% | 62.405%] | L: 3.127 | [4.664 | 2.007 | 1.171]LR: 0.0003
+02/10/2020 09:47:36 PM [118/200] | v_1 | R: 0.069 | [0.009 | 0.131 | 0.128] | A: [3.676% | 26.621% | 62.383%] | L: 3.149 | [4.696 | 2.042 | 1.161]LR: 0.0003
+02/10/2020 09:47:57 PM [119/200] | t_0 | R: 0.069 | [0.008 | 0.126 | 0.134] | A: [2.083% | 23.343% | 62.169%] | L: 3.273 | [4.905 | 2.082 | 1.200]LR: 0.0003
+02/10/2020 09:48:03 PM [119/200] | v_0 | R: 0.073 | [0.009 | 0.141 | 0.132] | A: [3.693% | 29.261% | 62.405%] | L: 3.134 | [4.675 | 2.016 | 1.171]LR: 0.0003
+02/10/2020 09:48:05 PM [119/200] | v_1 | R: 0.072 | [0.009 | 0.143 | 0.128] | A: [3.676% | 28.626% | 62.383%] | L: 3.152 | [4.700 | 2.045 | 1.165]LR: 0.0003
+02/10/2020 09:48:25 PM [120/200] | t_0 | R: 0.074 | [0.011 | 0.141 | 0.132] | A: [2.509% | 25.047% | 62.121%] | L: 3.268 | [4.899 | 2.067 | 1.208]LR: 0.0003
+02/10/2020 09:48:32 PM [120/200] | v_0 | R: 0.076 | [0.011 | 0.149 | 0.132] | A: [4.309% | 28.551% | 62.405%] | L: 3.135 | [4.673 | 2.021 | 1.173]LR: 0.0003
+02/10/2020 09:48:33 PM [120/200] | v_1 | R: 0.069 | [0.006 | 0.137 | 0.128] | A: [3.125% | 28.092% | 62.383%] | L: 3.151 | [4.700 | 2.039 | 1.165]LR: 0.0003
+02/10/2020 09:48:54 PM [121/200] | t_0 | R: 0.072 | [0.012 | 0.126 | 0.135] | A: [2.983% | 22.964% | 62.358%] | L: 3.281 | [4.928 | 2.077 | 1.193]LR: 0.0003
+02/10/2020 09:49:00 PM [121/200] | v_0 | R: 0.077 | [0.011 | 0.149 | 0.136] | A: [3.883% | 27.746% | 62.453%] | L: 3.129 | [4.663 | 2.022 | 1.168]LR: 0.0003
+02/10/2020 09:49:02 PM [121/200] | v_1 | R: 0.069 | [0.009 | 0.129 | 0.128] | A: [3.493% | 27.891% | 62.383%] | L: 3.150 | [4.697 | 2.042 | 1.164]LR: 0.0003
+02/10/2020 09:49:23 PM [122/200] | t_0 | R: 0.071 | [0.013 | 0.123 | 0.135] | A: [3.125% | 23.532% | 62.216%] | L: 3.271 | [4.898 | 2.081 | 1.205]LR: 0.0003
+02/10/2020 09:49:29 PM [122/200] | v_0 | R: 0.070 | [0.009 | 0.129 | 0.132] | A: [3.598% | 27.652% | 62.405%] | L: 3.138 | [4.678 | 2.021 | 1.173]LR: 0.0003
+02/10/2020 09:49:31 PM [122/200] | v_1 | R: 0.070 | [0.008 | 0.136 | 0.128] | A: [3.309% | 27.707% | 62.383%] | L: 3.149 | [4.696 | 2.039 | 1.165]LR: 0.0003
+02/10/2020 09:49:51 PM [123/200] | t_0 | R: 0.071 | [0.013 | 0.118 | 0.141] | A: [2.699% | 22.491% | 62.263%] | L: 3.264 | [4.888 | 2.081 | 1.197]LR: 0.0003
+02/10/2020 09:49:58 PM [123/200] | v_0 | R: 0.073 | [0.013 | 0.132 | 0.132] | A: [4.545% | 27.841% | 62.405%] | L: 3.128 | [4.663 | 2.020 | 1.168]LR: 0.0003
+02/10/2020 09:49:59 PM [123/200] | v_1 | R: 0.068 | [0.007 | 0.128 | 0.128] | A: [3.309% | 27.156% | 62.383%] | L: 3.151 | [4.697 | 2.043 | 1.165]LR: 0.0003
+02/10/2020 09:50:20 PM [124/200] | t_0 | R: 0.068 | [0.010 | 0.119 | 0.134] | A: [2.415% | 22.964% | 62.121%] | L: 3.272 | [4.895 | 2.087 | 1.209]LR: 0.0003
+02/10/2020 09:50:26 PM [124/200] | v_0 | R: 0.078 | [0.011 | 0.154 | 0.136] | A: [4.072% | 29.261% | 62.453%] | L: 3.125 | [4.661 | 2.006 | 1.170]LR: 0.0003
+02/10/2020 09:50:28 PM [124/200] | v_1 | R: 0.076 | [0.009 | 0.159 | 0.128] | A: [3.860% | 28.994% | 62.383%] | L: 3.146 | [4.695 | 2.031 | 1.164]LR: 0.0003
+02/10/2020 09:50:49 PM [125/200] | t_0 | R: 0.073 | [0.012 | 0.135 | 0.134] | A: [2.367% | 24.527% | 62.263%] | L: 3.264 | [4.893 | 2.066 | 1.202]LR: 0.0003
+02/10/2020 09:50:55 PM [125/200] | v_0 | R: 0.076 | [0.011 | 0.151 | 0.132] | A: [4.072% | 29.451% | 62.405%] | L: 3.129 | [4.674 | 2.004 | 1.165]LR: 0.0003
+02/10/2020 09:50:57 PM [125/200] | v_1 | R: 0.076 | [0.013 | 0.152 | 0.128] | A: [4.044% | 28.626% | 62.383%] | L: 3.144 | [4.694 | 2.030 | 1.160]LR: 0.0003
+02/10/2020 09:51:17 PM [126/200] | t_0 | R: 0.074 | [0.013 | 0.140 | 0.132] | A: [2.794% | 24.384% | 62.121%] | L: 3.276 | [4.904 | 2.090 | 1.207]LR: 0.0003
+02/10/2020 09:51:24 PM [126/200] | v_0 | R: 0.074 | [0.013 | 0.137 | 0.132] | A: [4.072% | 27.273% | 62.405%] | L: 3.140 | [4.682 | 2.027 | 1.170]LR: 0.0003
+02/10/2020 09:51:25 PM [126/200] | v_1 | R: 0.072 | [0.010 | 0.142 | 0.128] | A: [3.860% | 27.156% | 62.383%] | L: 3.151 | [4.698 | 2.044 | 1.163]LR: 0.0003
+02/10/2020 09:51:46 PM [127/200] | t_0 | R: 0.075 | [0.015 | 0.133 | 0.136] | A: [2.746% | 25.379% | 61.979%] | L: 3.255 | [4.873 | 2.072 | 1.203]LR: 0.0003
+02/10/2020 09:51:52 PM [127/200] | v_0 | R: 0.078 | [0.012 | 0.156 | 0.132] | A: [3.788% | 28.788% | 62.405%] | L: 3.128 | [4.671 | 2.007 | 1.164]LR: 0.0003
+02/10/2020 09:51:54 PM [127/200] | v_1 | R: 0.074 | [0.011 | 0.147 | 0.128] | A: [4.044% | 27.523% | 62.383%] | L: 3.145 | [4.695 | 2.029 | 1.162]LR: 0.0003
+02/10/2020 09:52:15 PM [128/200] | t_0 | R: 0.072 | [0.009 | 0.128 | 0.143] | A: [2.225% | 24.763% | 62.263%] | L: 3.273 | [4.905 | 2.075 | 1.207]LR: 0.0003
+02/10/2020 09:52:21 PM [128/200] | v_0 | R: 0.083 | [0.010 | 0.179 | 0.132] | A: [4.309% | 31.108% | 62.405%] | L: 3.123 | [4.669 | 1.992 | 1.162]LR: 0.0003
+02/10/2020 09:52:23 PM [128/200] | v_1 | R: 0.080 | [0.014 | 0.164 | 0.128] | A: [4.779% | 30.281% | 62.383%] | L: 3.144 | [4.692 | 2.029 | 1.161]LR: 0.0003
+02/10/2020 09:52:43 PM [129/200] | t_0 | R: 0.076 | [0.011 | 0.138 | 0.142] | A: [2.557% | 24.527% | 62.074%] | L: 3.264 | [4.900 | 2.060 | 1.194]LR: 0.0003
+02/10/2020 09:52:50 PM [129/200] | v_0 | R: 0.077 | [0.010 | 0.156 | 0.132] | A: [3.977% | 28.788% | 62.358%] | L: 3.128 | [4.667 | 2.008 | 1.171]LR: 0.0003
+02/10/2020 09:52:51 PM [129/200] | v_1 | R: 0.078 | [0.010 | 0.163 | 0.128] | A: [4.044% | 29.913% | 62.383%] | L: 3.143 | [4.691 | 2.029 | 1.163]LR: 0.0003
+02/10/2020 09:53:12 PM [130/200] | t_0 | R: 0.068 | [0.007 | 0.115 | 0.141] | A: [1.752% | 23.722% | 62.500%] | L: 3.271 | [4.905 | 2.076 | 1.199]LR: 0.0003
+02/10/2020 09:53:18 PM [130/200] | v_0 | R: 0.080 | [0.014 | 0.160 | 0.132] | A: [4.498% | 29.735% | 62.405%] | L: 3.129 | [4.671 | 2.006 | 1.169]LR: 0.0003
+02/10/2020 09:53:20 PM [130/200] | v_1 | R: 0.074 | [0.010 | 0.147 | 0.128] | A: [4.228% | 27.891% | 62.383%] | L: 3.145 | [4.694 | 2.032 | 1.160]LR: 0.0003
+02/10/2020 09:53:41 PM [131/200] | t_0 | R: 0.070 | [0.010 | 0.113 | 0.147] | A: [2.604% | 22.680% | 62.311%] | L: 3.264 | [4.895 | 2.068 | 1.198]LR: 0.0003
+02/10/2020 09:53:47 PM [131/200] | v_0 | R: 0.073 | [0.010 | 0.140 | 0.132] | A: [3.788% | 27.699% | 62.405%] | L: 3.135 | [4.674 | 2.016 | 1.175]LR: 0.0003
+02/10/2020 09:53:49 PM [131/200] | v_1 | R: 0.075 | [0.009 | 0.153 | 0.128] | A: [3.676% | 27.523% | 62.383%] | L: 3.147 | [4.694 | 2.040 | 1.161]LR: 0.0003
+02/10/2020 09:54:09 PM [132/200] | t_0 | R: 0.070 | [0.009 | 0.127 | 0.135] | A: [2.273% | 23.153% | 62.358%] | L: 3.273 | [4.915 | 2.061 | 1.201]LR: 0.0003
+02/10/2020 09:54:16 PM [132/200] | v_0 | R: 0.078 | [0.014 | 0.153 | 0.132] | A: [4.451% | 29.214% | 62.405%] | L: 3.120 | [4.654 | 2.010 | 1.160]LR: 0.0003
+02/10/2020 09:54:17 PM [132/200] | v_1 | R: 0.074 | [0.007 | 0.156 | 0.128] | A: [3.309% | 28.994% | 62.383%] | L: 3.142 | [4.692 | 2.027 | 1.158]LR: 0.0003
+02/10/2020 09:54:38 PM [133/200] | t_0 | R: 0.073 | [0.009 | 0.135 | 0.139] | A: [1.941% | 23.627% | 62.216%] | L: 3.257 | [4.879 | 2.072 | 1.197]LR: 0.0003
+02/10/2020 09:54:44 PM [133/200] | v_0 | R: 0.078 | [0.009 | 0.160 | 0.136] | A: [3.883% | 28.598% | 62.453%] | L: 3.119 | [4.657 | 2.005 | 1.156]LR: 0.0003
+02/10/2020 09:54:46 PM [133/200] | v_1 | R: 0.076 | [0.010 | 0.156 | 0.128] | A: [3.676% | 29.178% | 62.383%] | L: 3.142 | [4.691 | 2.029 | 1.157]LR: 0.0003
+02/10/2020 09:55:07 PM [134/200] | t_0 | R: 0.071 | [0.011 | 0.123 | 0.138] | A: [2.509% | 22.869% | 62.121%] | L: 3.260 | [4.880 | 2.077 | 1.205]LR: 0.0003
+02/10/2020 09:55:13 PM [134/200] | v_0 | R: 0.078 | [0.011 | 0.159 | 0.132] | A: [4.451% | 31.061% | 62.405%] | L: 3.118 | [4.658 | 1.991 | 1.164]LR: 0.0003
+02/10/2020 09:55:15 PM [134/200] | v_1 | R: 0.075 | [0.013 | 0.146 | 0.128] | A: [4.412% | 28.626% | 62.383%] | L: 3.141 | [4.689 | 2.025 | 1.159]LR: 0.0003
+02/10/2020 09:55:35 PM [135/200] | t_0 | R: 0.078 | [0.011 | 0.144 | 0.147] | A: [2.794% | 25.047% | 62.405%] | L: 3.253 | [4.872 | 2.073 | 1.194]LR: 0.0003
+02/10/2020 09:55:42 PM [135/200] | v_0 | R: 0.079 | [0.013 | 0.160 | 0.132] | A: [4.782% | 28.835% | 62.405%] | L: 3.125 | [4.663 | 2.009 | 1.166]LR: 0.0003
+02/10/2020 09:55:43 PM [135/200] | v_1 | R: 0.072 | [0.007 | 0.145 | 0.128] | A: [3.493% | 28.443% | 62.383%] | L: 3.144 | [4.691 | 2.033 | 1.162]LR: 0.0003
+02/10/2020 09:56:04 PM [136/200] | t_0 | R: 0.073 | [0.009 | 0.132 | 0.144] | A: [2.036% | 24.905% | 62.311%] | L: 3.263 | [4.890 | 2.071 | 1.200]LR: 0.0003
+02/10/2020 09:56:10 PM [136/200] | v_0 | R: 0.073 | [0.009 | 0.138 | 0.135] | A: [4.119% | 26.989% | 62.453%] | L: 3.133 | [4.673 | 2.022 | 1.163]LR: 0.0003
+02/10/2020 09:56:12 PM [136/200] | v_1 | R: 0.073 | [0.009 | 0.147 | 0.128] | A: [3.860% | 26.788% | 62.383%] | L: 3.145 | [4.692 | 2.038 | 1.159]LR: 0.0003
+02/10/2020 09:56:33 PM [137/200] | t_0 | R: 0.075 | [0.012 | 0.133 | 0.141] | A: [3.125% | 23.911% | 62.216%] | L: 3.268 | [4.898 | 2.078 | 1.197]LR: 0.0003
+02/10/2020 09:56:39 PM [137/200] | v_0 | R: 0.077 | [0.011 | 0.152 | 0.132] | A: [4.830% | 29.167% | 62.405%] | L: 3.122 | [4.660 | 2.006 | 1.163]LR: 0.0003
+02/10/2020 09:56:41 PM [137/200] | v_1 | R: 0.075 | [0.008 | 0.156 | 0.128] | A: [3.493% | 28.626% | 62.383%] | L: 3.144 | [4.693 | 2.030 | 1.158]LR: 0.0003
+02/10/2020 09:57:01 PM [138/200] | t_0 | R: 0.072 | [0.009 | 0.126 | 0.142] | A: [1.941% | 24.195% | 62.169%] | L: 3.264 | [4.896 | 2.067 | 1.200]LR: 0.0003
+02/10/2020 09:57:08 PM [138/200] | v_0 | R: 0.081 | [0.011 | 0.169 | 0.132] | A: [3.977% | 30.114% | 62.358%] | L: 3.114 | [4.652 | 1.991 | 1.163]LR: 0.0003
+02/10/2020 09:57:10 PM [138/200] | v_1 | R: 0.076 | [0.010 | 0.155 | 0.128] | A: [4.228% | 29.913% | 62.383%] | L: 3.137 | [4.683 | 2.024 | 1.156]LR: 0.0003
+02/10/2020 09:57:30 PM [139/200] | t_0 | R: 0.069 | [0.013 | 0.114 | 0.137] | A: [2.699% | 21.780% | 62.216%] | L: 3.251 | [4.870 | 2.068 | 1.195]LR: 0.0003
+02/10/2020 09:57:36 PM [139/200] | v_0 | R: 0.077 | [0.011 | 0.155 | 0.132] | A: [3.977% | 29.735% | 62.405%] | L: 3.125 | [4.664 | 2.005 | 1.168]LR: 0.0003
+02/10/2020 09:57:38 PM [139/200] | v_1 | R: 0.075 | [0.009 | 0.154 | 0.128] | A: [3.676% | 27.707% | 62.383%] | L: 3.142 | [4.690 | 2.031 | 1.155]LR: 0.0003
+02/10/2020 09:57:59 PM [140/200] | t_0 | R: 0.075 | [0.015 | 0.133 | 0.135] | A: [3.220% | 24.337% | 62.263%] | L: 3.258 | [4.885 | 2.063 | 1.200]LR: 0.0003
+02/10/2020 09:58:05 PM [140/200] | v_0 | R: 0.082 | [0.012 | 0.173 | 0.132] | A: [4.214% | 30.587% | 62.405%] | L: 3.119 | [4.655 | 1.999 | 1.165]LR: 0.0003
+02/10/2020 09:58:07 PM [140/200] | v_1 | R: 0.074 | [0.009 | 0.150 | 0.128] | A: [4.044% | 28.626% | 62.383%] | L: 3.142 | [4.692 | 2.028 | 1.155]LR: 0.0003
+02/10/2020 09:58:27 PM [141/200] | t_0 | R: 0.071 | [0.013 | 0.120 | 0.138] | A: [2.699% | 22.112% | 62.358%] | L: 3.268 | [4.895 | 2.079 | 1.203]LR: 0.0003
+02/10/2020 09:58:34 PM [141/200] | v_0 | R: 0.077 | [0.009 | 0.157 | 0.132] | A: [3.977% | 28.835% | 62.405%] | L: 3.122 | [4.664 | 2.002 | 1.161]LR: 0.0003
+02/10/2020 09:58:36 PM [141/200] | v_1 | R: 0.073 | [0.010 | 0.143 | 0.128] | A: [4.044% | 28.259% | 62.383%] | L: 3.139 | [4.687 | 2.028 | 1.154]LR: 0.0003
+02/10/2020 09:58:56 PM [142/200] | t_0 | R: 0.068 | [0.012 | 0.115 | 0.135] | A: [2.794% | 22.159% | 62.121%] | L: 3.261 | [4.889 | 2.067 | 1.200]LR: 0.0003
+02/10/2020 09:59:03 PM [142/200] | v_0 | R: 0.075 | [0.010 | 0.150 | 0.132] | A: [3.504% | 29.593% | 62.405%] | L: 3.120 | [4.659 | 2.000 | 1.165]LR: 0.0003
+02/10/2020 09:59:04 PM [142/200] | v_1 | R: 0.077 | [0.011 | 0.156 | 0.128] | A: [4.228% | 27.707% | 62.383%] | L: 3.138 | [4.687 | 2.021 | 1.156]LR: 0.0003
+02/10/2020 09:59:25 PM [143/200] | t_0 | R: 0.077 | [0.010 | 0.136 | 0.150] | A: [2.273% | 23.106% | 62.453%] | L: 3.255 | [4.880 | 2.065 | 1.195]LR: 0.0003
+02/10/2020 09:59:31 PM [143/200] | v_0 | R: 0.078 | [0.009 | 0.161 | 0.132] | A: [3.883% | 30.114% | 62.405%] | L: 3.120 | [4.654 | 2.003 | 1.168]LR: 0.0003
+02/10/2020 09:59:33 PM [143/200] | v_1 | R: 0.077 | [0.010 | 0.158 | 0.128] | A: [3.860% | 28.626% | 62.383%] | L: 3.138 | [4.686 | 2.029 | 1.153]LR: 0.0003
+02/10/2020 09:59:53 PM [144/200] | t_0 | R: 0.069 | [0.014 | 0.114 | 0.135] | A: [2.983% | 22.396% | 62.358%] | L: 3.242 | [4.853 | 2.060 | 1.201]LR: 0.0003
+02/10/2020 10:00:00 PM [144/200] | v_0 | R: 0.083 | [0.012 | 0.166 | 0.139] | A: [4.593% | 30.634% | 62.453%] | L: 3.113 | [4.652 | 1.991 | 1.158]LR: 0.0003
+02/10/2020 10:00:02 PM [144/200] | v_1 | R: 0.075 | [0.008 | 0.158 | 0.128] | A: [3.676% | 30.832% | 62.383%] | L: 3.137 | [4.685 | 2.018 | 1.159]LR: 0.0003
+02/10/2020 10:00:22 PM [145/200] | t_0 | R: 0.070 | [0.006 | 0.129 | 0.138] | A: [1.420% | 24.811% | 62.074%] | L: 3.260 | [4.889 | 2.069 | 1.194]LR: 0.0003
+02/10/2020 10:00:29 PM [145/200] | v_0 | R: 0.079 | [0.010 | 0.163 | 0.132] | A: [4.214% | 29.877% | 62.405%] | L: 3.122 | [4.661 | 1.999 | 1.168]LR: 0.0003
+02/10/2020 10:00:30 PM [145/200] | v_1 | R: 0.074 | [0.011 | 0.148 | 0.128] | A: [4.044% | 27.707% | 62.383%] | L: 3.141 | [4.691 | 2.025 | 1.157]LR: 0.0003
+02/10/2020 10:00:51 PM [146/200] | t_0 | R: 0.073 | [0.011 | 0.131 | 0.138] | A: [2.509% | 23.390% | 62.169%] | L: 3.249 | [4.864 | 2.071 | 1.195]LR: 0.0003
+02/10/2020 10:00:57 PM [146/200] | v_0 | R: 0.080 | [0.013 | 0.156 | 0.136] | A: [4.640% | 28.693% | 62.453%] | L: 3.113 | [4.644 | 2.001 | 1.163]LR: 0.0003
+02/10/2020 10:00:59 PM [146/200] | v_1 | R: 0.079 | [0.013 | 0.160 | 0.128] | A: [4.412% | 29.545% | 62.383%] | L: 3.135 | [4.682 | 2.021 | 1.155]LR: 0.0003
+02/10/2020 10:01:19 PM [147/200] | t_0 | R: 0.072 | [0.012 | 0.128 | 0.138] | A: [2.367% | 23.437% | 62.311%] | L: 3.259 | [4.899 | 2.054 | 1.185]LR: 0.0003
+02/10/2020 10:01:26 PM [147/200] | v_0 | R: 0.079 | [0.013 | 0.158 | 0.132] | A: [4.356% | 29.782% | 62.405%] | L: 3.123 | [4.664 | 2.000 | 1.162]LR: 0.0003
+02/10/2020 10:01:28 PM [147/200] | v_1 | R: 0.072 | [0.007 | 0.145 | 0.128] | A: [3.676% | 27.523% | 62.383%] | L: 3.139 | [4.686 | 2.030 | 1.153]LR: 0.0003
+02/10/2020 10:01:48 PM [148/200] | t_0 | R: 0.076 | [0.012 | 0.137 | 0.142] | A: [2.415% | 24.763% | 62.358%] | L: 3.252 | [4.877 | 2.062 | 1.191]LR: 0.0003
+02/10/2020 10:01:55 PM [148/200] | v_0 | R: 0.082 | [0.013 | 0.170 | 0.132] | A: [4.687% | 30.682% | 62.405%] | L: 3.115 | [4.657 | 1.988 | 1.158]LR: 0.0003
+02/10/2020 10:01:56 PM [148/200] | v_1 | R: 0.075 | [0.010 | 0.151 | 0.128] | A: [3.860% | 29.362% | 62.383%] | L: 3.137 | [4.686 | 2.020 | 1.155]LR: 0.0003
+02/10/2020 10:02:17 PM [149/200] | t_0 | R: 0.072 | [0.011 | 0.120 | 0.145] | A: [2.557% | 21.591% | 62.405%] | L: 3.249 | [4.865 | 2.077 | 1.190]LR: 0.0003
+02/10/2020 10:02:23 PM [149/200] | v_0 | R: 0.078 | [0.013 | 0.154 | 0.132] | A: [4.451% | 28.883% | 62.405%] | L: 3.116 | [4.650 | 2.001 | 1.162]LR: 0.0003
+02/10/2020 10:02:25 PM [149/200] | v_1 | R: 0.077 | [0.015 | 0.151 | 0.128] | A: [4.412% | 28.092% | 62.383%] | L: 3.137 | [4.683 | 2.026 | 1.157]LR: 0.0003
+02/10/2020 10:02:46 PM [150/200] | t_0 | R: 0.078 | [0.013 | 0.145 | 0.142] | A: [2.462% | 23.911% | 62.405%] | L: 3.255 | [4.882 | 2.062 | 1.196]LR: 0.0003
+02/10/2020 10:02:52 PM [150/200] | v_0 | R: 0.080 | [0.015 | 0.157 | 0.132] | A: [5.256% | 29.403% | 62.405%] | L: 3.110 | [4.641 | 1.998 | 1.160]LR: 0.0003
+02/10/2020 10:02:54 PM [150/200] | v_1 | R: 0.077 | [0.014 | 0.149 | 0.128] | A: [4.596% | 28.994% | 62.383%] | L: 3.137 | [4.688 | 2.017 | 1.154]LR: 0.0003
+02/10/2020 10:03:14 PM [151/200] | t_0 | R: 0.074 | [0.013 | 0.134 | 0.136] | A: [2.557% | 24.858% | 62.311%] | L: 3.266 | [4.898 | 2.060 | 1.210]LR: 0.0003
+02/10/2020 10:03:21 PM [151/200] | v_0 | R: 0.075 | [0.012 | 0.145 | 0.132] | A: [4.640% | 28.693% | 62.405%] | L: 3.122 | [4.654 | 2.011 | 1.167]LR: 0.0003
+02/10/2020 10:03:22 PM [151/200] | v_1 | R: 0.074 | [0.008 | 0.151 | 0.128] | A: [3.860% | 27.523% | 62.383%] | L: 3.138 | [4.684 | 2.029 | 1.154]LR: 0.0003
+02/10/2020 10:03:43 PM [152/200] | t_0 | R: 0.076 | [0.013 | 0.136 | 0.142] | A: [2.888% | 24.100% | 62.216%] | L: 3.251 | [4.887 | 2.040 | 1.192]LR: 0.0003
+02/10/2020 10:03:49 PM [152/200] | v_0 | R: 0.083 | [0.012 | 0.175 | 0.132] | A: [4.025% | 30.350% | 62.405%] | L: 3.114 | [4.651 | 1.995 | 1.158]LR: 0.0003
+02/10/2020 10:03:51 PM [152/200] | v_1 | R: 0.075 | [0.010 | 0.154 | 0.128] | A: [4.044% | 29.178% | 62.383%] | L: 3.135 | [4.684 | 2.017 | 1.153]LR: 0.0003
+02/10/2020 10:04:12 PM [153/200] | t_0 | R: 0.070 | [0.008 | 0.132 | 0.132] | A: [2.367% | 22.680% | 62.216%] | L: 3.248 | [4.874 | 2.054 | 1.191]LR: 0.0003
+02/10/2020 10:04:18 PM [153/200] | v_0 | R: 0.080 | [0.008 | 0.166 | 0.135] | A: [3.456% | 30.587% | 62.453%] | L: 3.109 | [4.646 | 1.986 | 1.158]LR: 0.0003
+02/10/2020 10:04:20 PM [153/200] | v_1 | R: 0.078 | [0.015 | 0.153 | 0.128] | A: [4.963% | 30.281% | 62.383%] | L: 3.132 | [4.682 | 2.012 | 1.155]LR: 0.0003
+02/10/2020 10:04:40 PM [154/200] | t_0 | R: 0.075 | [0.009 | 0.137 | 0.143] | A: [2.131% | 24.716% | 62.358%] | L: 3.275 | [4.918 | 2.067 | 1.198]LR: 0.0003
+02/10/2020 10:04:47 PM [154/200] | v_0 | R: 0.083 | [0.013 | 0.175 | 0.132] | A: [4.356% | 30.966% | 62.358%] | L: 3.108 | [4.649 | 1.979 | 1.155]LR: 0.0003
+02/10/2020 10:04:48 PM [154/200] | v_1 | R: 0.074 | [0.009 | 0.150 | 0.128] | A: [4.044% | 29.362% | 62.383%] | L: 3.134 | [4.684 | 2.014 | 1.153]LR: 0.0003
+02/10/2020 10:05:09 PM [155/200] | t_0 | R: 0.073 | [0.012 | 0.134 | 0.135] | A: [2.841% | 23.532% | 62.311%] | L: 3.252 | [4.879 | 2.059 | 1.193]LR: 0.0003
+02/10/2020 10:05:15 PM [155/200] | v_0 | R: 0.081 | [0.013 | 0.167 | 0.132] | A: [4.687% | 29.972% | 62.358%] | L: 3.115 | [4.651 | 1.997 | 1.159]LR: 0.0003
+02/10/2020 10:05:17 PM [155/200] | v_1 | R: 0.078 | [0.010 | 0.162 | 0.128] | A: [4.044% | 30.097% | 62.383%] | L: 3.133 | [4.683 | 2.016 | 1.152]LR: 0.0003
+02/10/2020 10:05:38 PM [156/200] | t_0 | R: 0.075 | [0.013 | 0.129 | 0.145] | A: [2.604% | 23.911% | 62.121%] | L: 3.247 | [4.867 | 2.064 | 1.191]LR: 0.0003
+02/10/2020 10:05:44 PM [156/200] | v_0 | R: 0.083 | [0.012 | 0.172 | 0.135] | A: [4.025% | 30.398% | 62.453%] | L: 3.119 | [4.656 | 1.998 | 1.168]LR: 0.0003
+02/10/2020 10:05:46 PM [156/200] | v_1 | R: 0.076 | [0.011 | 0.152 | 0.128] | A: [4.228% | 28.626% | 62.383%] | L: 3.134 | [4.682 | 2.019 | 1.152]LR: 0.0003
+02/10/2020 10:06:06 PM [157/200] | t_0 | R: 0.076 | [0.009 | 0.144 | 0.139] | A: [2.225% | 25.521% | 62.358%] | L: 3.257 | [4.892 | 2.052 | 1.190]LR: 0.0003
+02/10/2020 10:06:13 PM [157/200] | v_0 | R: 0.087 | [0.014 | 0.188 | 0.132] | A: [4.972% | 31.155% | 62.405%] | L: 3.109 | [4.647 | 1.984 | 1.159]LR: 0.0003
+02/10/2020 10:06:14 PM [157/200] | v_1 | R: 0.077 | [0.014 | 0.153 | 0.128] | A: [4.228% | 29.362% | 62.383%] | L: 3.131 | [4.680 | 2.010 | 1.151]LR: 0.0003
+02/10/2020 10:06:35 PM [158/200] | t_0 | R: 0.074 | [0.014 | 0.130 | 0.139] | A: [3.030% | 24.527% | 62.405%] | L: 3.253 | [4.873 | 2.069 | 1.196]LR: 0.0003
+02/10/2020 10:06:41 PM [158/200] | v_0 | R: 0.083 | [0.016 | 0.167 | 0.132] | A: [5.114% | 29.451% | 62.405%] | L: 3.108 | [4.642 | 1.991 | 1.158]LR: 0.0003
+02/10/2020 10:06:43 PM [158/200] | v_1 | R: 0.071 | [0.009 | 0.138 | 0.128] | A: [3.676% | 28.075% | 62.383%] | L: 3.132 | [4.680 | 2.016 | 1.151]LR: 0.0003
+02/10/2020 10:07:04 PM [159/200] | t_0 | R: 0.071 | [0.011 | 0.130 | 0.135] | A: [2.225% | 23.674% | 62.169%] | L: 3.258 | [4.883 | 2.064 | 1.200]LR: 0.0003
+02/10/2020 10:07:10 PM [159/200] | v_0 | R: 0.079 | [0.013 | 0.158 | 0.132] | A: [4.545% | 30.540% | 62.405%] | L: 3.111 | [4.644 | 1.996 | 1.159]LR: 0.0003
+02/10/2020 10:07:12 PM [159/200] | v_1 | R: 0.073 | [0.013 | 0.136 | 0.128] | A: [4.779% | 28.459% | 62.383%] | L: 3.130 | [4.681 | 2.014 | 1.147]LR: 0.0003
+02/10/2020 10:07:32 PM [160/200] | t_0 | R: 0.070 | [0.009 | 0.127 | 0.136] | A: [2.131% | 23.674% | 62.074%] | L: 3.238 | [4.852 | 2.055 | 1.195]LR: 0.0003
+02/10/2020 10:07:39 PM [160/200] | v_0 | R: 0.080 | [0.012 | 0.164 | 0.132] | A: [4.451% | 31.108% | 62.405%] | L: 3.107 | [4.642 | 1.981 | 1.162]LR: 0.0003
+02/10/2020 10:07:40 PM [160/200] | v_1 | R: 0.074 | [0.016 | 0.135 | 0.128] | A: [4.412% | 28.075% | 62.383%] | L: 3.132 | [4.680 | 2.016 | 1.151]LR: 0.0003
+02/10/2020 10:08:01 PM [161/200] | t_0 | R: 0.073 | [0.009 | 0.136 | 0.138] | A: [2.320% | 24.100% | 62.027%] | L: 3.253 | [4.879 | 2.056 | 1.197]LR: 0.0003
+02/10/2020 10:08:07 PM [161/200] | v_0 | R: 0.079 | [0.011 | 0.162 | 0.132] | A: [4.356% | 28.930% | 62.405%] | L: 3.111 | [4.640 | 2.001 | 1.162]LR: 0.0003
+02/10/2020 10:08:09 PM [161/200] | v_1 | R: 0.076 | [0.012 | 0.152 | 0.128] | A: [4.044% | 28.810% | 62.383%] | L: 3.134 | [4.684 | 2.016 | 1.151]LR: 0.0003
+02/10/2020 10:08:30 PM [162/200] | t_0 | R: 0.077 | [0.010 | 0.149 | 0.140] | A: [2.273% | 25.047% | 62.216%] | L: 3.256 | [4.894 | 2.055 | 1.182]LR: 0.0003
+02/10/2020 10:08:36 PM [162/200] | v_0 | R: 0.082 | [0.010 | 0.172 | 0.136] | A: [3.977% | 30.256% | 62.453%] | L: 3.110 | [4.654 | 1.979 | 1.153]LR: 0.0003
+02/10/2020 10:08:38 PM [162/200] | v_1 | R: 0.073 | [0.010 | 0.143 | 0.128] | A: [3.860% | 29.362% | 62.383%] | L: 3.132 | [4.680 | 2.015 | 1.153]LR: 0.0003
+02/10/2020 10:08:58 PM [163/200] | t_0 | R: 0.074 | [0.013 | 0.128 | 0.140] | A: [2.604% | 24.716% | 62.216%] | L: 3.252 | [4.875 | 2.066 | 1.190]LR: 0.0003
+02/10/2020 10:09:05 PM [163/200] | v_0 | R: 0.085 | [0.009 | 0.190 | 0.132] | A: [3.741% | 31.629% | 62.405%] | L: 3.108 | [4.650 | 1.976 | 1.156]LR: 0.0003
+02/10/2020 10:09:06 PM [163/200] | v_1 | R: 0.073 | [0.010 | 0.141 | 0.128] | A: [4.228% | 28.810% | 62.383%] | L: 3.130 | [4.679 | 2.012 | 1.151]LR: 0.0003
+02/10/2020 10:09:27 PM [164/200] | t_0 | R: 0.075 | [0.011 | 0.129 | 0.149] | A: [2.509% | 26.278% | 62.311%] | L: 3.248 | [4.870 | 2.066 | 1.185]LR: 0.0003
+02/10/2020 10:09:33 PM [164/200] | v_0 | R: 0.082 | [0.011 | 0.169 | 0.135] | A: [4.687% | 30.350% | 62.453%] | L: 3.109 | [4.647 | 1.982 | 1.159]LR: 0.0003
+02/10/2020 10:09:35 PM [164/200] | v_1 | R: 0.072 | [0.013 | 0.135 | 0.128] | A: [4.044% | 28.259% | 62.383%] | L: 3.129 | [4.678 | 2.011 | 1.149]LR: 0.0003
+02/10/2020 10:09:56 PM [165/200] | t_0 | R: 0.072 | [0.012 | 0.125 | 0.138] | A: [2.367% | 22.964% | 62.263%] | L: 3.237 | [4.850 | 2.052 | 1.195]LR: 0.0003
+02/10/2020 10:10:02 PM [165/200] | v_0 | R: 0.080 | [0.015 | 0.157 | 0.135] | A: [4.309% | 29.972% | 62.453%] | L: 3.106 | [4.641 | 1.991 | 1.152]LR: 0.0003
+02/10/2020 10:10:04 PM [165/200] | v_1 | R: 0.076 | [0.008 | 0.160 | 0.128] | A: [3.860% | 29.178% | 62.383%] | L: 3.128 | [4.677 | 2.008 | 1.151]LR: 0.0003
+02/10/2020 10:10:24 PM [166/200] | t_0 | R: 0.072 | [0.013 | 0.120 | 0.142] | A: [2.936% | 23.059% | 62.216%] | L: 3.253 | [4.874 | 2.070 | 1.192]LR: 0.0003
+02/10/2020 10:10:31 PM [166/200] | v_0 | R: 0.081 | [0.012 | 0.167 | 0.132] | A: [3.977% | 30.256% | 62.405%] | L: 3.111 | [4.651 | 1.985 | 1.157]LR: 0.0003
+02/10/2020 10:10:32 PM [166/200] | v_1 | R: 0.075 | [0.009 | 0.154 | 0.128] | A: [4.044% | 29.362% | 62.383%] | L: 3.126 | [4.677 | 2.006 | 1.146]LR: 0.0003
+02/10/2020 10:10:53 PM [167/200] | t_0 | R: 0.072 | [0.012 | 0.134 | 0.132] | A: [2.652% | 24.195% | 62.121%] | L: 3.237 | [4.853 | 2.056 | 1.187]LR: 0.0003
+02/10/2020 10:10:59 PM [167/200] | v_0 | R: 0.081 | [0.012 | 0.168 | 0.132] | A: [4.214% | 29.167% | 62.405%] | L: 3.107 | [4.640 | 1.991 | 1.155]LR: 0.0003
+02/10/2020 10:11:01 PM [167/200] | v_1 | R: 0.076 | [0.014 | 0.148 | 0.128] | A: [4.412% | 29.178% | 62.383%] | L: 3.127 | [4.674 | 2.010 | 1.149]LR: 0.0003
+02/10/2020 10:11:22 PM [168/200] | t_0 | R: 0.076 | [0.015 | 0.138 | 0.136] | A: [2.983% | 24.811% | 61.979%] | L: 3.236 | [4.851 | 2.047 | 1.197]LR: 0.0003
+02/10/2020 10:11:28 PM [168/200] | v_0 | R: 0.083 | [0.010 | 0.174 | 0.135] | A: [4.119% | 30.398% | 62.453%] | L: 3.103 | [4.640 | 1.973 | 1.159]LR: 0.0003
+02/10/2020 10:11:30 PM [168/200] | v_1 | R: 0.078 | [0.012 | 0.159 | 0.128] | A: [4.228% | 29.930% | 62.383%] | L: 3.128 | [4.679 | 2.006 | 1.147]LR: 0.0003
+02/10/2020 10:11:50 PM [169/200] | t_0 | R: 0.075 | [0.011 | 0.144 | 0.135] | A: [2.983% | 25.331% | 62.169%] | L: 3.244 | [4.870 | 2.042 | 1.194]LR: 0.0003
+02/10/2020 10:11:57 PM [169/200] | v_0 | R: 0.081 | [0.014 | 0.159 | 0.135] | A: [4.403% | 28.835% | 62.453%] | L: 3.109 | [4.638 | 1.997 | 1.162]LR: 0.0003
+02/10/2020 10:11:58 PM [169/200] | v_1 | R: 0.077 | [0.014 | 0.154 | 0.128] | A: [4.412% | 29.178% | 62.383%] | L: 3.132 | [4.680 | 2.018 | 1.150]LR: 0.0003
+02/10/2020 10:12:19 PM [170/200] | t_0 | R: 0.073 | [0.010 | 0.137 | 0.135] | A: [2.083% | 25.710% | 62.169%] | L: 3.246 | [4.879 | 2.040 | 1.185]LR: 0.0003
+02/10/2020 10:12:25 PM [170/200] | v_0 | R: 0.086 | [0.015 | 0.183 | 0.132] | A: [5.114% | 31.581% | 62.405%] | L: 3.092 | [4.624 | 1.966 | 1.155]LR: 0.0003
+02/10/2020 10:12:27 PM [170/200] | v_1 | R: 0.082 | [0.014 | 0.169 | 0.128] | A: [4.596% | 30.097% | 62.383%] | L: 3.128 | [4.675 | 2.009 | 1.151]LR: 0.0003
+02/10/2020 10:12:48 PM [171/200] | t_0 | R: 0.080 | [0.012 | 0.152 | 0.144] | A: [2.509% | 26.468% | 62.027%] | L: 3.246 | [4.877 | 2.045 | 1.187]LR: 0.0003
+02/10/2020 10:12:54 PM [171/200] | v_0 | R: 0.081 | [0.013 | 0.163 | 0.135] | A: [4.735% | 29.309% | 62.453%] | L: 3.107 | [4.641 | 1.989 | 1.157]LR: 0.0003
+02/10/2020 10:12:56 PM [171/200] | v_1 | R: 0.079 | [0.015 | 0.158 | 0.128] | A: [4.412% | 29.362% | 62.383%] | L: 3.131 | [4.679 | 2.014 | 1.150]LR: 0.0003
+02/10/2020 10:13:16 PM [172/200] | t_0 | R: 0.079 | [0.009 | 0.161 | 0.137] | A: [1.847% | 26.089% | 62.074%] | L: 3.246 | [4.863 | 2.059 | 1.197]LR: 0.0003
+02/10/2020 10:13:23 PM [172/200] | v_0 | R: 0.082 | [0.014 | 0.166 | 0.132] | A: [4.593% | 31.297% | 62.405%] | L: 3.102 | [4.635 | 1.976 | 1.163]LR: 0.0003
+02/10/2020 10:13:24 PM [172/200] | v_1 | R: 0.076 | [0.014 | 0.149 | 0.128] | A: [4.779% | 28.994% | 62.383%] | L: 3.127 | [4.677 | 2.005 | 1.147]LR: 0.0003
+02/10/2020 10:13:45 PM [173/200] | t_0 | R: 0.071 | [0.014 | 0.119 | 0.138] | A: [3.078% | 22.964% | 62.074%] | L: 3.245 | [4.873 | 2.043 | 1.191]LR: 0.0003
+02/10/2020 10:13:51 PM [173/200] | v_0 | R: 0.078 | [0.014 | 0.150 | 0.135] | A: [4.261% | 29.167% | 62.453%] | L: 3.102 | [4.630 | 1.993 | 1.154]LR: 0.0003
+02/10/2020 10:13:53 PM [173/200] | v_1 | R: 0.080 | [0.012 | 0.166 | 0.128] | A: [4.044% | 29.178% | 62.383%] | L: 3.126 | [4.675 | 2.005 | 1.149]LR: 0.0003
+02/10/2020 10:14:14 PM [174/200] | t_0 | R: 0.076 | [0.010 | 0.141 | 0.141] | A: [2.367% | 24.669% | 62.263%] | L: 3.250 | [4.878 | 2.057 | 1.190]LR: 0.0003
+02/10/2020 10:14:20 PM [174/200] | v_0 | R: 0.080 | [0.014 | 0.158 | 0.132] | A: [4.782% | 29.261% | 62.405%] | L: 3.111 | [4.650 | 1.992 | 1.151]LR: 0.0003
+02/10/2020 10:14:22 PM [174/200] | v_1 | R: 0.075 | [0.011 | 0.150 | 0.128] | A: [4.412% | 28.626% | 62.383%] | L: 3.131 | [4.678 | 2.016 | 1.152]LR: 0.0003
+02/10/2020 10:14:42 PM [175/200] | t_0 | R: 0.076 | [0.013 | 0.134 | 0.146] | A: [2.841% | 23.437% | 62.358%] | L: 3.248 | [4.866 | 2.069 | 1.193]LR: 0.0003
+02/10/2020 10:14:49 PM [175/200] | v_0 | R: 0.077 | [0.011 | 0.152 | 0.132] | A: [3.930% | 29.593% | 62.405%] | L: 3.113 | [4.651 | 1.989 | 1.158]LR: 0.0003
+02/10/2020 10:14:50 PM [175/200] | v_1 | R: 0.076 | [0.011 | 0.153 | 0.128] | A: [4.228% | 28.994% | 62.383%] | L: 3.127 | [4.673 | 2.015 | 1.150]LR: 0.0003
+02/10/2020 10:15:11 PM [176/200] | t_0 | R: 0.071 | [0.009 | 0.127 | 0.138] | A: [2.036% | 24.527% | 62.121%] | L: 3.245 | [4.866 | 2.045 | 1.203]LR: 0.0003
+02/10/2020 10:15:17 PM [176/200] | v_0 | R: 0.082 | [0.012 | 0.171 | 0.132] | A: [4.261% | 31.581% | 62.405%] | L: 3.091 | [4.628 | 1.953 | 1.155]LR: 0.0003
+02/10/2020 10:15:19 PM [176/200] | v_1 | R: 0.077 | [0.012 | 0.156 | 0.128] | A: [4.779% | 31.200% | 62.383%] | L: 3.121 | [4.673 | 1.993 | 1.146]LR: 0.0003
+02/10/2020 10:15:40 PM [177/200] | t_0 | R: 0.076 | [0.011 | 0.136 | 0.146] | A: [2.604% | 24.953% | 62.216%] | L: 3.240 | [4.861 | 2.052 | 1.184]LR: 0.0003
+02/10/2020 10:15:46 PM [177/200] | v_0 | R: 0.080 | [0.013 | 0.158 | 0.135] | A: [4.545% | 29.924% | 62.453%] | L: 3.105 | [4.642 | 1.984 | 1.151]LR: 0.0003
+02/10/2020 10:15:48 PM [177/200] | v_1 | R: 0.075 | [0.011 | 0.150 | 0.128] | A: [4.228% | 29.178% | 62.383%] | L: 3.126 | [4.675 | 2.007 | 1.147]LR: 0.0003
+02/10/2020 10:16:08 PM [178/200] | t_0 | R: 0.079 | [0.012 | 0.151 | 0.142] | A: [2.746% | 25.426% | 62.405%] | L: 3.244 | [4.867 | 2.052 | 1.188]LR: 0.0003
+02/10/2020 10:16:15 PM [178/200] | v_0 | R: 0.083 | [0.012 | 0.178 | 0.132] | A: [4.403% | 30.919% | 62.358%] | L: 3.099 | [4.637 | 1.963 | 1.158]LR: 0.0003
+02/10/2020 10:16:16 PM [178/200] | v_1 | R: 0.075 | [0.012 | 0.148 | 0.128] | A: [4.412% | 28.626% | 62.383%] | L: 3.125 | [4.674 | 2.005 | 1.148]LR: 0.0003
+02/10/2020 10:16:37 PM [179/200] | t_0 | R: 0.071 | [0.009 | 0.134 | 0.132] | A: [1.989% | 24.763% | 62.074%] | L: 3.250 | [4.876 | 2.057 | 1.192]LR: 0.0003
+02/10/2020 10:16:43 PM [179/200] | v_0 | R: 0.078 | [0.011 | 0.158 | 0.132] | A: [4.356% | 28.598% | 62.405%] | L: 3.106 | [4.640 | 1.980 | 1.163]LR: 0.0003
+02/10/2020 10:16:45 PM [179/200] | v_1 | R: 0.074 | [0.008 | 0.153 | 0.128] | A: [4.044% | 28.626% | 62.383%] | L: 3.127 | [4.675 | 2.013 | 1.146]LR: 0.0003
+02/10/2020 10:17:06 PM [180/200] | t_0 | R: 0.076 | [0.011 | 0.135 | 0.148] | A: [2.794% | 24.432% | 62.169%] | L: 3.241 | [4.861 | 2.043 | 1.197]LR: 0.0003
+02/10/2020 10:17:12 PM [180/200] | v_0 | R: 0.085 | [0.013 | 0.179 | 0.136] | A: [4.356% | 30.634% | 62.453%] | L: 3.098 | [4.632 | 1.978 | 1.151]LR: 0.0003
+02/10/2020 10:17:14 PM [180/200] | v_1 | R: 0.080 | [0.016 | 0.158 | 0.128] | A: [4.412% | 29.378% | 62.383%] | L: 3.125 | [4.674 | 2.005 | 1.146]LR: 0.0003
+02/10/2020 10:17:34 PM [181/200] | t_0 | R: 0.074 | [0.011 | 0.127 | 0.145] | A: [2.794% | 24.148% | 62.405%] | L: 3.236 | [4.858 | 2.048 | 1.181]LR: 0.0003
+02/10/2020 10:17:41 PM [181/200] | v_0 | R: 0.083 | [0.010 | 0.175 | 0.139] | A: [4.119% | 30.777% | 62.453%] | L: 3.094 | [4.624 | 1.972 | 1.155]LR: 0.0003
+02/10/2020 10:17:42 PM [181/200] | v_1 | R: 0.079 | [0.012 | 0.164 | 0.128] | A: [4.779% | 29.178% | 62.383%] | L: 3.120 | [4.669 | 1.996 | 1.144]LR: 0.0003
+02/10/2020 10:18:03 PM [182/200] | t_0 | R: 0.074 | [0.014 | 0.131 | 0.138] | A: [3.314% | 25.047% | 62.169%] | L: 3.233 | [4.842 | 2.050 | 1.199]LR: 0.0003
+02/10/2020 10:18:09 PM [182/200] | v_0 | R: 0.081 | [0.011 | 0.165 | 0.136] | A: [3.977% | 30.634% | 62.405%] | L: 3.098 | [4.630 | 1.984 | 1.150]LR: 0.0003
+02/10/2020 10:18:11 PM [182/200] | v_1 | R: 0.076 | [0.012 | 0.150 | 0.128] | A: [4.228% | 27.908% | 62.383%] | L: 3.126 | [4.673 | 2.009 | 1.151]LR: 0.0003
+02/10/2020 10:18:32 PM [183/200] | t_0 | R: 0.077 | [0.008 | 0.155 | 0.135] | A: [2.320% | 26.278% | 62.311%] | L: 3.239 | [4.861 | 2.039 | 1.196]LR: 0.0003
+02/10/2020 10:18:38 PM [183/200] | v_0 | R: 0.083 | [0.011 | 0.179 | 0.132] | A: [4.782% | 31.913% | 62.405%] | L: 3.097 | [4.632 | 1.974 | 1.151]LR: 0.0003
+02/10/2020 10:18:40 PM [183/200] | v_1 | R: 0.074 | [0.012 | 0.144 | 0.128] | A: [4.412% | 28.626% | 62.383%] | L: 3.125 | [4.674 | 2.007 | 1.144]LR: 0.0003
+02/10/2020 10:19:00 PM [184/200] | t_0 | R: 0.075 | [0.013 | 0.137 | 0.138] | A: [2.983% | 23.390% | 62.216%] | L: 3.229 | [4.838 | 2.045 | 1.194]LR: 0.0003
+02/10/2020 10:19:07 PM [184/200] | v_0 | R: 0.085 | [0.010 | 0.186 | 0.132] | A: [4.356% | 30.871% | 62.358%] | L: 3.101 | [4.637 | 1.975 | 1.156]LR: 0.0003
+02/10/2020 10:19:08 PM [184/200] | v_1 | R: 0.078 | [0.015 | 0.154 | 0.128] | A: [4.412% | 28.994% | 62.383%] | L: 3.124 | [4.671 | 2.006 | 1.147]LR: 0.0003
+02/10/2020 10:19:29 PM [185/200] | t_0 | R: 0.074 | [0.010 | 0.141 | 0.136] | A: [1.989% | 25.379% | 62.169%] | L: 3.232 | [4.845 | 2.047 | 1.190]LR: 0.0003
+02/10/2020 10:19:35 PM [185/200] | v_0 | R: 0.084 | [0.014 | 0.174 | 0.132] | A: [4.498% | 30.777% | 62.405%] | L: 3.094 | [4.632 | 1.968 | 1.145]LR: 0.0003
+02/10/2020 10:19:37 PM [185/200] | v_1 | R: 0.078 | [0.011 | 0.163 | 0.128] | A: [4.596% | 29.913% | 62.383%] | L: 3.120 | [4.671 | 1.995 | 1.143]LR: 0.0003
+02/10/2020 10:19:58 PM [186/200] | t_0 | R: 0.075 | [0.011 | 0.140 | 0.138] | A: [2.462% | 24.763% | 61.932%] | L: 3.233 | [4.850 | 2.047 | 1.184]LR: 0.0003
+02/10/2020 10:20:04 PM [186/200] | v_0 | R: 0.091 | [0.014 | 0.204 | 0.132] | A: [4.782% | 32.055% | 62.358%] | L: 3.088 | [4.627 | 1.948 | 1.150]LR: 0.0003
+02/10/2020 10:20:06 PM [186/200] | v_1 | R: 0.084 | [0.016 | 0.178 | 0.128] | A: [4.963% | 32.670% | 62.383%] | L: 3.116 | [4.667 | 1.985 | 1.144]LR: 0.0003
+02/10/2020 10:20:26 PM [187/200] | t_0 | R: 0.074 | [0.012 | 0.129 | 0.142] | A: [3.078% | 23.864% | 62.311%] | L: 3.226 | [4.826 | 2.059 | 1.194]LR: 0.0003
+02/10/2020 10:20:33 PM [187/200] | v_0 | R: 0.083 | [0.014 | 0.171 | 0.132] | A: [4.782% | 31.108% | 62.405%] | L: 3.099 | [4.636 | 1.966 | 1.159]LR: 0.0003
+02/10/2020 10:20:34 PM [187/200] | v_1 | R: 0.076 | [0.011 | 0.151 | 0.128] | A: [4.412% | 29.178% | 62.383%] | L: 3.122 | [4.673 | 2.003 | 1.139]LR: 0.0003
+02/10/2020 10:20:55 PM [188/200] | t_0 | R: 0.072 | [0.010 | 0.132 | 0.135] | A: [2.604% | 23.864% | 62.263%] | L: 3.234 | [4.857 | 2.038 | 1.182]LR: 0.0003
+02/10/2020 10:21:01 PM [188/200] | v_0 | R: 0.078 | [0.011 | 0.155 | 0.136] | A: [4.451% | 30.208% | 62.453%] | L: 3.094 | [4.630 | 1.968 | 1.147]LR: 0.0003
+02/10/2020 10:21:03 PM [188/200] | v_1 | R: 0.073 | [0.009 | 0.144 | 0.128] | A: [3.860% | 28.443% | 62.383%] | L: 3.123 | [4.670 | 2.005 | 1.147]LR: 0.0003
+02/10/2020 10:21:24 PM [189/200] | t_0 | R: 0.076 | [0.013 | 0.138 | 0.139] | A: [2.652% | 25.331% | 62.169%] | L: 3.237 | [4.854 | 2.049 | 1.188]LR: 0.0003
+02/10/2020 10:21:30 PM [189/200] | v_0 | R: 0.080 | [0.015 | 0.160 | 0.132] | A: [4.687% | 31.108% | 62.405%] | L: 3.089 | [4.617 | 1.968 | 1.156]LR: 0.0003
+02/10/2020 10:21:32 PM [189/200] | v_1 | R: 0.078 | [0.010 | 0.163 | 0.128] | A: [4.228% | 30.297% | 62.383%] | L: 3.120 | [4.671 | 1.995 | 1.142]LR: 0.0003
+02/10/2020 10:21:52 PM [190/200] | t_0 | R: 0.076 | [0.014 | 0.133 | 0.144] | A: [3.125% | 24.669% | 62.311%] | L: 3.248 | [4.871 | 2.054 | 1.196]LR: 0.0003
+02/10/2020 10:21:59 PM [190/200] | v_0 | R: 0.082 | [0.011 | 0.168 | 0.139] | A: [4.498% | 31.297% | 62.500%] | L: 3.096 | [4.636 | 1.971 | 1.143]LR: 0.0003
+02/10/2020 10:22:00 PM [190/200] | v_1 | R: 0.079 | [0.012 | 0.164 | 0.128] | A: [4.596% | 29.195% | 62.383%] | L: 3.120 | [4.671 | 1.995 | 1.145]LR: 0.0003
+02/10/2020 10:22:21 PM [191/200] | t_0 | R: 0.075 | [0.013 | 0.140 | 0.136] | A: [2.604% | 24.716% | 62.027%] | L: 3.238 | [4.863 | 2.033 | 1.195]LR: 0.0003
+02/10/2020 10:22:27 PM [191/200] | v_0 | R: 0.084 | [0.012 | 0.180 | 0.132] | A: [4.593% | 31.013% | 62.405%] | L: 3.099 | [4.635 | 1.966 | 1.161]LR: 0.0003
+02/10/2020 10:22:29 PM [191/200] | v_1 | R: 0.081 | [0.013 | 0.171 | 0.128] | A: [4.779% | 30.297% | 62.383%] | L: 3.118 | [4.667 | 1.992 | 1.145]LR: 0.0003
+02/10/2020 10:22:50 PM [192/200] | t_0 | R: 0.074 | [0.010 | 0.129 | 0.147] | A: [2.225% | 25.284% | 62.074%] | L: 3.230 | [4.854 | 2.033 | 1.181]LR: 0.0003
+02/10/2020 10:22:56 PM [192/200] | v_0 | R: 0.084 | [0.012 | 0.179 | 0.132] | A: [4.972% | 30.540% | 62.358%] | L: 3.094 | [4.623 | 1.968 | 1.160]LR: 0.0003
+02/10/2020 10:22:58 PM [192/200] | v_1 | R: 0.080 | [0.013 | 0.165 | 0.128] | A: [4.412% | 29.545% | 62.383%] | L: 3.119 | [4.670 | 1.994 | 1.142]LR: 0.0003
+02/10/2020 10:23:18 PM [193/200] | t_0 | R: 0.080 | [0.012 | 0.147 | 0.148] | A: [2.841% | 25.663% | 62.642%] | L: 3.226 | [4.838 | 2.041 | 1.186]LR: 0.0003
+02/10/2020 10:23:25 PM [193/200] | v_0 | R: 0.091 | [0.016 | 0.197 | 0.136] | A: [5.398% | 32.670% | 62.453%] | L: 3.086 | [4.624 | 1.952 | 1.146]LR: 0.0003
+02/10/2020 10:23:26 PM [193/200] | v_1 | R: 0.085 | [0.012 | 0.188 | 0.128] | A: [4.596% | 32.119% | 62.383%] | L: 3.117 | [4.669 | 1.987 | 1.143]LR: 0.0003
+02/10/2020 10:23:47 PM [194/200] | t_0 | R: 0.075 | [0.013 | 0.126 | 0.149] | A: [2.746% | 25.473% | 62.311%] | L: 3.236 | [4.857 | 2.043 | 1.187]LR: 0.0003
+02/10/2020 10:23:53 PM [194/200] | v_0 | R: 0.084 | [0.015 | 0.176 | 0.132] | A: [4.593% | 30.634% | 62.358%] | L: 3.097 | [4.632 | 1.972 | 1.151]LR: 0.0003
+02/10/2020 10:23:55 PM [194/200] | v_1 | R: 0.077 | [0.011 | 0.157 | 0.128] | A: [4.412% | 29.178% | 62.383%] | L: 3.121 | [4.673 | 1.996 | 1.143]LR: 0.0003
+02/10/2020 10:24:16 PM [195/200] | t_0 | R: 0.075 | [0.010 | 0.141 | 0.141] | A: [2.178% | 23.437% | 62.027%] | L: 3.229 | [4.842 | 2.035 | 1.197]LR: 0.0003
+02/10/2020 10:24:22 PM [195/200] | v_0 | R: 0.087 | [0.016 | 0.179 | 0.136] | A: [5.350% | 30.966% | 62.453%] | L: 3.088 | [4.623 | 1.958 | 1.147]LR: 0.0003
+02/10/2020 10:24:24 PM [195/200] | v_1 | R: 0.076 | [0.008 | 0.159 | 0.128] | A: [3.860% | 29.729% | 62.383%] | L: 3.116 | [4.668 | 1.991 | 1.138]LR: 0.0003
+02/10/2020 10:24:44 PM [196/200] | t_0 | R: 0.072 | [0.010 | 0.132 | 0.138] | A: [2.131% | 25.805% | 62.169%] | L: 3.229 | [4.847 | 2.039 | 1.182]LR: 0.0003
+02/10/2020 10:24:51 PM [196/200] | v_0 | R: 0.092 | [0.012 | 0.207 | 0.136] | A: [4.498% | 32.812% | 62.453%] | L: 3.082 | [4.618 | 1.949 | 1.145]LR: 0.0003
+02/10/2020 10:24:52 PM [196/200] | v_1 | R: 0.077 | [0.010 | 0.161 | 0.128] | A: [4.228% | 29.195% | 62.383%] | L: 3.117 | [4.669 | 1.990 | 1.143]LR: 0.0003
+02/10/2020 10:25:13 PM [197/200] | t_0 | R: 0.077 | [0.010 | 0.137 | 0.149] | A: [2.509% | 24.195% | 62.500%] | L: 3.235 | [4.857 | 2.044 | 1.181]LR: 0.0003
+02/10/2020 10:25:19 PM [197/200] | v_0 | R: 0.091 | [0.014 | 0.203 | 0.132] | A: [4.830% | 32.339% | 62.405%] | L: 3.079 | [4.617 | 1.940 | 1.143]LR: 0.0003
+02/10/2020 10:25:21 PM [197/200] | v_1 | R: 0.081 | [0.012 | 0.172 | 0.128] | A: [4.412% | 31.935% | 62.383%] | L: 3.113 | [4.665 | 1.983 | 1.139]LR: 0.0003
+02/10/2020 10:25:42 PM [198/200] | t_0 | R: 0.073 | [0.009 | 0.140 | 0.135] | A: [2.225% | 24.621% | 62.405%] | L: 3.242 | [4.872 | 2.033 | 1.193]LR: 0.0003
+02/10/2020 10:25:48 PM [198/200] | v_0 | R: 0.089 | [0.015 | 0.192 | 0.132] | A: [4.687% | 32.812% | 62.405%] | L: 3.088 | [4.623 | 1.962 | 1.142]LR: 0.0003
+02/10/2020 10:25:50 PM [198/200] | v_1 | R: 0.078 | [0.012 | 0.159 | 0.128] | A: [4.044% | 30.832% | 62.383%] | L: 3.120 | [4.669 | 1.994 | 1.146]LR: 0.0003
+02/10/2020 10:26:10 PM [199/200] | t_0 | R: 0.081 | [0.014 | 0.158 | 0.138] | A: [2.888% | 26.089% | 62.358%] | L: 3.231 | [4.846 | 2.044 | 1.188]LR: 0.0003
+02/10/2020 10:26:17 PM [199/200] | v_0 | R: 0.081 | [0.014 | 0.164 | 0.132] | A: [4.877% | 31.155% | 62.405%] | L: 3.091 | [4.629 | 1.953 | 1.152]LR: 0.0003
+02/10/2020 10:26:18 PM [199/200] | v_1 | R: 0.079 | [0.011 | 0.165 | 0.128] | A: [4.412% | 29.545% | 62.383%] | L: 3.118 | [4.669 | 1.992 | 1.142]LR: 0.0003
+02/10/2020 10:26:39 PM [200/200] | t_0 | R: 0.072 | [0.015 | 0.127 | 0.132] | A: [2.841% | 23.153% | 62.027%] | L: 3.229 | [4.846 | 2.044 | 1.180]LR: 0.0003
+02/10/2020 10:26:45 PM [200/200] | v_0 | R: 0.084 | [0.016 | 0.168 | 0.135] | A: [4.640% | 30.303% | 62.405%] | L: 3.095 | [4.626 | 1.971 | 1.157]LR: 0.0003
+02/10/2020 10:26:47 PM [200/200] | v_1 | R: 0.078 | [0.013 | 0.158 | 0.128] | A: [4.412% | 28.259% | 62.383%] | L: 3.119 | [4.669 | 1.995 | 1.143]LR: 0.0003
