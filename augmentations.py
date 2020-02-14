@@ -3,8 +3,10 @@ import numpy as np
 import torch.nn as nn
 import albumentations as albu
 import cv2
-from albumentations.core.transforms_interface import DualTransform
+from albumentations.core.transforms_interface import DualTransform, ImageOnlyTransform
 from albumentations.augmentations import functional as F
+import torch
+import random
 
 class ToTensor:
     def __call__(self, data):
@@ -126,29 +128,45 @@ class GridMask(DualTransform):
     def get_transform_init_args_names(self):
         return ('num_grid', 'fill_value', 'rotate', 'mode')
 
-def get_augs(gridmask=False):
+
+class RandomMorph(ImageOnlyTransform):
+
+    def __init__(self, _min=2, _max=6, element_shape=cv2.MORPH_ELLIPSE, always_apply=False, p=0.5):
+        super().__init__(always_apply, p)
+        self._min = _min
+        self._max = _max
+        self.element_shape = element_shape
+
+    def apply(self, image, **params):
+        arr = np.random.randint(self._min, self._max, 2)
+        kernel = cv2.getStructuringElement(self.element_shape, tuple(arr))
+
+        if random.random() > 0.5:
+            # make it thinner
+            image = cv2.erode(image, kernel, iterations=1)
+        else:
+            # make it thicker
+            image = cv2.dilate(image, kernel, iterations=1)
+
+        return image
+
+
+def get_augs(gridmask=False, randommorph=True):
+    augs = [albu.ShiftScaleRotate(p=0.7,
+                          border_mode=cv2.BORDER_CONSTANT,
+                          value=1,
+                          scale_limit=0.2,
+                          rotate_limit=30)]
     if gridmask:
-        print("Using gridmask")
-        augs = albu.Compose([
-            albu.ShiftScaleRotate(p=0.7,
-                                  border_mode=cv2.BORDER_CONSTANT,
-                                  value=1,
-                                  scale_limit=0.2,
-                                  rotate_limit=30),
-            albu.OneOf([
-                GridMask(num_grid=3, rotate=15),
-                GridMask(num_grid=3),
-                ], p=1),
-        ])
-    else:
-        augs = albu.Compose([
-            albu.ShiftScaleRotate(p=0.7,
-                                  border_mode=cv2.BORDER_CONSTANT,
-                                  value=1,
-                                  scale_limit=0.2,
-                                  rotate_limit=30),
-        ])
-    return augs
+        augs.append(albu.OneOf([
+                        GridMask(num_grid=3, rotate=15),
+                        GridMask(num_grid=3),
+                        ], p=1))
+    if randommorph:
+        augs.append(RandomMorph())
+
+    return albu.Compose(augs)
+
 
 
 
@@ -161,19 +179,6 @@ def mixup_data(data, labels, alpha, device):
                        labels[1][indices].to(device),
                        labels[2][indices].to(device)], lam)
     return data, labels
-
-
-class Mixed_CrossEntropyLoss():
-    def __init__(self):
-        pass
-
-    def __call__(self, preds, labels, val=True):
-        criterion = nn.CrossEntropyLoss(reduction='mean')
-        if val:
-            return criterion(preds, labels)
-        l1, l2, lam = labels
-        return lam * criterion(preds, l1) + (1 - lam) * criterion(preds, l2)
-
 
 def rand_bbox(size, lam):
     W = size[2]

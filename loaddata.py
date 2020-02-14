@@ -132,8 +132,8 @@ def load_toy_df(random_state=42, root="/home/timetraveller/Entertainment/Bengali
 
 if __name__ == "__main__":
     """Unit tests"""
-    # train_df, valid_df = load_df(True)
-    train_df, valid_df = load_toy_df()
+    train_df, valid_df = load_df(True)
+    # train_df, valid_df = load_toy_df()
     dataset1 = BengaliAI(train_df)
     dataset2 = BengaliAI(train_df,
                              transform=get_augs(),

@@ -27,6 +27,7 @@ from model import *
 from loaddata import *
 from optimizers import *
 from augmentations import *
+from losses import *
 
 import logging
 import argparse
@@ -115,7 +116,37 @@ def find_lr(model, optimizer, criterion, trainloader, ws, final_value=10, init_v
     plt.show()
     sys.exit()
 
-def get_optim(model, optmzr, lr, momentum=0.0, weight_decay=0.0):
+def get_sched(schd, optimizer, train_df, batch_size, n_epochs):
+    if schd is None:
+        scheduler = optim.lr_scheduler.MultiStepLR(optimizer,
+                                                   # milestones=[60,75,85,90],
+                                                   # milestones=[30,40,50,70], #alt
+                                                   # milestones=[30,50,80,150], #alt3
+                                                   milestones=[30,40,50,75], #alt4
+                                                   gamma=0.5)
+    elif schd == "clr":
+        stepsz = int(10*train_df.shape[0]//batch_size)
+        if lr < 0.01:
+            max_lr = 100*lr
+        else:
+            max_lr = 2*lr
+        scheduler = optim.lr_scheduler.CyclicLR(optimizer,
+                                                base_lr=lr, max_lr=max_lr,
+                                                step_size_up=stepsz)
+
+    elif schd == "oclr":
+        import math
+        steps_per_epoch = math.ceil(train_df.shape[0]/batch_size)
+        print(f"\n\nScjed: {steps_per_epoch}")
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=1e-3,
+                                            steps_per_epoch=steps_per_epoch,
+                                            epochs=n_epochs, pct_start=0.33)
+    elif schd == "rlrp":
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5,
+                                            patience=5, min_lr=1e-7)
+    return scheduler
+
+def get_optim(model, schd, optmzr, lr, train_df, batch_size, n_epochs, momentum=0.0, weight_decay=0.0):
     lr = 3e-4
     if optmzr == 'swats':
         print(f"\n\n\n Using SWATS")
@@ -132,10 +163,24 @@ def get_optim(model, optmzr, lr, momentum=0.0, weight_decay=0.0):
     else:
         optimizer = None
         print(f"{optmzr} not defined")
-    return optimizer, lr
+
+    scheduler = get_sched(schd, optimizer, train_df, batch_size, n_epochs)
+
+    return optimizer, scheduler, lr
+
+def get_criterion(mixup, cutmix, ohem):
+    if mixup or cutmix:
+        criterion = Mixed_CrossEntropyLoss(ohem)
+    else:
+        if ohem:
+            criterion = CrossEntropyLoss_OHEM()
+        else:
+            criterion = nn.CrossEntropyLoss()
+    return criterion
 
 def plot_lr(optimizer, scheduler, epochs):
     lrs = {}
+    # epochs = 6600
     for epoch in range(epochs):
         lrs[epoch] = get_learning_rate(optimizer)
         scheduler.step()
@@ -150,8 +195,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         weights=[2, 1, 1], activation=None, mixup=False, cutmix=False, alpha=1,
         min_save_epoch=3, save_freq=3, data_root="/data", save_dir=None,
         use_wandb=False, optmzr=None, heavy_head=False, toy_set=False,
-        gridmask=False, schd=None, momentum=0., weight_decay=0.,
-        use_apex=False, batch_size=32, verbose=False):
+        gridmask=False, morph=False, schd=None, momentum=0., weight_decay=0.,
+        use_apex=False, batch_size=32, grad_acc=0, ohem=False,
+        min_loss_cutoff=100000, loss_skips=3, verbose=False):
 
     if not run_name: run_name = model_name
 
@@ -227,30 +273,10 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     if use_wandb:
         wandb.watch(model)
 
-    optimizer, lr = get_optim(model, optmzr, lr, momentum, weight_decay)
-
-
-    # scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
-    #                                 factor=0.7, patience=5,
-    #                                 min_lr=1e-10, verbose=True
-    #                                 )
-
-    if schd is None:
-        scheduler = optim.lr_scheduler.MultiStepLR(optimizer,
-                                                   # milestones=[60,75,85,90],
-                                                   # milestones=[30,40,50,70], #alt
-                                                   # milestones=[30,50,80,150], #alt3
-                                                   milestones=[30,50,65,75], #alt4
-                                                   gamma=0.5)
-    elif schd == "clr":
-        stepsz = int(10*train_df.shape[0]//batch_size)
-        if lr < 0.01:
-            max_lr = 100*lr
-        else:
-            max_lr = 2*lr
-        scheduler = optim.lr_scheduler.CyclicLR(optimizer,
-                                                base_lr=lr, max_lr=max_lr,
-                                                step_size_up=stepsz)
+    # optimizer, lr = get_optim(model, optmzr, lr, momentum, weight_decay)
+    optimizer, scheduler, lr = get_optim(model, schd, optmzr, lr, train_df,
+                                                batch_size, n_epochs,
+                                                momentum, weight_decay)
 
     # plot_lr(optimizer, scheduler, n_epochs)
     if continue_train:
@@ -275,16 +301,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
             print("Can't continue training. Starting again.")
             logger.info("Can't continue training. Starting again.")
 
-    # scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[10], gamma=0.3)
-    # scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer, 1e-2, total_steps=None, epochs=n_epochs, steps_per_epoch=3139, pct_start=0.0,
-    #                                    anneal_strategy='cos', cycle_momentum=True,base_momentum=0.85, max_momentum=0.95,  div_factor=100.0)
+    criterion = get_criterion(mixup, cutmix, ohem)
 
-    if mixup or cutmix:
-        criterion = Mixed_CrossEntropyLoss()
-    else:
-        # criterion = Mixed_CrossEntropyLoss()
-        criterion = nn.CrossEntropyLoss()
-    train_aug = get_augs(gridmask)
+    train_aug = get_augs(gridmask, morph)
     train_dataset = BengaliAI(train_df,
                              transform=train_aug,
                              details=mean_std(model_name)
@@ -332,6 +351,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     logger.info(f"Momentum: {momentum}")
     logger.info(f"Weight decay: {weight_decay}")
     logger.info(f"Batch size: {batch_size}")
+    logger.info(f"Gradient accumulation: {grad_acc}")
     logger.info(f"Model: {model}")
     logger.info("------------------------------------------------------------")
 
@@ -421,7 +441,11 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                             aug = np.random.choice(augs, p=p)
                         img = img.to(device)
                         if phase == 'train':
-                            optimizer.zero_grad()
+
+                            if not grad_acc:
+                                optimizer.zero_grad()
+                            elif (epoch+1) % grad_acc == 0:
+                                optimizer.zero_grad()
 
                             if mixup or cutmix:
                                 if aug == 'mixup':
@@ -444,7 +468,12 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                             loss1 = criterion(out[1], label[1])
                             loss2 = criterion(out[2], label[2])
 
-                        loss = ws[0]*loss0 + ws[1]*loss1 + ws[2]*loss2
+                        if epoch < min_loss_cutoff:
+                            loss = ws[0]*loss0 + ws[1]*loss1 + ws[2]*loss2
+                        elif (epoch+1) % loss_skips == 0:
+                            loss = ws[0]*loss0 + ws[1]*loss1 + ws[2]*loss2
+                        else:
+                            loss = loss0
 
                         if phase == 'train':
                             if APEX_AVAILABLE and use_apex:
@@ -452,9 +481,15 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                                     scaled_loss.backward()
                             else:
                                 loss.backward()
+
                             current_lr = get_learning_rate(optimizer)
-                            optimizer.step()
-                            if schd == "clr":
+
+                            if not grad_acc:
+                                optimizer.step()
+                            elif (epoch+1) % grad_acc == 0:
+                                optimizer.step()
+
+                            if schd == "clr" or schd == "oclr":
                                 scheduler.step()
 
                         if verbose:
@@ -478,16 +513,15 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 # if phase == 'valid' and li == 1: #For the validation dataset
                 if save_cond(phase, li, len(loaders)):
                     current = recall #Update current score
-                    # scheduler.step(loss) #Step for val loss only
+                    if schd == "rlrp":
+                        print("\nplatue")
+                        scheduler.step(recall) #Step for val loss only
 
-
-
-                current_lr = get_learning_rate(optimizer)
                 epoch_str = f"[{epoch+1}/{n_epochs}] | {phase[0]}_{li} | "
                 recall_str = f"R: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] | "
                 acc_str = f"A: [{100*running_acc0:.3f}% | {100*running_acc1:.3f}% | {100*running_acc2:.3f}%] | "
                 loss_str = f"L: {running_loss:.3f} | [{running_loss0:.3f} | {running_loss1:.3f} | {running_loss2:.3f}]"
-                lr_str = f"LR: {current_lr}"
+                lr_str = f"LR: {get_learning_rate(optimizer)}"
 
                 if verbose:
                     print(epoch_str)
@@ -520,7 +554,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 history.loc[epoch, f'{phase}_{li}_acc_consonant'] = running_acc2.cpu().numpy()
                 # Loader end
             # # this part new
-            if phase == "valid":
+            if (phase == "valid") and (schd not in ["clr", "oclr", "rlrp"]):
                 scheduler.step() #Step for val loss only
             # Phase end
         # Epoch end
@@ -580,6 +614,8 @@ if __name__ == "__main__":
                             help="use toy dataset or not.")
     parser.add_argument("--gridmask", "-grm", default=False,
                             help="gridmask augmentation.")
+    parser.add_argument("--morph", "-mrp", default=False,
+                            help="morphological augmentation: bengaliai-cv19/discussion/128198")
     parser.add_argument("--scheduler", "-sch", default=None,
                             help="type of scheduler.")
     parser.add_argument("--momentum", "-mom", default=0.0,
@@ -590,9 +626,16 @@ if __name__ == "__main__":
                             help="nvidia apex")
     parser.add_argument("--batch_size", "-bs", default=32,
                             help="batch size")
+    parser.add_argument("--grad_acc", "-gac", default=0,
+                            help="gradient accumulation")
+    parser.add_argument("--ohem", "-ohm", default=False,
+                            help="Online Hard Example Mining")
+    parser.add_argument("--min_loss_cutoff", "-mlc", default=1000000,
+                            help="Min epochs to start cutting loss to just root")
+    parser.add_argument("--loss_skips", "-lskips", default=3,
+                            help="No. epochs to skip for constant and vowel")
     parser.add_argument("--verbose", "-v", default=False,
                             help="print loss on screen or not?")
-
 
 
 
@@ -625,10 +668,15 @@ if __name__ == "__main__":
         args.heavy_head,
         args.toy_set,
         args.gridmask,
+        args.morph,
         args.scheduler,
         float(args.momentum),
         float(args.weight_decay),
         args.use_apex,
         int(args.batch_size),
+        int(args.grad_acc),
+        args.ohem,
+        int(args.min_loss_cutoff),
+        int(args.loss_skips),
         args.verbose,
         )

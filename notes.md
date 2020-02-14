@@ -9,13 +9,16 @@ pip install iterative-stratification
 - Try SWATS [DONE]
 - Try SMOTE
 
+# Turn off screenshutdown
+- xset s off
+- xset -dpms 
 
 # Ideas
 - Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687
 
 
 # What doesn't work?
-- Reducing first kenel size in `se_resnext50_32x4d` from 7x7 to 3x3... it should've worked but it doesn't. 
+- Reducing first kenel size in `se_resnext50_32x4d` from 7x7 to 3x3... it should've worked but it doesn't.
 
 # Feels
 - DAMN! `se_resnext50_32x4d` with mish and mixup got 0.9 val score only on 2 epochs (~55 minutes)! This is amazing. I will be training it for ~40-60 epochs.

@@ -1,2 +1,2 @@
 # python train.py --save_dir "$1" --epochs $2 --run_name seresnext50 --model_name se_resnext50_32x4d --rgb True --activation mish --mixup True --cutmix True --use_wandb True --continue_train True
-python train.py --save_dir "$1" --epochs $2 --batch_size 64 --run_name baseline --mixup True --gridmask True --activation mish --rgb True --pretrained True --model_name se_resnext50_32x4d --min_save_epoch 20 --use_wandb True --continue_train True
+python train.py --morph True --grad_acc 2 --save_dir "$1" --epochs $2 --batch_size 64 --run_name baselinex2 --mixup True --gridmask True --activation mish --rgb True --pretrained True --model_name se_resnext50_32x4d --min_save_epoch 20 --use_wandb True --continue_train True
