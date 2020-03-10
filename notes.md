@@ -3,18 +3,30 @@ I scribble here whatever I feel like. There is no order. This is just a direct i
 
 pip install iterative-stratification
 
+# Latest
+- Stopped writing notes here
+- I took a ~3 week break
+- Was using white board instead
+- NOTHING WORKS, I WROTE SO MUCH CODE AND NOTHING WORKS. I CANT EVEN GET IN THE BRONZE ZONE.
+
+# OHEM
+- My score just doesn't improve with this
+- Must've implemented it wrong
+- Need to rewrite OHEM or just copy paste it from somewhere
+
+
 # Todo
-- increase batch size by gradient accumulation
+- increase batch size by gradient accumulation [DONE]
 - cosine annealing with initial learning rate 0.2
 - Try SWATS [DONE]
 - Try SMOTE
 
 # Turn off screenshutdown
 - xset s off
-- xset -dpms 
+- xset -dpms
 
 # Ideas
-- Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687
+- Steal from here: https://www.kaggle.com/c/imet-2019-fgvc6/discussion/94687 [DONE]
 
 
 # What doesn't work?
@@ -27,7 +39,7 @@ pip install iterative-stratification
 
 # Model?
 - I love efficientnets. Mainly because they are efficient. EUREKA!
-- effnet-b0 got me a score of ~0.94 with all the vanilla settings. Althought, I won't submit until I get ~0.97 so I don't know my CB score (however it should be close because its close for everyone in the discussions)
+- effnet-b0 got me a score of ~0.94 with all the vanilla settings. Although, I won't submit until I get ~0.97 so I don't know my CB score (however it should be close because its close for everyone in the discussions)
 - effnet-b0 is very small. I need a bigger model.
 - I should try effnet-b4 but I easily get influenced by people in kaggle. they are getting good score for `se_resnext50_32x4d` so I will train that now too (RIP my GPU)
 
@@ -95,7 +107,7 @@ pip install iterative-stratification
 # CUDA out of memory
 - I got CUDA out of memory for my se_resnext50_32x4d
 - Usually, I dismiss it at saying - my GPU is only 6GB
-- This time I investigated
+- This time I investigated and found a fix i.e my validation was wrong and chaining batches consuming memory
 
 # Datasplit
 - MultilabelStratifiedShuffleSplit

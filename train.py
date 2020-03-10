@@ -514,7 +514,6 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 if save_cond(phase, li, len(loaders)):
                     current = recall #Update current score
                     if schd == "rlrp":
-                        print("\nplatue")
                         scheduler.step(loss) #Step for val loss only
 
                 epoch_str = f"[{epoch+1}/{n_epochs}] | {phase[0]}_{li} | "
@@ -542,6 +541,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                     wandb.log({f"{phase}_{li}_recall_grapheme": running_recall0})
                     wandb.log({f"{phase}_{li}_recall_vowel": running_recall1})
                     wandb.log({f"{phase}_{li}_recall_consonant": running_recall2})
+                    wandb.log({f"LR": get_learning_rate(optimizer)})
 
 
                 history.loc[epoch, f'{phase}_{li}_loss'] = running_loss
