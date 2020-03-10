@@ -161,9 +161,9 @@ def get_augs(gridmask=False, randommorph=True):
         augs.append(albu.OneOf([
                         GridMask(num_grid=3, rotate=15),
                         GridMask(num_grid=3),
-                        ], p=1))
+                        ], p=0.2)) #Low probability
     if randommorph:
-        augs.append(RandomMorph())
+        augs.append(RandomMorph()) #Stolen from kaggle
 
     return albu.Compose(augs)
 

@@ -143,7 +143,7 @@ def get_sched(schd, optimizer, train_df, batch_size, n_epochs):
                                             epochs=n_epochs, pct_start=0.33)
     elif schd == "rlrp":
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.5,
-                                            patience=5, min_lr=1e-7)
+                                            patience=5, min_lr=1e-8)
     return scheduler
 
 def get_optim(model, schd, optmzr, lr, train_df, batch_size, n_epochs, momentum=0.0, weight_decay=0.0):

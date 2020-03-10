@@ -187,6 +187,7 @@ def lin_head(indim, outdim, bias=True, use_bn=True, activation=F.relu,
 class AdaptiveHead(nn.Module):
     """ New best R: 0.732 | [0.601 | 0.878 | 0.849]
         TRAIN:   R: 0.990 | [0.984 | 0.996 | 0.995] """
+
     def __init__(self, in_features, out_features, factor=2, p=0.7):
         super(AdaptiveHead, self).__init__()
         self.pool = GeM()
@@ -344,7 +345,8 @@ class ClassifierCNN_effnet(nn.Module):
             param.requires_grad = True
 
     def forward(self, x):
-        x = self.first(x)
+        # x = self.first(x)
+        x = torch.cat([x, x, x], dim=1) #Simple cat
         x = self.model.extract_features(x)
 
         logit_grapheme_root = self.head_grapheme_root(x)
