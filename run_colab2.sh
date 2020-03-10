@@ -1,1 +1,1 @@
-python train.py --save_dir "$1" --epochs $2 --heavy_head True --run_name seresnext50 --model_name se_resnext50_32x4d --rgb True --activation mish --mixup True --cutmix True --use_wandb True --continue_train True
+python train.py --scheduler rlrp --morph True --save_dir "$1" --epochs $2 --batch_size 64 --run_name nothingworks_cutmix_instead_of_mixup_and_no_gridmask --cutmix True --activation mish --rgb True --pretrained True --model_name se_resnext50_32x4d --min_save_epoch 10 --use_wandb True --continue_train True

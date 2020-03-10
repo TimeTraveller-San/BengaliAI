@@ -3,6 +3,11 @@ I scribble here whatever I feel like. There is no order. This is just a direct i
 
 pip install iterative-stratification
 
+# Ray of hope?
+- Preprocessing
+- There must be some problems in the way I am cropping and preprocessing my images
+- Need to rethink that. This is where I've worked the least.
+
 # Latest
 - Stopped writing notes here
 - I took a ~3 week break
