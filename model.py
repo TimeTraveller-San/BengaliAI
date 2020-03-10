@@ -301,7 +301,8 @@ class ClassifierCNN(nn.Module):
 
     def forward(self, x):
         # x = F.interpolate(x, size=self.size, mode='bilinear')
-        x = self.first(x)
+        # x = self.first(x)
+        x = torch.cat([x, x, x], dim=1) #Simple cat
         x = self.model.features(x)
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
@@ -330,10 +331,9 @@ class ClassifierCNN_effnet(nn.Module):
         # self.head_vowel_diacritic = lin_head(in_features, num_classes[1])
         # self.head_consonant_diacritic = lin_head(in_features, num_classes[2])
 
-        self.head_grapheme_root = AdaptiveHead_Heavy(in_features, num_classes[0], factor=2)
-        self.head_vowel_diacritic = AdaptiveHead_Heavy(in_features, num_classes[1], factor=2)
-        self.head_consonant_diacritic = AdaptiveHead_Heavy(in_features, num_classes[2], factor=2)
-
+        self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0], factor=2)
+        self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1], factor=2)
+        self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2], factor=2)
 
 
     def freeze(self):
