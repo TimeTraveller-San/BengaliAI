@@ -515,7 +515,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                     current = recall #Update current score
                     if schd == "rlrp":
                         print("\nplatue")
-                        scheduler.step(recall) #Step for val loss only
+                        scheduler.step(loss) #Step for val loss only
 
                 epoch_str = f"[{epoch+1}/{n_epochs}] | {phase[0]}_{li} | "
                 recall_str = f"R: {running_recall:.3f} | [{running_recall0:.3f} | {running_recall1:.3f} | {running_recall2:.3f}] | "
