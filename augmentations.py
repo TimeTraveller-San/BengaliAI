@@ -152,7 +152,7 @@ class RandomMorph(ImageOnlyTransform):
 
 
 def get_augs(gridmask=False, randommorph=True):
-    augs = [albu.ShiftScaleRotate(p=0.7,
+    augs = [albu.ShiftScaleRotate(p=0.2,
                           border_mode=cv2.BORDER_CONSTANT,
                           value=1,
                           scale_limit=0.2,
@@ -161,14 +161,24 @@ def get_augs(gridmask=False, randommorph=True):
         augs.append(albu.OneOf([
                         GridMask(num_grid=3, rotate=15),
                         GridMask(num_grid=3),
-                        ], p=0.2)) #Low probability
+                        ], p=0.5)) #Low probability
     if randommorph:
         augs.append(RandomMorph()) #Stolen from kaggle
 
     return albu.Compose(augs)
 
-
-
+def avg(alpha=1):
+    l, lc, s, sc = 0, 0, 0, 0
+    for x in range(1000):
+        r = np.random.beta(alpha, alpha)
+        if r > 0.5:
+            l+=r
+            lc+=1
+        else:
+            s+=r
+            sc+=1
+    print(l/lc)
+    print(s/sc)
 
 def mixup_data(data, labels, alpha, device):
     indices = torch.randperm(data.size(0))
