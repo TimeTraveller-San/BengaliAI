@@ -72,7 +72,7 @@ def ohem_loss_from_loss(loss, rate=0.3):
 class CEntropy():
     def __init__(self):
         self.criterion = nn.CrossEntropyLoss()
-        self.ohem_criterion = torch.nn.CrossEntropyLoss(reduction='none')
+        self.ohem_criterion = nn.CrossEntropyLoss(reduction='none')
 
     def __call__(self, preds, labels, val=True, ohem=False):
         if val:
@@ -85,8 +85,8 @@ class CEntropy():
 
 class Mixed_CrossEntropyLoss():
     def __init__(self):
-        self.criterion = torch.nn.CrossEntropyLoss(reduction='mean')
-        self.ohem_criterion = torch.nn.CrossEntropyLoss(reduction='none')
+        self.criterion = nn.CrossEntropyLoss(reduction='mean')
+        self.ohem_criterion = nn.CrossEntropyLoss(reduction='none')
 
     def __call__(self, preds, labels, val=True, ohem=False):
         if ohem: criterion = self.ohem_criterion

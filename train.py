@@ -267,7 +267,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
 
     lr = 3e-4 # Andrej must be proud of me
-    # lr = 0.01 # For SGD
+    # lr = 0.01 # For SGDM
     if use_wandb:
         wandb.watch(model)
 
@@ -357,7 +357,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     logger.info("Starting training...")
     if continue_train:
         logger.info(f"WILL CONTINUE FROM EPOCH: {start_epoch}\n\n")
-        n_epochs += start_epoch
+        # n_epochs += start_epoch
         epoch = start_epoch
     if verbose:
         pbar = tqdm(total=n_epochs, initial=epoch)
@@ -368,7 +368,14 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                model, optimizer, opt_level="O3",
                keep_batchnorm_fp32=True
             )
+
     ohem = False
+    ohem_max_r = 0.8
+    ohem_min_r = 0.3
+    ohem_min_epoch = ohem_cutoff
+    ohem_max_epoch = 50
+    ohem_step = (ohem_max_r - ohem_min_r)/(ohem_max_epoch - ohem_min_epoch)
+
     while epoch < n_epochs:
         # Epoch start
         if epoch >= unfreerze_cutoff and freezed:
@@ -401,6 +408,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 model.train()
                 # logger.info("----------------------------------------------------------\n")
                 loaders = [train_loader]
+                if ohem:
+                    ohem_rate += ohem_step
+                    logger.info(f"OHEM rate {ohem_rate}")
 
             if phase == 'valid':
                 model.eval()
