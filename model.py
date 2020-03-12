@@ -196,7 +196,7 @@ class AdaptiveHead(nn.Module):
         if pool == 'gem':
             self.pool = GeM()
         else:
-            self.pool = nn.AdaptiveAvgPool2d()
+            self.pool = nn.AdaptiveAvgPool2d(output_size=(1,1))
         h_dim = int(in_features//factor)
         self.fc1 = nn.Conv2d(in_features, h_dim, 2)
         self.bn = nn.BatchNorm2d(h_dim)
@@ -247,7 +247,7 @@ class AdaptiveHead_Heavy(nn.Module):
         if pool == 'gem':
             self.pool = GeM()
         else:
-            self.pool = nn.AdaptiveAvgPool2d()
+            self.pool = nn.AdaptiveAvgPool2d(output_size=(1,1))
         self.l1 = nn.Linear(in_features//factor, out_features)
 
 
@@ -378,7 +378,7 @@ if __name__ == "__main__":
     mixup = True
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # model = ClassifierCNN_effnet(model_name, pretrained=pretrained, activation=activation).to(device)
-    model = ClassifierCNN(model_name, pretrained=pretrained, activation=activation).to(device)
+    model = ClassifierCNN(model_name, pretrained=pretrained, activation=activation, pool='notgem').to(device)
     x = torch.zeros((8, 1, 128, 128))
     with torch.no_grad():
         output1, output2, output3 = model(x.cuda())
