@@ -665,7 +665,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     weights = [int(args.w1), int(args.w2), int(args.w3)]
-    imgsize = (int(imgh), int(imgw))
+    imgsize = (int(args.imgh), int(args.imgw))
 
     if args.debug:
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
