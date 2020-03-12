@@ -147,7 +147,6 @@ def get_sched(schd, optimizer, train_df, batch_size, n_epochs):
     return scheduler
 
 def get_optim(model, schd, optmzr, lr, train_df, batch_size, n_epochs, momentum=0.0, weight_decay=0.0):
-    lr = 3e-4
     if optmzr == 'swats':
         print(f"\n\n\n Using SWATS")
         optimizer = SWATS(model.parameters(), lr=lr, logger=logger)
@@ -272,7 +271,6 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     if use_wandb:
         wandb.watch(model)
 
-    # optimizer, lr = get_optim(model, optmzr, lr, momentum, weight_decay)
     optimizer, scheduler, lr = get_optim(model, schd, optmzr, lr, train_df,
                                                 batch_size, n_epochs,
                                                 momentum, weight_decay)
