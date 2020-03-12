@@ -196,7 +196,7 @@ class AdaptiveHead(nn.Module):
         if pool == 'gem':
             self.pool = GeM()
         else:
-            self.pool = AdaptiveAvgPool2d()
+            self.pool = nn.AdaptiveAvgPool2d()
         h_dim = int(in_features//factor)
         self.fc1 = nn.Conv2d(in_features, h_dim, 2)
         self.bn = nn.BatchNorm2d(h_dim)
@@ -247,7 +247,7 @@ class AdaptiveHead_Heavy(nn.Module):
         if pool == 'gem':
             self.pool = GeM()
         else:
-            self.pool = AdaptiveAvgPool2d()
+            self.pool = nn.AdaptiveAvgPool2d()
         self.l1 = nn.Linear(in_features//factor, out_features)
 
 
