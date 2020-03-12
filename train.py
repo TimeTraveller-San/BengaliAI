@@ -168,14 +168,11 @@ def get_optim(model, schd, optmzr, lr, train_df, batch_size, n_epochs, momentum=
 
     return optimizer, scheduler, lr
 
-def get_criterion(mixup, cutmix, ohem):
+def get_criterion(mixup, cutmix):
     if mixup or cutmix:
-        criterion = Mixed_CrossEntropyLoss(ohem)
+        criterion = Mixed_CrossEntropyLoss()
     else:
-        if ohem:
-            criterion = CrossEntropyLoss_OHEM()
-        else:
-            criterion = nn.CrossEntropyLoss()
+        criterion = CEntropy()
     return criterion
 
 def plot_lr(optimizer, scheduler, epochs):
@@ -196,8 +193,9 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
         min_save_epoch=3, save_freq=3, data_root="/data", save_dir=None,
         use_wandb=False, optmzr=None, heavy_head=False, toy_set=False,
         gridmask=False, morph=False, schd=None, momentum=0., weight_decay=0.,
-        use_apex=False, batch_size=32, grad_acc=0, ohem=False,
-        min_loss_cutoff=100000, loss_skips=3, verbose=False):
+        use_apex=False, batch_size=32, grad_acc=0, ohem_cutoff=5000,
+        ohem_rate=0.3, min_loss_cutoff=100000, loss_skips=3, pool='gem',
+        feather_folder="train_128_feather", imgsize=(128, 128), verbose=False):
 
     if not run_name: run_name = model_name
 
@@ -235,7 +233,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     if toy_set:
         train_df , valid_df = load_toy_df()
     else:
-        train_df , valid_df = load_df(debug, root=data_root)
+        train_df , valid_df = load_df(debug, root=data_root, feather_folder=feather_folder)
 
     if debug:
         LIMIT = 500
@@ -261,7 +259,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                               pretrained=pretrained,
                               rgb=rgb,
                               activation=activation,
-                              heavy_head=heavy_head).to(device)
+                              heavy_head=heavy_head,
+                              pool=pool).to(device)
         if pretrained:
             model.freeze()
             freezed = True
@@ -301,12 +300,13 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
             print("Can't continue training. Starting again.")
             logger.info("Can't continue training. Starting again.")
 
-    criterion = get_criterion(mixup, cutmix, ohem)
+    criterion = get_criterion(mixup, cutmix)
 
     train_aug = get_augs(gridmask, morph)
     train_dataset = BengaliAI(train_df,
                              transform=train_aug,
-                             details=mean_std(model_name)
+                             details=mean_std(model_name),
+                             imgsize=imgsize,
                         )
     train_loader = DataLoader(train_dataset,
                               batch_size=batch_size,
@@ -314,7 +314,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                               shuffle=False
                         )
     val_dataset = BengaliAI(valid_df,
-                            details=mean_std(model_name)
+                            details=mean_std(model_name),
+                             imgsize=imgsize,
                         )
     val_loader = DataLoader(val_dataset,
                             batch_size=batch_size,
@@ -369,12 +370,17 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                model, optimizer, opt_level="O3",
                keep_batchnorm_fp32=True
             )
+    ohem = False
     while epoch < n_epochs:
         # Epoch start
         if epoch >= unfreerze_cutoff and freezed:
             logger.info("Unfreezing model")
             model.unfreeze()
             freezed = False
+        if (epoch > ohem_cutoff) and not ohem:
+            ohem = True
+            logger.info(f"Doing ohem loss")
+            print(f"Doing ohem loss")
         for phase in ['train', 'valid', 'save']:
             # Phase start
             if phase == 'save':
@@ -460,16 +466,19 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                         label[2] = label[2].to(device)
 
                         if (mixup or cutmix) and phase == 'train':
-                            loss0 = criterion(out[0], (label[0], shuffled_labels[0], lam), False)
-                            loss1 = criterion(out[1], (label[1], shuffled_labels[1], lam), False)
-                            loss2 = criterion(out[2], (label[2], shuffled_labels[2], lam), False)
+                            loss0 = criterion(out[0], (label[0], shuffled_labels[0], lam), False, ohem=ohem)
+                            loss1 = criterion(out[1], (label[1], shuffled_labels[1], lam), False, ohem=ohem)
+                            loss2 = criterion(out[2], (label[2], shuffled_labels[2], lam), False, ohem=ohem)
                         else:
-                            loss0 = criterion(out[0], label[0])
-                            loss1 = criterion(out[1], label[1])
-                            loss2 = criterion(out[2], label[2])
+                            loss0 = criterion(out[0], label[0], ohem=ohem)
+                            loss1 = criterion(out[1], label[1], ohem=ohem)
+                            loss2 = criterion(out[2], label[2], ohem=ohem)
 
                         if epoch < min_loss_cutoff:
                             loss = ws[0]*loss0 + ws[1]*loss1 + ws[2]*loss2
+                            if ohem:
+                                loss = ohem_loss_from_loss(loss, ohem_rate)
+
                         elif (epoch+1) % loss_skips == 0:
                             loss = ws[0]*loss0 + ws[1]*loss1 + ws[2]*loss2
                         else:
@@ -498,9 +507,14 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                         # Evaluation
                         with torch.no_grad():
                             running_loss += loss.item()/len(loader)
-                            running_loss0 += loss0.item()/len(loader)
-                            running_loss1 += loss1.item()/len(loader)
-                            running_loss2 += loss2.item()/len(loader)
+                            try:
+                                running_loss0 += loss0.item()/len(loader)
+                                running_loss1 += loss1.item()/len(loader)
+                                running_loss2 += loss2.item()/len(loader)
+                            except:
+                                running_loss0 += -1
+                                running_loss1 += -1
+                                running_loss2 += -1
                             recall, recall_grapheme, recall_vowel, recall_consonant = macro_recall_multi(out, label)
                             running_recall += recall/len(loader)
                             running_recall0 += recall_grapheme/len(loader)
@@ -628,12 +642,22 @@ if __name__ == "__main__":
                             help="batch size")
     parser.add_argument("--grad_acc", "-gac", default=0,
                             help="gradient accumulation")
-    parser.add_argument("--ohem", "-ohm", default=False,
-                            help="Online Hard Example Mining")
+    parser.add_argument("--ohem_cutoff", "-ohmc", default=1000,
+                            help="Online Hard Example Mining cutoff epoch")
+    parser.add_argument("--ohem_rate", "-ohmr", default=0.3,
+                            help="Online Hard Example Mining rate")
     parser.add_argument("--min_loss_cutoff", "-mlc", default=1000000,
                             help="Min epochs to start cutting loss to just root")
     parser.add_argument("--loss_skips", "-lskips", default=3,
                             help="No. epochs to skip for constant and vowel")
+    parser.add_argument("--pool", "-pool", default='gem',
+                            help="Kind of pooling to use in head. Anything except gem is AdaptiveAvgPool2d")
+    parser.add_argument("--ffo", "-feather_folder", default='train_128_feather',
+                            help="folder that contains feather file inside the root folder")
+    parser.add_argument("--imgh", "-image_height", default=128,
+                            help="-")
+    parser.add_argument("--imgw", "-image_width", default=128,
+                            help="-")
     parser.add_argument("--verbose", "-v", default=False,
                             help="print loss on screen or not?")
 
@@ -641,6 +665,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     weights = [int(args.w1), int(args.w2), int(args.w3)]
+    imgsize = (int(imgh), int(imgw))
 
     if args.debug:
         print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
@@ -675,8 +700,12 @@ if __name__ == "__main__":
         args.use_apex,
         int(args.batch_size),
         int(args.grad_acc),
-        args.ohem,
+        int(args.ohem_cutoff),
+        float(args.ohem_rate),
         int(args.min_loss_cutoff),
         int(args.loss_skips),
+        args.pool,
+        args.ffo,
+        imgsize,
         args.verbose,
         )

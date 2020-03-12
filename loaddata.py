@@ -63,12 +63,12 @@ class BengaliAI(Dataset):
 
 
 
-def load_df(debug=True, random_state=42, root="data/"):
+def load_df(debug=True, random_state=42, root="data/", feather_folder="train_128_feather", filename="train_"):
     # Load Feather Data
     # df = 'data/train.csv'
     df = os.path.join(root, 'train.csv')
     # files = [f'data/train_128_feather/train_{i}.feather' for i in range(4)]
-    files = [os.path.join(root, 'train_128_feather', f'train_{i}.feather') for i in range(4)]
+    files = [os.path.join(root, feather_folder, f'{filename}{i}.feather') for i in range(4)]
     df = pd.read_csv(df)
     if debug:
         data0 = pd.read_feather(files[0])
@@ -103,17 +103,22 @@ def load_df(debug=True, random_state=42, root="data/"):
     return train_df, valid_df
 
 
-def load_toy_df(random_state=42, root="/home/timetraveller/Entertainment/BengaliAI_Data"):
+def load_toy_df(random_state=42, root="/home/timetraveller/Entertainment/BengaliAI_Data", debug=False):
     # Load Feather Data
     df = os.path.join(root, 'toy_data.csv')
     files = [os.path.join(root, 'train_128', f'train_{i}.feather') for i in range(4)]
     df = pd.read_csv(df)
-    data0 = pd.read_feather(files[0])
-    data1 = pd.read_feather(files[1])
-    data2 = pd.read_feather(files[2])
-    data3 = pd.read_feather(files[3])
-    data_full = pd.concat([data0,data1,data2,data3], ignore_index=True)
-    del data0, data1, data2, data3
+    if debug:
+        data0 = pd.read_feather(files[0])
+        data_full = pd.concat([data0,data0], ignore_index=True)
+        del data0
+    else:
+        data0 = pd.read_feather(files[0])
+        data1 = pd.read_feather(files[1])
+        data2 = pd.read_feather(files[2])
+        data3 = pd.read_feather(files[3])
+        data_full = pd.concat([data0,data1,data2,data3], ignore_index=True)
+        del data0, data1, data2, data3
     gc.collect()
     data_full = df.merge(data_full, on='image_id', how='inner')
     del df
@@ -132,11 +137,11 @@ def load_toy_df(random_state=42, root="/home/timetraveller/Entertainment/Bengali
 
 if __name__ == "__main__":
     """Unit tests"""
-    train_df, valid_df = load_df(True)
-    # train_df, valid_df = load_toy_df()
+    # train_df, valid_df = load_df(True)
+    train_df, valid_df = load_toy_df(debug=True)
     dataset1 = BengaliAI(train_df)
     dataset2 = BengaliAI(train_df,
-                             transform=get_augs(),
+                             transform=get_augs(gridmask=True),
                         )
     ncol = 2
     nrow = 15

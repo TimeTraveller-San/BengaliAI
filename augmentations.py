@@ -152,18 +152,20 @@ class RandomMorph(ImageOnlyTransform):
 
 
 def get_augs(gridmask=False, randommorph=True):
-    augs = [albu.ShiftScaleRotate(p=0.2,
+    augs = [albu.ShiftScaleRotate(p=0.667,
                           border_mode=cv2.BORDER_CONSTANT,
-                          value=1,
-                          scale_limit=0.2,
-                          rotate_limit=30)]
+                          shift_limit=0.03,
+                          scale_limit=0.1,
+                          rotate_limit=21)]
     if gridmask:
         augs.append(albu.OneOf([
                         GridMask(num_grid=3, rotate=15),
                         GridMask(num_grid=3),
-                        ], p=0.5)) #Low probability
+                        GridMask(num_grid=4),
+                        GridMask(num_grid=5),
+                        ], p=0.667))
     if randommorph:
-        augs.append(RandomMorph()) #Stolen from kaggle
+        augs.append(RandomMorph(p=0.3)) #Stolen from kaggle
 
     return albu.Compose(augs)
 

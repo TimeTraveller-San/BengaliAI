@@ -18,6 +18,7 @@ from sklearn.model_selection import train_test_split
 import torch
 from torch import nn
 from torch import optim
+from augmentations import *
 import torch.nn.functional as F
 from torch.nn.parameter import Parameter
 
@@ -30,6 +31,7 @@ import SEResNeXt_vanilla
 from effnet import EfficientNet
 from mixup import *
 from activations import Mish
+from losses import *
 
 n_grapheme = 168
 n_vowel = 11
@@ -184,13 +186,17 @@ def lin_head(indim, outdim, bias=True, use_bn=True, activation=F.relu,
 #         return x
 
 # https://arxiv.org/pdf/1901.07012.pdf
+
 class AdaptiveHead(nn.Module):
     """ New best R: 0.732 | [0.601 | 0.878 | 0.849]
         TRAIN:   R: 0.990 | [0.984 | 0.996 | 0.995] """
 
-    def __init__(self, in_features, out_features, factor=2, p=0.7):
+    def __init__(self, in_features, out_features, factor=2, p=0.7, pool='gem'):
         super(AdaptiveHead, self).__init__()
-        self.pool = GeM()
+        if pool == 'gem':
+            self.pool = GeM()
+        else:
+            self.pool = AdaptiveAvgPool2d()
         h_dim = int(in_features//factor)
         self.fc1 = nn.Conv2d(in_features, h_dim, 2)
         self.bn = nn.BatchNorm2d(h_dim)
@@ -233,12 +239,15 @@ class AdaptiveHead(nn.Module):
 #         return x
 
 class AdaptiveHead_Heavy(nn.Module):
-    def __init__(self, in_features, out_features, factor):
+    def __init__(self, in_features, out_features, factor, pool='gem'):
         super(AdaptiveHead_Heavy, self).__init__()
         self.fc1 = nn.Conv2d(in_features, in_features//factor, 4)
         self.bn = nn.BatchNorm2d(in_features//factor)
         self.mish = Mish()
-        self.pool = GeM()
+        if pool == 'gem':
+            self.pool = GeM()
+        else:
+            self.pool = AdaptiveAvgPool2d()
         self.l1 = nn.Linear(in_features//factor, out_features)
 
 
@@ -254,8 +263,8 @@ class AdaptiveHead_Heavy(nn.Module):
 
 
 class ClassifierCNN(nn.Module):
-    def __init__(self, model_name, num_classes=num_classes,
-            rgb=False, pretrained=None, activation=None, heavy_head=False):
+    def __init__(self, model_name, num_classes=num_classes, rgb=False,
+                pretrained=None, activation=None, heavy_head=False, pool='gem'):
         super(ClassifierCNN, self).__init__()
 
         if rgb:
@@ -280,16 +289,16 @@ class ClassifierCNN(nn.Module):
         else:
             self.model = pretrainedmodels.__dict__[model_name](pretrained=pretrained)
 
-        in_features = 2048
+        in_features = 2048 #Will make lazy loader later. For now, determined this by getting an error.
 
         if heavy_head:
             self.head_grapheme_root = AdaptiveHead_Heavy(in_features, num_classes[0], factor=2)
             self.head_vowel_diacritic = AdaptiveHead_Heavy(in_features, num_classes[1], factor=4)
             self.head_consonant_diacritic = AdaptiveHead_Heavy(in_features, num_classes[2], factor=4)
         else:
-            self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0])
-            self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1], 4, p=0.3)
-            self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2], 4, p=0.3)
+            self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0], 4, p=0.4, pool=pool)
+            self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1], 4, p=0.3, pool=pool)
+            self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2], 4, p=0.3, pool=pool)
 
     def freeze(self):
         for param in self.model.parameters():
@@ -300,7 +309,7 @@ class ClassifierCNN(nn.Module):
             param.requires_grad = True
 
     def forward(self, x):
-        # x = F.interpolate(x, size=self.size, mode='bilinear')
+        x = F.interpolate(x, (224, 224), mode='area')
         # x = self.first(x)
         x = torch.cat([x, x, x], dim=1) #Simple cat
         x = self.model.features(x)
@@ -364,7 +373,7 @@ if __name__ == "__main__":
     #1. Check forward pass
     model_name = 'se_resnext50_32x4d'
     # model_name = 'efficientnet-b0'
-    pretrained = False
+    pretrained = True
     activation = 'mish'
     mixup = True
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -381,15 +390,17 @@ if __name__ == "__main__":
     #2. Does the model converge?
     from loaddata import BengaliAI, load_df
     from tqdm import tqdm
-    df, _ = load_df(True)
-    dataset = BengaliAI(df[:10000])
-    dataloader = DataLoader(dataset, batch_size=32)
+    df, _ = load_df(True, root="/home/timetraveller/Entertainment/BengaliAI_Data",
+                    feather_folder="orig_feather", filename="train_")
+    imgsize = (137, 236)
+    dataset = BengaliAI(df[:10000], imgsize=imgsize)
+    dataloader = DataLoader(dataset, batch_size=4)
     optimizer = optim.AdamW(model.parameters(), lr=3e-4)
     if mixup:
         print("Using mixup")
-        criterion = Mixup_CrossEntropyLoss()
+        criterion = Mixed_CrossEntropyLoss()
     else:
-        criterion = nn.CrossEntropyLoss()
+        criterion = CEntropy()
     losses = []
     epochs = 5 #Increase this if you have good resources/a lot of time
     for epoch in tqdm(range(epochs)):
@@ -403,9 +414,9 @@ if __name__ == "__main__":
             optimizer.zero_grad()
             out = model(img)
             if mixup:
-                loss = 0.5*criterion(out[0], (label[0].to(device), shuffled_labels[0], lam)) +\
-                       0.25*criterion(out[1], (label[1].to(device), shuffled_labels[1], lam)) +\
-                       0.25*criterion(out[2], (label[2].to(device), shuffled_labels[2], lam))
+                loss = 0.5*criterion(out[0], (label[0].to(device), shuffled_labels[0], lam), False, False) +\
+                       0.25*criterion(out[1], (label[1].to(device), shuffled_labels[1], lam), False, False) +\
+                       0.25*criterion(out[2], (label[2].to(device), shuffled_labels[2], lam), False, False)
             else:
                 loss = 0.5*criterion(out[0], label[0].to(device)) +\
                        0.25*criterion(out[1], label[1].to(device)) +\

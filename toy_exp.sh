@@ -75,5 +75,5 @@
 # python train.py --run_name baseline --mixup True --gridmask True --activation mish --rgb True --epochs 100 --pretrained True --toy_set True --model_name se_resnext50_32x4d --save_dir test_8 --verbose True --min_save_epoch 10000
 # python train.py --run_name baseline_ohem --ohem True --mixup True --gridmask True --activation mish --rgb True --epochs 100 --pretrained True --toy_set True --model_name se_resnext50_32x4d --save_dir test_8 --verbose True --min_save_epoch 10000
 
-# efficientnet-b0
-python train.py --run_name baseline_ohem --ohem True --mixup True --gridmask True --activation mish --rgb True --epochs 100 --pretrained True --toy_set True --model_name se_resnext50_32x4d --save_dir test_8 --verbose True --min_save_epoch 10000
+# python train.py --run_name baseline_ohem_fixed --ohem_cutoff 50 --mixup True --gridmask True --activation mish --rgb True --epochs 100 --pretrained True --toy_set True --model_name se_resnext50_32x4d --save_dir test_8 --verbose True --min_save_epoch 10000
+python train.py --run_name baseline-AdaptiveAvgPool2d --pool nonGEM --mixup True --gridmask True --activation mish --rgb True --epochs 100 --pretrained True --toy_set True --model_name se_resnext50_32x4d --save_dir test_8 --verbose True --min_save_epoch 10000

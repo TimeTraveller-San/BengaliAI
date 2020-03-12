@@ -47,9 +47,9 @@ def macro_recall_multi(preds, labels):
     pred_label_consonants = torch.argmax(pred_consonants, dim=1).cpu().numpy()
     true_label_consonants = true_consonants.cpu().numpy()
 
-    recall_grapheme = sklearn.metrics.recall_score(pred_label_graphemes, true_label_graphemes, average='macro')
-    recall_vowel = sklearn.metrics.recall_score(pred_label_vowels, true_label_vowels, average='macro')
-    recall_consonant = sklearn.metrics.recall_score(pred_label_consonants, true_label_consonants, average='macro')
+    recall_grapheme = sklearn.metrics.recall_score(true_label_graphemes, pred_label_graphemes, average='macro')
+    recall_vowel = sklearn.metrics.recall_score(true_label_vowels, pred_label_vowels, average='macro')
+    recall_consonant = sklearn.metrics.recall_score(true_label_consonants, pred_label_consonants, average='macro')
     scores = [recall_grapheme, recall_vowel, recall_consonant]
     final_score = np.average(scores, weights=[2, 1, 1])
     return final_score, recall_grapheme, recall_vowel, recall_consonant

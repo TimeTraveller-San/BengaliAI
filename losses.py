@@ -42,17 +42,56 @@ class CrossEntropyLoss_OHEM(torch.nn.CrossEntropyLoss):
 
 
 
-class Mixed_CrossEntropyLoss():
-    def __init__(self, ohem=False):
-        if ohem:
-            print("USING OHEM")
-            self.criterion = ohem_loss
-        else:
-            self.criterion = torch.nn.CrossEntropyLoss(reduction='mean')
-        pass
+# class Mixed_CrossEntropyLoss():
+#     def __init__(self, ohem=False):
+#         if ohem:
+#             print("USING OHEM")
+#             self.criterion = ohem_loss
+#         else:
+#             self.criterion = torch.nn.CrossEntropyLoss(reduction='mean')
+#         pass
+#
+#     def __call__(self, preds, labels, val=True):
+#         if val:
+#             return self.criterion(preds, labels)
+#         l1, l2, lam = labels
+#         return lam * self.criterion(preds, l1) + (1 - lam) * self.criterion(preds, l2)
 
-    def __call__(self, preds, labels, val=True):
+def ohem_loss_from_loss(loss, rate=0.3):
+    bs = loss.shape[0]
+    sorted_loss, idx = torch.sort(loss, descending=True)
+    keep_num = min(sorted_loss.size()[0], int(bs*rate) )
+
+    if keep_num < sorted_loss.size()[0]:
+        keep_idx_cuda = idx[:keep_num]
+        loss = loss[keep_idx_cuda]
+    cls_loss = loss.sum() / keep_num
+    return cls_loss
+
+
+class CEntropy():
+    def __init__(self):
+        self.criterion = nn.CrossEntropyLoss()
+        self.ohem_criterion = torch.nn.CrossEntropyLoss(reduction='none')
+
+    def __call__(self, preds, labels, val=True, ohem=False):
         if val:
             return self.criterion(preds, labels)
         l1, l2, lam = labels
+        if ohem:
+            return lam * self.ohem_criterion(preds, l1) + (1 - lam) * self.ohem_criterion(preds, l2)
         return lam * self.criterion(preds, l1) + (1 - lam) * self.criterion(preds, l2)
+
+
+class Mixed_CrossEntropyLoss():
+    def __init__(self):
+        self.criterion = torch.nn.CrossEntropyLoss(reduction='mean')
+        self.ohem_criterion = torch.nn.CrossEntropyLoss(reduction='none')
+
+    def __call__(self, preds, labels, val=True, ohem=False):
+        if ohem: criterion = self.ohem_criterion
+        else: criterion = self.criterion
+        if val:
+            return criterion(preds, labels)
+        l1, l2, lam = labels
+        return lam * criterion(preds, l1) + (1 - lam) * criterion(preds, l2)
