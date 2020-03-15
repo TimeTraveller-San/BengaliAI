@@ -13,12 +13,6 @@ from torch.nn.parameter import Parameter
 import torch
 import torch.nn.functional as F
 
-
-
-
-
-
-
 __all__ = ['SENet', 'senet154', 'se_resnet50', 'se_resnet101', 'se_resnet152',
            'se_resnext50_32x4d', 'se_resnext101_32x4d']
 
@@ -154,54 +148,6 @@ class Bottleneck(nn.Module):
         return out
 
 
-class SEBottleneck(Bottleneck):
-    """
-    Bottleneck for SENet154.
-    """
-    expansion = 4
-
-    def __init__(self, inplanes, planes, groups, reduction, stride=1,
-                 downsample=None):
-        super(SEBottleneck, self).__init__()
-        self.conv1 = nn.Conv2d(inplanes, planes * 2, kernel_size=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(planes * 2)
-        self.conv2 = nn.Conv2d(planes * 2, planes * 4, kernel_size=3,
-                               stride=stride, padding=1, groups=groups,
-                               bias=False)
-        self.bn2 = nn.BatchNorm2d(planes * 4)
-        self.conv3 = nn.Conv2d(planes * 4, planes * 4, kernel_size=1,
-                               bias=False)
-        self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = Mish()
-        self.se_module = SEModule(planes * 4, reduction=reduction)
-        self.downsample = downsample
-        self.stride = stride
-
-
-class SEResNetBottleneck(Bottleneck):
-    """
-    ResNet bottleneck with a Squeeze-and-Excitation module. It follows Caffe
-    implementation and uses `stride=stride` in `conv1` and not in `conv2`
-    (the latter is used in the torchvision implementation of ResNet).
-    """
-    expansion = 4
-
-    def __init__(self, inplanes, planes, groups, reduction, stride=1,
-                 downsample=None):
-        super(SEResNetBottleneck, self).__init__()
-        self.conv1 = nn.Conv2d(inplanes, planes, kernel_size=1, bias=False,
-                               stride=stride)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, padding=1,
-                               groups=groups, bias=False)
-        self.bn2 = nn.BatchNorm2d(planes)
-        self.conv3 = nn.Conv2d(planes, planes * 4, kernel_size=1, bias=False)
-        self.bn3 = nn.BatchNorm2d(planes * 4)
-        self.relu = Mish()
-        self.se_module = SEModule(planes * 4, reduction=reduction)
-        self.downsample = downsample
-        self.stride = stride
-
 
 class SEResNeXtBottleneck(Bottleneck):
     """
@@ -277,23 +223,7 @@ class SENet(nn.Module):
         """
         super(SENet, self).__init__()
         self.inplanes = inplanes
-        if input_3x3:
-            layer0_modules = [
-                ('conv1', nn.Conv2d(3, 64, 3, stride=2, padding=1,
-                                    bias=False)),
-                ('bn1', nn.BatchNorm2d(64)),
-                ('relu1', Mish()),
-                ('conv2', nn.Conv2d(64, 64, 3, stride=1, padding=1,
-                                    bias=False)),
-                ('bn2', nn.BatchNorm2d(64)),
-                ('relu2', Mish()),
-                ('conv3', nn.Conv2d(64, inplanes, 3, stride=1, padding=1,
-                                    bias=False)),
-                ('bn3', nn.BatchNorm2d(inplanes)),
-                ('relu3', Mish()),
-            ]
-        else:
-            layer0_modules = [
+        layer0_modules = [
                 ('conv1', nn.Conv2d(3, inplanes, kernel_size=7, stride=2,
                                     padding=3, bias=False)),
                 ('bn1', nn.BatchNorm2d(inplanes)),

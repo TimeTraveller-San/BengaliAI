@@ -220,7 +220,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
     if mixup and cutmix:
         augs = ['mixup', 'cutmix']
-        p = [0.25, 0.75] #I want more cutmix than mixup
+        p = [0.75, 0.25] #I want less cutmix than mixup
     elif mixup:
         augs = ['mixup']
         p = [1]
@@ -373,7 +373,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     ohem_max_r = 0.8
     ohem_min_r = 0.3
     ohem_min_epoch = ohem_cutoff
-    ohem_max_epoch = 50
+    ohem_max_epoch = 70
     ohem_step = (ohem_max_r - ohem_min_r)/(ohem_max_epoch - ohem_min_epoch)
 
     while epoch < n_epochs:

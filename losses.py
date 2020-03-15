@@ -3,7 +3,7 @@ from torch import nn
 from torch import optim
 import torch.nn.functional as F
 
-def ohem_loss(cls_pred, cls_target, rate=0.3 ):
+def ohem_loss(cls_pred, cls_target, rate=0.3):
     batch_size = cls_pred.size(0)
     ohem_cls_loss = F.cross_entropy(cls_pred, cls_target, reduction='none', ignore_index=-1)
 

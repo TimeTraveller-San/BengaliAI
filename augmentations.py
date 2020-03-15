@@ -152,21 +152,19 @@ class RandomMorph(ImageOnlyTransform):
 
 
 def get_augs(gridmask=False, randommorph=True):
-    augs = [albu.ShiftScaleRotate(p=0.667,
+    augs = [albu.ShiftScaleRotate(p=0.5,
                           border_mode=cv2.BORDER_CONSTANT,
-                          shift_limit=0.03,
-                          scale_limit=0.1,
+                          shift_limit=0.021,
+                          scale_limit=0.11,
                           rotate_limit=21)]
     if gridmask:
         augs.append(albu.OneOf([
                         GridMask(num_grid=3, rotate=15),
                         GridMask(num_grid=3),
                         GridMask(num_grid=4),
-                        GridMask(num_grid=5),
-                        ], p=0.667))
+                        ], p=0.5))
     if randommorph:
         augs.append(RandomMorph(p=0.3)) #Stolen from kaggle
-
     return albu.Compose(augs)
 
 def avg(alpha=1):

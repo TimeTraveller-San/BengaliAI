@@ -200,7 +200,8 @@ class AdaptiveHead(nn.Module):
         h_dim = int(in_features//factor)
         self.fc1 = nn.Conv2d(in_features, h_dim, 2)
         self.bn = nn.BatchNorm2d(h_dim)
-        self.mish = Mish()
+        self.act = nn.ReLU(inplace=True)
+        # self.act = Mish()
         self.l1 = nn.Linear(h_dim, out_features)
         self.dropout = nn.Dropout2d(p)
 
@@ -211,7 +212,7 @@ class AdaptiveHead(nn.Module):
         x = self.bn(x)
         x = self.pool(x)
         x = self.dropout(x)
-        x = self.mish(x)
+        x = self.act(x)
         x = x.view(x.size(0), -1)
         x = self.l1(x)
         return x
@@ -282,23 +283,30 @@ class ClassifierCNN(nn.Module):
             print("Using mish")
             if pretrained is not None:
                 print("PRETRAINTED")
-                self.model = SEResNeXt_vanilla.se_resnext50_32x4d(pretrained=pretrained) #Only one model supported for now
+                self.model = SEResNeXt_mish.se_resnext50_32x4d(pretrained=pretrained) #Only one model supported for now
+                self.model.layer0.conv1 = nn.Conv2d(3, 64, kernel_size=5, stride=1, padding=2, bias=False) #change first layer
             else:
                 print("NOT PRETRIANED")
                 self.model = SEResNeXt_mish.se_resnext50_32x4d(pretrained=pretrained) #Only one model supported for now
+                self.model.layer0.conv1 = nn.Conv2d(3, 64, kernel_size=5, stride=1, padding=2, bias=False) #change first layer
         else:
             self.model = pretrainedmodels.__dict__[model_name](pretrained=pretrained)
 
         in_features = 2048 #Will make lazy loader later. For now, determined this by getting an error.
 
-        if heavy_head:
-            self.head_grapheme_root = AdaptiveHead_Heavy(in_features, num_classes[0], factor=2)
-            self.head_vowel_diacritic = AdaptiveHead_Heavy(in_features, num_classes[1], factor=4)
-            self.head_consonant_diacritic = AdaptiveHead_Heavy(in_features, num_classes[2], factor=4)
-        else:
-            self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0], 4, p=0.4, pool=pool)
-            self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1], 4, p=0.3, pool=pool)
-            self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2], 4, p=0.3, pool=pool)
+        # if heavy_head:
+        #     self.head_grapheme_root = AdaptiveHead_Heavy(in_features, num_classes[0], factor=2)
+        #     self.head_vowel_diacritic = AdaptiveHead_Heavy(in_features, num_classes[1], factor=4)
+        #     self.head_consonant_diacritic = AdaptiveHead_Heavy(in_features, num_classes[2], factor=4)
+        # else:
+        #     self.head_grapheme_root = AdaptiveHead(in_features, num_classes[0], 4, p=0.4, pool=pool)
+        #     self.head_vowel_diacritic = AdaptiveHead(in_features, num_classes[1], 4, p=0.3, pool=pool)
+        #     self.head_consonant_diacritic = AdaptiveHead(in_features, num_classes[2], 4, p=0.3, pool=pool)
+
+        self.head_grapheme_root = nn.Linear(2048, num_classes[0])
+        self.head_vowel_diacritic = nn.Linear(2048, num_classes[1])
+        self.head_consonant_diacritic = nn.Linear(2048, num_classes[2])
+        self.gem = GeM()
 
     def freeze(self):
         for param in self.model.parameters():
@@ -309,10 +317,16 @@ class ClassifierCNN(nn.Module):
             param.requires_grad = True
 
     def forward(self, x):
-        x = F.interpolate(x, (224, 224), mode='area')
+        # x = F.interpolate(x, (224, 224), mode='area')
         # x = self.first(x)
         x = torch.cat([x, x, x], dim=1) #Simple cat
         x = self.model.features(x)
+
+        # x = F.adaptive_avg_pool2d(x, 1).reshape(x.size(0), -1)
+        x = self.gem(x).reshape(x.size(0), -1)
+
+        x = F.dropout(x, 0.25, self.training)
+
         logit_grapheme_root = self.head_grapheme_root(x)
         logit_vowel_diacritic = self.head_vowel_diacritic(x)
         logit_consonant_diacritic = self.head_consonant_diacritic(x)
@@ -378,7 +392,7 @@ if __name__ == "__main__":
     mixup = True
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # model = ClassifierCNN_effnet(model_name, pretrained=pretrained, activation=activation).to(device)
-    model = ClassifierCNN(model_name, pretrained=pretrained, activation=activation, pool='notgem').to(device)
+    model = ClassifierCNN(model_name, pretrained=pretrained, activation=activation, pool='gem').to(device)
     x = torch.zeros((8, 1, 128, 128))
     with torch.no_grad():
         output1, output2, output3 = model(x.cuda())

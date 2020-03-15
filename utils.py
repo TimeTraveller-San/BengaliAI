@@ -22,7 +22,8 @@ def mean_std(model_name):
         mean, std = 0.5, 0.5
     return (mean, std)
 
-def seed_everything(seed=42):
+# def seed_everything(seed=42):
+def seed_everything(seed=2890):
     """
     42 is the answer to everything.
     """
