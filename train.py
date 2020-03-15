@@ -364,7 +364,7 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
     if APEX_AVAILABLE and use_apex:
         model, optimizer = amp.initialize(
-               model, optimizer, opt_level="O1",
+               model, optimizer, opt_level="O2",
                keep_batchnorm_fp32=None
             )
 
