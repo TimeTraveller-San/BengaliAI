@@ -349,7 +349,6 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
     logger.info(f"Continue: {continue_train}")
     logger.info(f"Momentum: {momentum}")
     logger.info(f"Weight decay: {weight_decay}")
-    logger.info(f"Batch size: {batch_size}")
     logger.info(f"Gradient accumulation: {grad_acc}")
     logger.info(f"Model: {model}")
     logger.info("------------------------------------------------------------")
@@ -365,8 +364,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
 
     if APEX_AVAILABLE and use_apex:
         model, optimizer = amp.initialize(
-               model, optimizer, opt_level="O3",
-               keep_batchnorm_fp32=True
+               model, optimizer, opt_level="O1",
+               keep_batchnorm_fp32=None
             )
 
     ohem = False
@@ -417,7 +416,8 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
                 if mixup or cutmix:
                     # logger.info("++++++++++++++ VALIDATING ON BOTH, IGNORE ABOVE TRAIN METRICS ++++++++++++++")
                     # logger.info("++++++++++++++ FIRST IS TRAIN, THEN IS VAL ++++++++++++++")
-                    loaders = [train_loader, val_loader] #For mixup, train_loader while training doesn't have the actual train data so validation needs to validate both. (to see if I am overfitting)
+                    # loaders = [train_loader, val_loader] #For mixup, train_loader while training doesn't have the actual train data so validation needs to validate both. (to see if I am overfitting)
+                    loaders = [val_loader] #Last try fuck it
                 else:
                     loaders = [val_loader]
 

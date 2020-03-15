@@ -32,6 +32,7 @@ from effnet import EfficientNet
 from mixup import *
 from activations import Mish
 from losses import *
+from apex import amp
 
 n_grapheme = 168
 n_vowel = 11
@@ -410,6 +411,9 @@ if __name__ == "__main__":
     dataset = BengaliAI(df[:10000], imgsize=imgsize)
     dataloader = DataLoader(dataset, batch_size=4)
     optimizer = optim.AdamW(model.parameters(), lr=3e-4)
+
+
+
     if mixup:
         print("Using mixup")
         criterion = Mixed_CrossEntropyLoss()
