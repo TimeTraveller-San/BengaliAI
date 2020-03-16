@@ -369,10 +369,10 @@ def train(n_epochs=5, pretrained=False, debug=False, rgb=False,
             )
 
     ohem = False
-    ohem_max_r = 0.8
+    ohem_max_r = 0.7
     ohem_min_r = 0.3
     ohem_min_epoch = ohem_cutoff
-    ohem_max_epoch = 60
+    ohem_max_epoch = 40
     ohem_step = (ohem_max_r - ohem_min_r)/(ohem_max_epoch - ohem_min_epoch)
 
     while epoch < n_epochs:
