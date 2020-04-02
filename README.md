@@ -5,6 +5,9 @@ This is a public record of my failure in the [Bengali.AI Handwritten Grapheme Cl
 Might also serve as a repo for the next image classification competition, won't lose again.
 
 
+# Disclaimer
+You will be a fool if you copy anything from this repo. I probably implemented, whatever you're copying, wrong.
+
 An incomplete list of things I failed with:
 
 ## Augmentations
